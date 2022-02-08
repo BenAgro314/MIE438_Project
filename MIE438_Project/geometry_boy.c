@@ -30,6 +30,8 @@
 
 #define PLAYER_START_Y 144
 #define PLAYER_START_X 32
+#define PLAYER_HALF_WIDTH 4
+#define PLAYER_WIDTH 4
 
 // TODO: docstrings
 
@@ -50,12 +52,54 @@ uint8_t player_x = PLAYER_START_X;
 uint8_t prev_jpad = 0;
 uint8_t jpad = 0;
 uint8_t tick = 0;
+uint8_t background_x_shift = 0;
+
+void scroll_bkg_x(uint8_t x_shift){
+    background_x_shift = (background_x_shift + x_shift) % 256;
+    move_bkg(background_x_shift,0);
+}
+
+uint8_t x_px_to_tile_ind(uint8_t x_px){
+    return (x_px - XOFF) / 8;
+}
+
+uint8_t y_px_to_tile_ind(uint8_t y_px){
+    return (y_px - YOFF) / 8;
+}
+
+uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px){
+    return get_bkg_tile_xy(x_px_to_tile_ind(x_px + background_x_shift) , y_px_to_tile_ind(y_px));
+}
 
 uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button){
     return (button == target) && !(prev_button == target);
 }
 
-void tick_player(){
+uint8_t on_floor(){
+    // return floor y coordinates if on the floor, otherwise return -1
+    uint8_t t_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
+    uint8_t t_right = get_tile_by_px(player_x+PLAYER_WIDTH, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
+    if (t_left == 1 || t_right == 1 || t_left == 5 || t_right == 5){
+        return y_px_to_tile_ind(player_y)*8 + YOFF;
+    }
+    return 0;
+}
+
+uint8_t check_death_collision(){
+    uint8_t t_top = get_tile_by_px(player_x+PLAYER_WIDTH - 1, player_y + 1);
+    uint8_t t_bottom = get_tile_by_px(player_x+PLAYER_WIDTH -1, player_y + PLAYER_WIDTH - 1);
+    if (t_top == 1 || t_bottom == 1 || t_top == 8 || t_bottom == 8){
+        return 1;
+    }
+    uint8_t t_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
+    uint8_t t_right = get_tile_by_px(player_x+PLAYER_WIDTH, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
+    if (t_left == 8 || t_right == 8){
+        return 1;
+    }
+    return 0;
+}
+
+uint8_t tick_player(){
     if (debounce_input(J_UP, prev_jpad, jpad)){
         if (player_y >= FLOOR){
             player_dy = -PLAYER_JUMP_VEL;
@@ -64,12 +108,18 @@ void tick_player(){
 
     player_y += player_dy;
 
-    if (player_y < FLOOR){
+    if (check_death_collision()){
+        return 0;
+    }
+
+    uint8_t floor = on_floor();
+    if (floor == 0){
         player_dy += GRAVITY;
     } else {
-        player_y = FLOOR;
+        player_y = floor;
         player_dy = 0;
     }
+    return 1;
 }
 
 void render_player(){ // i want a better name for this function
@@ -101,8 +151,7 @@ screen_t game(){
         // note that (0,0) is in the top left corner
         //if (tick % GAME_SPEED == 0){
         //    tick++;
-        //    continue;
-        //}
+        //    continue; //}
 
         prev_jpad = jpad;
         jpad = joypad();
@@ -112,9 +161,20 @@ screen_t game(){
             return TITLE;
         }
 
-        tick_player();
+
+        if (!tick_player()){
+            return TITLE;
+        }
+
         render_player();
-        scroll_bkg(BACKGROUND_SCROLL_PX_PER_TICK, 0);//
+        scroll_bkg_x(BACKGROUND_SCROLL_PX_PER_TICK);
+
+        //set_bkg_tile_xy(x_px_to_tile_ind(player_x + background_x_shift), y_px_to_tile_ind(player_y), 1);
+        //set_bkg_tile_xy(background_x_shift/8, 1, 1);
+        //if (get_tile_by_px(player_x, player_y) == 1){
+        //    printf("EXITING\n");
+        //    return TITLE;
+        //};
 
         tick++;
         delay(LOOP_DELAY);
@@ -131,10 +191,11 @@ screen_t title(){
     while (1) {
         prev_jpad = jpad;
         jpad = joypad();
+        //set_bkg_tile_xy(1, 1, 1);
         if (debounce_input(J_START, jpad, prev_jpad)){
             return GAME;
         }
-        scroll_bkg(BACKGROUND_SCROLL_PX_PER_TICK, 0);
+        scroll_bkg_x(BACKGROUND_SCROLL_PX_PER_TICK);
         delay(30);
     }
 }
