@@ -13,6 +13,9 @@
 #include "sprites/level1.c"
 #include "sprites/long_map.c"
 
+// debug flags
+//#define INVINCIBLE
+
 #define TRUE 1
 #define False 0
 
@@ -49,8 +52,7 @@ typedef enum{
 
 // we use globals because they are faster (not on the stack)
 int8_t player_dy = 0; 
-int8_t player_dx = 2; // don't change this or scrolling will break. TODO: fix this 
-// note we don't acutall move the player, just the background
+int8_t player_dx = 3; // note we don't move the player, just the background
 // player velocities
 uint8_t player_y = PLAYER_START_Y;
 uint8_t player_x = PLAYER_START_X;
@@ -64,6 +66,7 @@ uint8_t jpad = 0;
 // game/level state
 uint8_t tick = 0;
 uint16_t background_x_shift = 0;
+uint16_t old_background_x_shift = 8;
 // vars for scrolling 
 uint8_t scx_cnt;
 uint8_t render_row; 
@@ -73,10 +76,10 @@ uint16_t count;
 void scroll_bkg_x(uint8_t x_shift, char* map, uint16_t map_width){
     scroll_bkg(x_shift, 0);
     background_x_shift = (background_x_shift + x_shift);
-    scx_cnt += x_shift;
-    if (scx_cnt >= 8){
-        scx_cnt = 0;
-        uint16_t eff_shft = (background_x_shift/8)*8;
+    //scx_cnt += x_shift;
+    if (background_x_shift >= old_background_x_shift){
+        old_background_x_shift = (background_x_shift/8)*8 + 8;
+        //scx_cnt = 0;
         count = background_x_shift/8 - 1;
         count = (count + 32)%map_width;
         for (render_row = 0; render_row < 18; render_row++){
@@ -119,12 +122,14 @@ void collide(int8_t vel_y){
     };
     for (uint8_t i = 0; i < 4; i++){
         uint8_t tile = tiles[i];
+        #ifndef INVINCIBLE
         if (tile == 0x8){ // TODO: formalize tile indices
             player_dx = 0;
             player_dy = 0;
             player_x = (player_x/8)*8;
             lose = 1;
         }
+        #endif
         if (tile == 0x1 || tile == 0x5){ // black block or floor block
             if (vel_y > 0){ // falling down
                 player_y = (player_y/8)*8;
@@ -133,10 +138,12 @@ void collide(int8_t vel_y){
             } else if (vel_y < 0) {// jumping up
                 player_y = (player_y/8)*8 + 8;
             } else { // player cannot go through walls
+                #ifndef INVINCIBLE
                 player_dx = 0;
                 player_dy = 0;
                 player_x = (player_x/8)*8;
                 lose = 1;
+                #endif
             }
         }
     }
@@ -198,6 +205,7 @@ screen_t game(){
     SHOW_BKG;
     DISPLAY_ON;
     background_x_shift = 0; 
+    old_background_x_shift = 8; 
     move_bkg(background_x_shift, 0);
 
     while (1){
@@ -216,12 +224,13 @@ screen_t game(){
 
         scroll_bkg_x(player_dx, long_map, long_mapWidth);
 
-        if (lose){
+        if (lose){ // TODO: add this to a reset function
             background_x_shift = 0; 
             player_y = PLAYER_START_Y;
             player_x = PLAYER_START_X;
-            player_dx = 2;
+            player_dx = 3;
             on_ground = 1;
+            old_background_x_shift = 8;
             lose = 0;
             set_bkg_submap(0, 0, 32, 18, long_map, long_mapWidth); // map specifies where tiles go
             move_bkg(background_x_shift, 0);
