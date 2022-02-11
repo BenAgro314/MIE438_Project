@@ -20,7 +20,7 @@
 
 #define test_mapWidth 40
 #define test_mapHeight 18
-#define test_mapBank 0
+#define test_mapBank 2
 
 extern const unsigned char test_map[];
 

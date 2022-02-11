@@ -22,17 +22,18 @@
 #define FLOOR               144
 #define CEILING             24
 
-#define LOOP_DELAY          30
+#define LOOP_DELAY          25
 
 #define GRAVITY             1
+#define MAX_FALL_SPEED      8
 #define PLAYER_JUMP_VEL     6
 #define ACCELERATION        1 
 #define ROTATION_SPEED      15 
 
 #define PLAYER_START_Y 144
 #define PLAYER_START_X 32
-#define PLAYER_HALF_WIDTH 4
-#define PLAYER_WIDTH 4
+#define PLAYER_WIDTH 8
+//#define APPLY_GRAV_EVERY 1
 
 // TODO: docstrings
 
@@ -48,24 +49,43 @@ typedef enum{
 
 // we use globals because they are faster (not on the stack)
 int8_t player_dy = 0; 
-int8_t player_dx = 2; // note we don't acutall move the player, just the background
+int8_t player_dx = 2; // don't change this or scrolling will break. TODO: fix this 
+// note we don't acutall move the player, just the background
+// player velocities
 uint8_t player_y = PLAYER_START_Y;
 uint8_t player_x = PLAYER_START_X;
+// player status
+uint8_t on_ground = 1;
+uint8_t win = 0;
+uint8_t lose = 0;
+// joypad
 uint8_t prev_jpad = 0;
 uint8_t jpad = 0;
+// game/level state
 uint8_t tick = 0;
-uint8_t background_x_shift = 0;
-
-// scrolling from http://www.devrs.com/gb/files/mapscroll.txt
-uint16_t scroll_x;
+uint16_t background_x_shift = 0;
+// vars for scrolling 
 uint8_t scx_cnt;
-uint8_t tempa; 
-int count;
+uint8_t render_row; 
+uint16_t count;
 
-void scroll_bkg_x(uint8_t x_shift){
+
+void scroll_bkg_x(uint8_t x_shift, char* map, uint16_t map_width){
+    scroll_bkg(x_shift, 0);
     background_x_shift = (background_x_shift + x_shift);
-    move_bkg(background_x_shift, 0);
+    scx_cnt += x_shift;
+    if (scx_cnt >= 8){
+        scx_cnt = 0;
+        uint16_t eff_shft = (background_x_shift/8)*8;
+        count = background_x_shift/8 - 1;
+        count = (count + 32)%map_width;
+        for (render_row = 0; render_row < 18; render_row++){
+            set_bkg_tiles((background_x_shift/8 - 1)%32, render_row, 1, 1, map + count);
+            count += map_width;
+        }
+    }
 }
+
 
 uint8_t x_px_to_tile_ind(uint8_t x_px){
     return (x_px - XOFF) / 8;
@@ -76,58 +96,82 @@ uint8_t y_px_to_tile_ind(uint8_t y_px){
 }
 
 uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px){
-    return get_bkg_tile_xy(x_px_to_tile_ind(x_px + background_x_shift) , y_px_to_tile_ind(y_px));
+    return get_bkg_tile_xy(
+        x_px_to_tile_ind(
+            x_px + background_x_shift
+        )
+        , y_px_to_tile_ind(y_px)
+    );
 }
 
 uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button){
     return (button == target) && !(prev_button == target);
 }
 
-//uint8_t on_floor(){
-//    // return floor y coordinates if on the floor, otherwise return -1
-//    uint8_t t_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
-//    uint8_t t_right = get_tile_by_px(player_x+PLAYER_WIDTH, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
-//    if (t_left == 1 || t_right == 1 || t_left == 5 || t_right == 5){
-//        return y_px_to_tile_ind(player_y)*8 + YOFF;
-//    }
-//    return 0;
-//}
-//
-//uint8_t check_death_collision(){
-//    uint8_t t_top = get_tile_by_px(player_x+PLAYER_WIDTH - 1, player_y + 1);
-//    uint8_t t_bottom = get_tile_by_px(player_x+PLAYER_WIDTH -1, player_y + PLAYER_WIDTH - 1);
-//    if (t_top == 1 || t_bottom == 1 || t_top == 8 || t_bottom == 8){
-//        return 1;
-//    }
-//    uint8_t t_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
-//    uint8_t t_right = get_tile_by_px(player_x+PLAYER_WIDTH, player_y + PLAYER_WIDTH + PLAYER_HALF_WIDTH);
-//    if (t_left == 8 || t_right == 8){
-//        return 1;
-//    }
-//    return 0;
-//}
 
-uint8_t tick_player(){
-    if (debounce_input(J_UP, prev_jpad, jpad)){
-        if (player_y >= FLOOR){
+void collide(int8_t vel_y){
+    // get all tiles the sprite is colliding with
+    int tiles[4] = {
+        get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y), // top right
+        get_tile_by_px(player_x, player_y), // top left
+        get_tile_by_px(player_x+PLAYER_WIDTH -1, player_y + PLAYER_WIDTH-1), // bottom right
+        get_tile_by_px(player_x, player_y + PLAYER_WIDTH-1) // bottom left
+    };
+    for (uint8_t i = 0; i < 4; i++){
+        uint8_t tile = tiles[i];
+        if (tile == 0x8){ // TODO: formalize tile indices
+            player_dx = 0;
+            player_dy = 0;
+            player_x = (player_x/8)*8;
+            lose = 1;
+        }
+        if (tile == 0x1 || tile == 0x5){ // black block or floor block
+            if (vel_y > 0){ // falling down
+                player_y = (player_y/8)*8;
+                player_dy = 0;
+                on_ground = 1;
+            } else if (vel_y < 0) {// jumping up
+                player_y = (player_y/8)*8 + 8;
+            } else { // player cannot go through walls
+                player_dx = 0;
+                player_dy = 0;
+                player_x = (player_x/8)*8;
+                lose = 1;
+            }
+        }
+    }
+    if (vel_y == 0){
+        uint8_t down_right = get_tile_by_px(player_x+PLAYER_WIDTH, player_y + PLAYER_WIDTH);
+        uint8_t down_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH);
+        if (down_right == 0x1 || down_right == 0x5 || down_left == 0x1 || down_right == 0x5){
+            on_ground = 1;
+        }
+    }
+}
+
+void tick_player(){
+    if (jpad == J_UP) { //debounce_input(J_UP, prev_jpad, jpad)){ // if jumping
+        if (on_ground){
             player_dy = -PLAYER_JUMP_VEL;
         }
     }
+    if (!on_ground){
+        //if (tick % APPLY_GRAV_EVERY == 0){
+        player_dy += GRAVITY;
+        //}
+        if (player_dy > MAX_FALL_SPEED){ // terminal velocity
+            player_dy = MAX_FALL_SPEED;
+        }
+    }
+    // x axis collisions
+    collide(0);
 
     player_y += player_dy;
 
-    //if (check_death_collision()){
-    //    return 0;
-    //}
-
-    //uint8_t floor = on_floor();
-    if (player_y < FLOOR){
-        player_dy += GRAVITY;
-    } else {
-        player_y = FLOOR;
-        player_dy = 0;
-    }
-    return 1;
+    // assume player is not on ground. This will be corrected after collision check
+    on_ground = 0;
+    // y axis collisions
+    collide(player_dy);
 }
 
 void render_player(){ // i want a better name for this function
@@ -150,41 +194,38 @@ screen_t game(){
     render_player(); // render at initial position
     SHOW_SPRITES;
 
-    set_bkg_submap(0, 0, 32, 18, level1, 40); // map specifies where tiles go
+    set_bkg_submap(0, 0, 32, 18, long_map, long_mapWidth); // map specifies where tiles go
     SHOW_BKG;
     DISPLAY_ON;
     background_x_shift = 0; 
     move_bkg(background_x_shift, 0);
 
     while (1){
-        //wait_vbl_done();
-        // note that (0,0) is in the top left corner
-        //if (tick % GAME_SPEED == 0){
-        //    tick++;
-        //    continue; //}
+        wait_vbl_done();
 
         prev_jpad = jpad;
         jpad = joypad();
 
         if (debounce_input(J_A, jpad, prev_jpad)){ // press A to exit
-            //printf("EXITING\n");
             return TITLE;
         }
 
-
-        if (!tick_player()){
-            return TITLE;
-        }
+        tick_player();
 
         render_player();
-        scroll_bkg_x(player_dx);
 
-        //set_bkg_tile_xy(x_px_to_tile_ind(player_x + background_x_shift), y_px_to_tile_ind(player_y), 1);
-        //set_bkg_tile_xy(background_x_shift/8, 1, 1);
-        //if (get_tile_by_px(player_x, player_y) == 1){
-        //    printf("EXITING\n");
-        //    return TITLE;
-        //};
+        scroll_bkg_x(player_dx, long_map, long_mapWidth);
+
+        if (lose){
+            background_x_shift = 0; 
+            player_y = PLAYER_START_Y;
+            player_x = PLAYER_START_X;
+            player_dx = 2;
+            on_ground = 1;
+            lose = 0;
+            set_bkg_submap(0, 0, 32, 18, long_map, long_mapWidth); // map specifies where tiles go
+            move_bkg(background_x_shift, 0);
+        }
 
         tick++;
         delay(LOOP_DELAY);
@@ -192,41 +233,22 @@ screen_t game(){
 }
 
 screen_t scrolling_test(){
-    count = 0;
     wait_vbl_done();
-
     set_bkg_data(0, 9, test_tiles); // load tiles into VRAM
-    for (uint8_t row = 0; row<18; row++){
-        set_bkg_tiles(0, row, 32, 1, long_map + count);
-        count += long_mapWidth;
-    }
+    set_bkg_submap(0,0,32,18, long_map, long_mapWidth);
     SHOW_BKG;
     DISPLAY_ON;
-
     while (1){
         wait_vbl_done();
-        scroll_bkg(player_dx, 0);
-        scroll_x= scroll_x + player_dx;
-        scx_cnt+=player_dx;
-        if (scx_cnt == 8){ // if we have scrolled
-            scx_cnt = 0;
-            count = scroll_x / 8 - 1;
-            count = (count + 32)%long_mapWidth;
-            for (uint8_t row = 0; row < 18; row++){
-                set_bkg_tiles((scroll_x/8 - 1)%32, row, 1, 1, long_map + count);
-                count += long_mapWidth;
-            }
-        }
-        delay(30);
+        scroll_bkg_x(player_dx, long_map, long_mapWidth);
+        delay(LOOP_DELAY);
     }
-
-    return TITLE;
 }
 
 screen_t title(){
-   //printf("\n\t\tPress A to play\n");
+    wait_vbl_done();
     set_bkg_data(0, 9, test_tiles); // load tiles into VRAM
-    set_bkg_submap(0, 0, 32, 18, test_map, 40); // map specifies where tiles go
+    set_bkg_submap(0, 0, 32, 18, test_map, test_mapWidth); // map specifies where tiles go
     SHOW_BKG;
     DISPLAY_ON;
     HIDE_SPRITES;
@@ -237,8 +259,8 @@ screen_t title(){
         if (debounce_input(J_START, jpad, prev_jpad)){
             return GAME;
         }
-        scroll_bkg_x(player_dx);
-        delay(30);
+        scroll_bkg_x(player_dx, test_map, test_mapWidth);
+        delay(LOOP_DELAY);
     }
 }
 
@@ -247,14 +269,14 @@ void main(){
     enable_interrupts();
     BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
     SPRITES_8x8;
-    screen_t current_screen = GAME;
+    screen_t current_screen = TITLE;
 
     while (1){
         if (current_screen == TITLE){
             current_screen = title();
         } else if (current_screen == GAME){
-            //current_screen = game();
-            current_screen = scrolling_test();
+            current_screen = game();
+            //current_screen = scrolling_test();
         }
     }
 }
