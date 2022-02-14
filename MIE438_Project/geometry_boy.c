@@ -12,6 +12,8 @@
 #include "sprites/simple_map.c"
 #include "sprites/level1.c"
 #include "sprites/long_map.c"
+#include "sprites/parallax_map.c"
+#include "sprites/parallax_tiles.c"
 
 // debug flags
 //#define INVINCIBLE
@@ -224,6 +226,11 @@ screen_t game(){
 
         scroll_bkg_x(player_dx, long_map, long_mapWidth);
 
+        //if (tick % 5 == 0){
+        //    set_bkg_data(3, 1, test_tiles+16*9 + 16*((2*tick) % 7)); // load tiles into VRAM
+        //    set_bkg_data(0, 1, test_tiles + 16*10 + 16*((2*tick) % 7)); // load tiles into VRAM
+        //}
+
         if (lose){ // TODO: add this to a reset function
             background_x_shift = 0; 
             player_y = PLAYER_START_Y;
@@ -254,9 +261,37 @@ screen_t scrolling_test(){
     }
 }
 
+screen_t parallax_test(){
+    wait_vbl_done();
+    set_bkg_data(0, 18, parallax_tiles); // load tiles into VRAM
+    set_bkg_submap(0,0,20,18, parallax_map, parallax_mapWidth);
+    SHOW_BKG;
+    DISPLAY_ON;
+    int8_t white_tile_ind = 9;
+    int8_t green_tile_ind = 1;
+    while (1){
+        wait_vbl_done();
+        scroll_bkg_x(player_dx, parallax_map, parallax_mapWidth);
+        if (tick % 1 == 0){
+            white_tile_ind -=1;
+            if (white_tile_ind <= 0){
+                white_tile_ind = 16;
+            }
+            green_tile_ind -=1;
+            if (green_tile_ind <= 0){
+                green_tile_ind = 16;
+            }
+            set_bkg_data(0, 1, parallax_tiles + 16*white_tile_ind); // load tiles into VRAM
+            set_bkg_data(1, 1, parallax_tiles + 16*green_tile_ind); // load tiles into VRAM
+        }
+        tick++;
+        delay(LOOP_DELAY);
+    }
+}
+
 screen_t title(){
     wait_vbl_done();
-    set_bkg_data(0, 9, test_tiles); // load tiles into VRAM
+    set_bkg_data(0, 17, test_tiles); // load tiles into VRAM
     set_bkg_submap(0, 0, 32, 18, test_map, test_mapWidth); // map specifies where tiles go
     SHOW_BKG;
     DISPLAY_ON;
@@ -282,7 +317,7 @@ void main(){
 
     while (1){
         if (current_screen == TITLE){
-            current_screen = title();
+            current_screen = parallax_test();
         } else if (current_screen == GAME){
             current_screen = game();
             //current_screen = scrolling_test();

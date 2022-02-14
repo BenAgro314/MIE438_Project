@@ -1,6 +1,6 @@
 /*
 
- TEST_TILES.H
+ PARRALLAX_TILES_1.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 16
+  Tiles                : 0 to 0
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define test_tilesBank 0
+#define parrallax_tiles_1Bank 0
 /* Start of tile array. */
-extern unsigned char test_tiles[];
+extern unsigned char parrallax_tiles_1[];
 
-/* End of TEST_TILES.H */
+/* End of PARRALLAX_TILES_1.H */
