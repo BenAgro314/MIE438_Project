@@ -22,10 +22,14 @@
 
 */
 
+#ifndef __player_h_INCLUDE
+#define __player_h_INCLUDE
 
 /* Bank of tiles. */
 #define playerBank 0
 /* Start of tile array. */
-extern unsigned char player[];
+extern const unsigned char player[];
+
+#endif
 
 /* End of PLAYER.H */

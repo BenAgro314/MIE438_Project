@@ -1,3 +1,5 @@
+#pragma bank 2
+
 /*
 
  TITLE_MAP.C
@@ -6,7 +8,7 @@
 
  Info:
    Section       : 
-   Bank          : 0
+   Bank          : 2
    Map size      : 60 x 18
    Tile set      : Z:\home\agrobenj\MIE438_Project\sprites\src\gb_tileset.gbr
    Plane count   : 1 plane (8 bits)
@@ -20,9 +22,9 @@
 
 #define title_mapWidth 60
 #define title_mapHeight 18
-#define title_mapBank 0
+#define title_mapBank 2
 
-unsigned char title_map[] =
+const unsigned char title_map[] =
 {
   0x06,0x07,0x06,0x07,0x06,0x07,0x06,0x07,0x06,0x07,
   0x06,0x07,0x06,0x07,0x06,0x07,0x06,0x07,0x06,0x07,

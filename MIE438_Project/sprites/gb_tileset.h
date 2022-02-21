@@ -22,10 +22,14 @@
 
 */
 
+#ifndef __gb_tileset_h_INCLUDE
+#define __gb_tileset_h_INCLUDE
 
 /* Bank of tiles. */
 #define gb_tilesetBank 0
 /* Start of tile array. */
-extern unsigned char gb_tileset[];
+extern const unsigned char gb_tileset[];
+
+#endif
 
 /* End of GB_TILESET.H */

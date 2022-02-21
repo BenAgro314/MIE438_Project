@@ -1,3 +1,5 @@
+#pragma bank 3
+
 /*
 
  LEVEL1.C
@@ -6,7 +8,7 @@
 
  Info:
    Section       : 
-   Bank          : 0
+   Bank          : 2
    Map size      : 256 x 18
    Tile set      : Z:\home\agrobenj\MIE438_Project\sprites\src\gb_tileset.gbr
    Plane count   : 1 plane (8 bits)
@@ -20,7 +22,7 @@
 
 #define level1Width 256
 #define level1Height 18
-#define level1Bank 0
+#define level1Bank 3
 
 const unsigned char level1[] =
 {

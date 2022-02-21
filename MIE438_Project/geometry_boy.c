@@ -1,4 +1,5 @@
 #include <gb/gb.h>
+#include <gbdk/platform.h>
 #include <gbdk/console.h>
 #include <gbdk/font.h>
 
@@ -12,8 +13,8 @@
 #include "utils/out_test.c"
 
 //maps
-#include "sprites/title_map.c"
-#include "sprites/level1.c"
+#include "sprites/title_map.h"
+#include "sprites/level1.h"
 
 // debug flags
 //#define INVINCIBLE
@@ -76,6 +77,8 @@ uint16_t old_background_x_shift = 8;
 uint8_t scx_cnt;
 uint8_t render_row; 
 uint16_t count;
+// for bank restoring
+uint8_t saved_bank;
 
 
 #define TITLE_WIDTH 8
@@ -217,7 +220,9 @@ screen_t game(){
     SHOW_SPRITES;
 
     //set_bkg_data(0, 17, test_tiles); // load tiles into VRAM
+    SWITCH_ROM_MBC1(level1Bank);
     set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
+    SWITCH_ROM_MBC1(saved_bank);
     SHOW_BKG;
     DISPLAY_ON;
     background_x_shift = 0; 
@@ -241,7 +246,9 @@ screen_t game(){
 
         render_player();
 
+        SWITCH_ROM_MBC1(level1Bank);
         scroll_bkg_x(player_dx, level1, level1Width);
+        SWITCH_ROM_MBC1(saved_bank);
 
         if (lose){ // TODO: add this to a reset function
             background_x_shift = 0; 
@@ -251,8 +258,10 @@ screen_t game(){
             on_ground = 1;
             old_background_x_shift = 8;
             lose = 0;
+            SWITCH_ROM_MBC1(level1Bank);
             set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
             move_bkg(background_x_shift, 0);
+            SWITCH_ROM_MBC1(saved_bank);
         }
 
         white_tile_ind -= 16; 
@@ -288,9 +297,14 @@ screen_t title(){
 
     set_bkg_data(0, 13, gb_tileset); // load tiles into VRAM
     set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
-    set_bkg_submap(0,0, 32,18, title_map, title_mapWidth);
+
     SHOW_BKG;
     DISPLAY_ON;
+
+    SWITCH_ROM_MBC1(title_mapBank);
+    set_bkg_submap(0,0, 32,18, title_map, title_mapWidth);
+    SWITCH_ROM_MBC1(saved_bank);
+
     uint8_t white_tile_ind = 0;
     uint8_t green_tile_ind = 128; //8*16;
     uint8_t moving_letter_ind = 0;
@@ -298,7 +312,10 @@ screen_t title(){
     uint8_t offset = 0;
     while (1){
         wait_vbl_done();
+        SWITCH_ROM_MBC1(title_mapBank);
         scroll_bkg_x(player_dx, title_map, title_mapWidth);
+        SWITCH_ROM_MBC1(saved_bank);
+        saved_bank = _current_bank;
         if (tick % 1 == 0){
             white_tile_ind -= 16; 
             if (white_tile_ind <= 0){
@@ -352,6 +369,7 @@ void main(){
     enable_interrupts();
     BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
     SPRITES_8x8;
+    saved_bank = _current_bank;
     screen_t current_screen = TITLE;
 
     while (1){

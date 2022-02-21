@@ -22,10 +22,14 @@
 
 */
 
+#ifndef __parallax_tileset_h_INCLUDE
+#define __parallax_tileset_h_INCLUDE
 
 /* Bank of tiles. */
 #define parallax_tilesetBank 0
 /* Start of tile array. */
-extern unsigned char parallax_tileset[];
+extern const unsigned char parallax_tileset[];
+
+#endif
 
 /* End of PARALLAX_TILESET.H */
