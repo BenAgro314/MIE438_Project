@@ -7,7 +7,7 @@
  Info:
    Section       : 
    Bank          : 2
-   Map size      : 256 x 18
+   Map size      : 512 x 18
    Tile set      : Z:\home\agrobenj\MIE438_Project\sprites\src\gb_tileset.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
@@ -20,9 +20,9 @@
 #ifndef __level1_h_INCLUDE
 #define __level1_h_INCLUDE
 
-#define level1Width 256
+#define level1Width 512
 #define level1Height 18
-#define level1Bank 3
+#define level1Bank 2
 
 extern const unsigned char level1[];
 

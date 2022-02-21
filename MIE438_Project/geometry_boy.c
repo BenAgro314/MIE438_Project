@@ -31,7 +31,7 @@
 #define LOOP_DELAY          20
 
 #define GRAVITY             1
-#define MAX_FALL_SPEED      8
+#define MAX_FALL_SPEED      7
 #define PLAYER_JUMP_VEL     6
 #define ACCELERATION        1 
 #define ROTATION_SPEED      15 
@@ -104,6 +104,14 @@ void scroll_bkg_x(uint8_t x_shift, char* map, uint16_t map_width){
             set_bkg_tiles((background_x_shift/8 - 1)%32, render_row, 1, 1, map + count);
             count += map_width;
         }
+    }
+}
+
+void init_background(char * map, uint16_t map_width){
+    count = 0;
+    for (render_row = 0; render_row < 18; render_row++){
+        set_bkg_tiles(0, render_row, 32, 1, map + count);
+        count += map_width;
     }
 }
 
@@ -213,21 +221,33 @@ void initialize_player(){
     set_sprite_tile(0,0);
 }
 
+void init_tiles(){
+    set_bkg_data(0, 13, gb_tileset); // load tiles into VRAM
+    set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
+}
+
 screen_t game(){
+    wait_vbl_done();
 
     initialize_player();
     render_player(); // render at initial position
     SHOW_SPRITES;
 
+    init_tiles();
+
     //set_bkg_data(0, 17, test_tiles); // load tiles into VRAM
-    SWITCH_ROM_MBC1(level1Bank);
-    set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
-    SWITCH_ROM_MBC1(saved_bank);
-    SHOW_BKG;
-    DISPLAY_ON;
     background_x_shift = 0; 
     old_background_x_shift = 8; 
     move_bkg(background_x_shift, 0);
+
+    SHOW_BKG;
+    DISPLAY_ON;
+
+    SWITCH_ROM_MBC1(level1Bank);
+    //set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
+    init_background(level1, level1Width);
+    SWITCH_ROM_MBC1(saved_bank);
+
 
     uint8_t white_tile_ind = 0;
     uint8_t green_tile_ind = 128; //8*16;
@@ -259,7 +279,8 @@ screen_t game(){
             old_background_x_shift = 8;
             lose = 0;
             SWITCH_ROM_MBC1(level1Bank);
-            set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
+            init_background(level1, level1Width);
+            //set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
             move_bkg(background_x_shift, 0);
             SWITCH_ROM_MBC1(saved_bank);
         }
@@ -295,14 +316,15 @@ screen_t title(){
     }
     SHOW_SPRITES;
 
-    set_bkg_data(0, 13, gb_tileset); // load tiles into VRAM
-    set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
+    init_tiles();
 
     SHOW_BKG;
     DISPLAY_ON;
 
     SWITCH_ROM_MBC1(title_mapBank);
-    set_bkg_submap(0,0, 32,18, title_map, title_mapWidth);
+    //set_bkg_submap(0,0, 32,18, title_map, title_mapWidth);
+    init_background(title_map, title_mapWidth);
+
     SWITCH_ROM_MBC1(saved_bank);
 
     uint8_t white_tile_ind = 0;

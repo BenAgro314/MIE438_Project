@@ -11,6 +11,7 @@
 	.globl _main
 	.globl _title
 	.globl _game
+	.globl _init_tiles
 	.globl _initialize_player
 	.globl _render_player
 	.globl _tick_player
@@ -19,10 +20,10 @@
 	.globl _get_tile_by_px
 	.globl _y_px_to_tile_ind
 	.globl _x_px_to_tile_ind
+	.globl _init_background
 	.globl _scroll_bkg_x
 	.globl _set_sprite_data
 	.globl _get_bkg_tile_xy
-	.globl _set_bkg_submap
 	.globl _set_bkg_tiles
 	.globl _set_bkg_data
 	.globl _wait_vbl_done
@@ -1913,13 +1914,70 @@ _out_test:
 	.db #0x00	; 0
 	.db #0x00	; 0
 	.db #0x00	; 0
-;geometry_boy.c:110: uint8_t x_px_to_tile_ind(uint8_t x_px){
+;geometry_boy.c:110: void init_background(char * map, uint16_t map_width){
+;	---------------------------------
+; Function init_background
+; ---------------------------------
+_init_background::
+;geometry_boy.c:111: count = 0;
+	xor	a, a
+	ld	hl, #_count
+	ld	(hl+), a
+	ld	(hl), a
+;geometry_boy.c:112: for (render_row = 0; render_row < 18; render_row++){
+	ld	hl, #_render_row
+	ld	(hl), #0x00
+00102$:
+;geometry_boy.c:113: set_bkg_tiles(0, render_row, 32, 1, map + count);
+	ldhl	sp,#2
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #_count
+	ld	a,	(hl+)
+	ld	h, (hl)
+	ld	l, a
+	add	hl, de
+	push	hl
+	ld	hl, #0x120
+	push	hl
+	ld	a, (#_render_row)
+	ld	h, a
+	ld	l, #0x00
+	push	hl
+	call	_set_bkg_tiles
+	add	sp, #6
+;geometry_boy.c:114: count += map_width;
+	ld	hl, #_count
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ldhl	sp,	#4
+	ld	a,	(hl+)
+	ld	h, (hl)
+	ld	l, a
+	add	hl, de
+	ld	e, l
+	ld	d, h
+	ld	hl, #_count
+	ld	a, e
+	ld	(hl+), a
+	ld	(hl), d
+;geometry_boy.c:112: for (render_row = 0; render_row < 18; render_row++){
+	ld	hl, #_render_row
+	inc	(hl)
+	ld	a, (hl)
+	sub	a, #0x12
+	jr	C, 00102$
+;geometry_boy.c:116: }
+	ret
+;geometry_boy.c:118: uint8_t x_px_to_tile_ind(uint8_t x_px){
 ;	---------------------------------
 ; Function x_px_to_tile_ind
 ; ---------------------------------
 _x_px_to_tile_ind::
 	add	sp, #-4
-;geometry_boy.c:111: return (x_px - XOFF) / 8;
+;geometry_boy.c:119: return (x_px - XOFF) / 8;
 	ldhl	sp,	#6
 	ld	a, (hl)
 	ldhl	sp,	#0
@@ -1955,16 +2013,16 @@ _x_px_to_tile_ind::
 	sra	b
 	rr	c
 	ld	e, c
-;geometry_boy.c:112: }
+;geometry_boy.c:120: }
 	add	sp, #4
 	ret
-;geometry_boy.c:114: uint8_t y_px_to_tile_ind(uint8_t y_px){
+;geometry_boy.c:122: uint8_t y_px_to_tile_ind(uint8_t y_px){
 ;	---------------------------------
 ; Function y_px_to_tile_ind
 ; ---------------------------------
 _y_px_to_tile_ind::
 	add	sp, #-4
-;geometry_boy.c:115: return (y_px - YOFF) / 8;
+;geometry_boy.c:123: return (y_px - YOFF) / 8;
 	ldhl	sp,	#6
 	ld	a, (hl)
 	ldhl	sp,	#0
@@ -2000,15 +2058,15 @@ _y_px_to_tile_ind::
 	sra	b
 	rr	c
 	ld	e, c
-;geometry_boy.c:116: }
+;geometry_boy.c:124: }
 	add	sp, #4
 	ret
-;geometry_boy.c:118: uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px){
+;geometry_boy.c:126: uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px){
 ;	---------------------------------
 ; Function get_tile_by_px
 ; ---------------------------------
 _get_tile_by_px::
-;geometry_boy.c:123: , y_px_to_tile_ind(y_px)
+;geometry_boy.c:131: , y_px_to_tile_ind(y_px)
 	ldhl	sp,	#3
 	ld	a, (hl)
 	push	af
@@ -2016,7 +2074,7 @@ _get_tile_by_px::
 	call	_y_px_to_tile_ind
 	inc	sp
 	ld	b, e
-;geometry_boy.c:121: x_px + background_x_shift
+;geometry_boy.c:129: x_px + background_x_shift
 	ld	a, (#_background_x_shift)
 	ldhl	sp,	#2
 	add	a, (hl)
@@ -2031,14 +2089,14 @@ _get_tile_by_px::
 	inc	sp
 	call	_get_bkg_tile_xy
 	pop	hl
-;geometry_boy.c:125: }
+;geometry_boy.c:133: }
 	ret
-;geometry_boy.c:127: uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button){
+;geometry_boy.c:135: uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button){
 ;	---------------------------------
 ; Function debounce_input
 ; ---------------------------------
 _debounce_input::
-;geometry_boy.c:128: return (button == target) && !(prev_button == target);
+;geometry_boy.c:136: return (button == target) && !(prev_button == target);
 	ldhl	sp,	#4
 	ld	a, (hl-)
 	dec	hl
@@ -2053,15 +2111,15 @@ _debounce_input::
 	ret
 00104$:
 	ld	e, #0x01
-;geometry_boy.c:129: }
+;geometry_boy.c:137: }
 	ret
-;geometry_boy.c:132: void collide(int8_t vel_y){
+;geometry_boy.c:140: void collide(int8_t vel_y){
 ;	---------------------------------
 ; Function collide
 ; ---------------------------------
 _collide::
 	add	sp, #-18
-;geometry_boy.c:134: int tiles[4] = {
+;geometry_boy.c:142: int tiles[4] = {
 	ldhl	sp,	#0
 	ld	a, l
 	ld	d, h
@@ -2162,7 +2220,7 @@ _collide::
 	inc	bc
 	ld	a, d
 	ld	(bc), a
-;geometry_boy.c:140: for (uint8_t i = 0; i < 4; i++){
+;geometry_boy.c:148: for (uint8_t i = 0; i < 4; i++){
 	ldhl	sp,	#20
 	ld	e, (hl)
 	xor	a, a
@@ -2193,7 +2251,7 @@ _collide::
 	ld	(hl), #0x00
 00125$:
 	ldhl	sp,	#17
-;geometry_boy.c:141: uint8_t tile = tiles[i];
+;geometry_boy.c:149: uint8_t tile = tiles[i];
 	ld	a,(hl)
 	cp	a,#0x04
 	jp	NC,00116$
@@ -2210,17 +2268,17 @@ _collide::
 	ld	b, h
 	ld	a, (bc)
 	ldhl	sp,	#12
-;geometry_boy.c:143: if (tile == 0x5){ // TODO: formalize tile indices
+;geometry_boy.c:151: if (tile == 0x5){ // TODO: formalize tile indices
 	ld	(hl), a
 	sub	a, #0x05
 	jr	NZ, 00102$
-;geometry_boy.c:144: player_dx = 0;
+;geometry_boy.c:152: player_dx = 0;
 	ld	hl, #_player_dx
 	ld	(hl), #0x00
-;geometry_boy.c:145: player_dy = 0;
+;geometry_boy.c:153: player_dy = 0;
 	ld	hl, #_player_dy
 	ld	(hl), #0x00
-;geometry_boy.c:146: player_x = (player_x/8)*8;
+;geometry_boy.c:154: player_x = (player_x/8)*8;
 	ld	a, (#_player_x)
 	ldhl	sp,	#13
 	ld	(hl+), a
@@ -2265,16 +2323,16 @@ _collide::
 	add	a, a
 	add	a, a
 	ld	(#_player_x),a
-;geometry_boy.c:147: lose = 1;
+;geometry_boy.c:155: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
 00102$:
-;geometry_boy.c:150: if (tile == 0x3){ // black block or floor block
+;geometry_boy.c:158: if (tile == 0x3){ // black block or floor block
 	ldhl	sp,	#12
 	ld	a, (hl)
 	sub	a, #0x03
 	jp	NZ,00110$
-;geometry_boy.c:152: player_y = (player_y/8)*8;
+;geometry_boy.c:160: player_y = (player_y/8)*8;
 	ld	hl, #_player_y
 	ld	c, (hl)
 	ld	b, #0x00
@@ -2287,12 +2345,12 @@ _collide::
 	add	hl, bc
 	ld	e, l
 	ld	d, h
-;geometry_boy.c:151: if (vel_y > 0){ // falling down
+;geometry_boy.c:159: if (vel_y > 0){ // falling down
 	ldhl	sp,	#10
 	ld	a, (hl)
 	or	a, a
 	jr	Z, 00107$
-;geometry_boy.c:152: player_y = (player_y/8)*8;
+;geometry_boy.c:160: player_y = (player_y/8)*8;
 	ldhl	sp,	#16
 	ld	a, (hl)
 	or	a, a
@@ -2311,20 +2369,20 @@ _collide::
 	add	a, a
 	add	a, a
 	ld	(#_player_y),a
-;geometry_boy.c:153: player_dy = 0;
+;geometry_boy.c:161: player_dy = 0;
 	ld	hl, #_player_dy
 	ld	(hl), #0x00
-;geometry_boy.c:154: on_ground = 1;
+;geometry_boy.c:162: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
 	jr	00110$
 00107$:
-;geometry_boy.c:155: } else if (vel_y < 0) {// jumping up
+;geometry_boy.c:163: } else if (vel_y < 0) {// jumping up
 	ldhl	sp,	#11
 	ld	a, (hl)
 	or	a, a
 	jr	Z, 00104$
-;geometry_boy.c:156: player_y = (player_y/8)*8 + 8;
+;geometry_boy.c:164: player_y = (player_y/8)*8 + 8;
 	ldhl	sp,	#16
 	ld	a, (hl)
 	or	a, a
@@ -2346,13 +2404,13 @@ _collide::
 	ld	(#_player_y),a
 	jr	00110$
 00104$:
-;geometry_boy.c:159: player_dx = 0;
+;geometry_boy.c:167: player_dx = 0;
 	ld	hl, #_player_dx
 	ld	(hl), #0x00
-;geometry_boy.c:160: player_dy = 0;
+;geometry_boy.c:168: player_dy = 0;
 	ld	hl, #_player_dy
 	ld	(hl), #0x00
-;geometry_boy.c:161: player_x = (player_x/8)*8;
+;geometry_boy.c:169: player_x = (player_x/8)*8;
 	ld	hl, #_player_x
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -2380,20 +2438,20 @@ _collide::
 	add	a, a
 	add	a, a
 	ld	(#_player_x),a
-;geometry_boy.c:162: lose = 1;
+;geometry_boy.c:170: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
 00110$:
-;geometry_boy.c:166: if (tile == 0xB){ // jump tile
+;geometry_boy.c:174: if (tile == 0xB){ // jump tile
 	ldhl	sp,	#12
 	ld	a, (hl)
 	sub	a, #0x0b
 	jr	NZ, 00112$
-;geometry_boy.c:167: player_dy = -9;
+;geometry_boy.c:175: player_dy = -9;
 	ld	hl, #_player_dy
 	ld	(hl), #0xf7
 00112$:
-;geometry_boy.c:169: if (tile == 0xA && jpad == J_UP){
+;geometry_boy.c:177: if (tile == 0xA && jpad == J_UP){
 	ldhl	sp,	#12
 	ld	a, (hl)
 	sub	a, #0x0a
@@ -2401,21 +2459,21 @@ _collide::
 	ld	a, (#_jpad)
 	sub	a, #0x04
 	jr	NZ, 00126$
-;geometry_boy.c:170: player_dy = -PLAYER_JUMP_VEL;
+;geometry_boy.c:178: player_dy = -PLAYER_JUMP_VEL;
 	ld	hl, #_player_dy
 	ld	(hl), #0xfa
 00126$:
-;geometry_boy.c:140: for (uint8_t i = 0; i < 4; i++){
+;geometry_boy.c:148: for (uint8_t i = 0; i < 4; i++){
 	ldhl	sp,	#17
 	inc	(hl)
 	jp	00125$
 00116$:
-;geometry_boy.c:173: if (vel_y == 0){
+;geometry_boy.c:181: if (vel_y == 0){
 	ldhl	sp,	#20
 	ld	a, (hl)
 	or	a, a
 	jr	NZ, 00127$
-;geometry_boy.c:174: uint8_t down_right = get_tile_by_px(player_x+PLAYER_WIDTH, player_y + PLAYER_WIDTH);
+;geometry_boy.c:182: uint8_t down_right = get_tile_by_px(player_x+PLAYER_WIDTH, player_y + PLAYER_WIDTH);
 	ld	a, (#_player_y)
 	add	a, #0x08
 	ld	b, a
@@ -2428,7 +2486,7 @@ _collide::
 	call	_get_tile_by_px
 	pop	hl
 	ld	c, e
-;geometry_boy.c:175: uint8_t down_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH);
+;geometry_boy.c:183: uint8_t down_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH);
 	ld	a, (#_player_y)
 	add	a, #0x08
 	push	bc
@@ -2440,7 +2498,7 @@ _collide::
 	call	_get_tile_by_px
 	pop	hl
 	pop	bc
-;geometry_boy.c:176: if (down_right == 0x1 || down_right == 0x5 || down_left == 0x1 || down_right == 0x5){
+;geometry_boy.c:184: if (down_right == 0x1 || down_right == 0x5 || down_left == 0x1 || down_right == 0x5){
 	ld	a, c
 	dec	a
 	jr	Z, 00117$
@@ -2459,40 +2517,40 @@ _collide::
 	or	a, a
 	jr	Z, 00127$
 00117$:
-;geometry_boy.c:177: on_ground = 1;
+;geometry_boy.c:185: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
 00127$:
-;geometry_boy.c:180: }
+;geometry_boy.c:188: }
 	add	sp, #18
 	ret
-;geometry_boy.c:182: void tick_player(){
+;geometry_boy.c:190: void tick_player(){
 ;	---------------------------------
 ; Function tick_player
 ; ---------------------------------
 _tick_player::
-;geometry_boy.c:183: if (jpad == J_UP) { //debounce_input(J_UP, prev_jpad, jpad)){ // if jumping
+;geometry_boy.c:191: if (jpad == J_UP) { //debounce_input(J_UP, prev_jpad, jpad)){ // if jumping
 	ld	a, (#_jpad)
 	sub	a, #0x04
 	jr	NZ, 00104$
-;geometry_boy.c:184: if (on_ground){
+;geometry_boy.c:192: if (on_ground){
 	ld	a, (#_on_ground)
 	or	a, a
 	jr	Z, 00104$
-;geometry_boy.c:185: player_dy = -PLAYER_JUMP_VEL;
+;geometry_boy.c:193: player_dy = -PLAYER_JUMP_VEL;
 	ld	hl, #_player_dy
 	ld	(hl), #0xfa
 00104$:
-;geometry_boy.c:188: if (!on_ground){
+;geometry_boy.c:196: if (!on_ground){
 	ld	a, (#_on_ground)
 	or	a, a
 	jr	NZ, 00108$
-;geometry_boy.c:190: player_dy += GRAVITY;
+;geometry_boy.c:198: player_dy += GRAVITY;
 	ld	hl, #_player_dy
 	inc	(hl)
-;geometry_boy.c:192: if (player_dy > MAX_FALL_SPEED){ // terminal velocity
+;geometry_boy.c:200: if (player_dy > MAX_FALL_SPEED){ // terminal velocity
 	ld	e, (hl)
-	ld	a,#0x08
+	ld	a,#0x07
 	ld	d,a
 	sub	a, (hl)
 	bit	7, e
@@ -2507,38 +2565,38 @@ _tick_player::
 	scf
 00134$:
 	jr	NC, 00108$
-;geometry_boy.c:193: player_dy = MAX_FALL_SPEED;
+;geometry_boy.c:201: player_dy = MAX_FALL_SPEED;
 	ld	hl, #_player_dy
-	ld	(hl), #0x08
+	ld	(hl), #0x07
 00108$:
-;geometry_boy.c:197: collide(0);
+;geometry_boy.c:205: collide(0);
 	xor	a, a
 	push	af
 	inc	sp
 	call	_collide
 	inc	sp
-;geometry_boy.c:199: player_y += player_dy;
+;geometry_boy.c:207: player_y += player_dy;
 	ld	a, (#_player_y)
 	ld	hl, #_player_dy
 	add	a, (hl)
 	ld	(#_player_y),a
-;geometry_boy.c:202: on_ground = 0;
+;geometry_boy.c:210: on_ground = 0;
 	ld	hl, #_on_ground
 	ld	(hl), #0x00
-;geometry_boy.c:204: collide(player_dy);
+;geometry_boy.c:212: collide(player_dy);
 	ld	a, (#_player_dy)
 	push	af
 	inc	sp
 	call	_collide
 	inc	sp
-;geometry_boy.c:205: }
+;geometry_boy.c:213: }
 	ret
-;geometry_boy.c:207: void render_player(){ // i want a better name for this function
+;geometry_boy.c:215: void render_player(){ // i want a better name for this function
 ;	---------------------------------
 ; Function render_player
 ; ---------------------------------
 _render_player::
-;geometry_boy.c:208: move_sprite(0, player_x,     player_y    );
+;geometry_boy.c:216: move_sprite(0, player_x,     player_y    );
 	ld	hl, #_player_y
 	ld	b, (hl)
 	ld	hl, #_player_x
@@ -2549,15 +2607,15 @@ _render_player::
 	ld	a, b
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:208: move_sprite(0, player_x,     player_y    );
-;geometry_boy.c:209: }
+;geometry_boy.c:216: move_sprite(0, player_x,     player_y    );
+;geometry_boy.c:217: }
 	ret
-;geometry_boy.c:211: void initialize_player(){
+;geometry_boy.c:219: void initialize_player(){
 ;	---------------------------------
 ; Function initialize_player
 ; ---------------------------------
 _initialize_player::
-;geometry_boy.c:212: set_sprite_data(0, 1, player);
+;geometry_boy.c:220: set_sprite_data(0, 1, player);
 	ld	de, #_player
 	push	de
 	xor	a, a
@@ -2568,62 +2626,54 @@ _initialize_player::
 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
 	ld	hl, #(_shadow_OAM + 2)
 	ld	(hl), #0x00
-;geometry_boy.c:213: set_sprite_tile(0,0);
-;geometry_boy.c:214: }
+;geometry_boy.c:221: set_sprite_tile(0,0);
+;geometry_boy.c:222: }
 	ret
-;geometry_boy.c:216: screen_t game(){
+;geometry_boy.c:224: void init_tiles(){
+;	---------------------------------
+; Function init_tiles
+; ---------------------------------
+_init_tiles::
+;geometry_boy.c:225: set_bkg_data(0, 13, gb_tileset); // load tiles into VRAM
+	ld	de, #_gb_tileset
+	push	de
+	ld	hl, #0xd00
+	push	hl
+	call	_set_bkg_data
+	add	sp, #4
+;geometry_boy.c:226: set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
+	ld	de, #_parallax_tileset
+	push	de
+	ld	hl, #0x100d
+	push	hl
+	call	_set_bkg_data
+	add	sp, #4
+;geometry_boy.c:227: }
+	ret
+;geometry_boy.c:229: screen_t game(){
 ;	---------------------------------
 ; Function game
 ; ---------------------------------
 _game::
 	dec	sp
-;geometry_boy.c:218: initialize_player();
+;geometry_boy.c:230: wait_vbl_done();
+	call	_wait_vbl_done
+;geometry_boy.c:232: initialize_player();
 	call	_initialize_player
-;geometry_boy.c:219: render_player(); // render at initial position
+;geometry_boy.c:233: render_player(); // render at initial position
 	call	_render_player
-;geometry_boy.c:220: SHOW_SPRITES;
+;geometry_boy.c:234: SHOW_SPRITES;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x02
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:223: SWITCH_ROM_MBC1(level1Bank);
-	ld	a, #0x03
-	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
-	ld	(hl), #0x03
-;geometry_boy.c:224: set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
-	xor	a, a
-	push	af
-	inc	sp
-	ld	de, #_level1
-	push	de
-	ld	hl, #0x1220
-	push	hl
-	xor	a, a
-	rrca
-	push	af
-	call	_set_bkg_submap
-	add	sp, #7
-;geometry_boy.c:225: SWITCH_ROM_MBC1(saved_bank);
-	ld	hl, #_saved_bank
-	ld	a, (hl)
-	ldh	(__current_bank + 0), a
-	ld	de, #0x2000
-	ld	a, (hl)
-	ld	(de), a
-;geometry_boy.c:226: SHOW_BKG;
-	ldh	a, (_LCDC_REG + 0)
-	or	a, #0x01
-	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:227: DISPLAY_ON;
-	ldh	a, (_LCDC_REG + 0)
-	or	a, #0x80
-	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:228: background_x_shift = 0; 
+;geometry_boy.c:236: init_tiles();
+	call	_init_tiles
+;geometry_boy.c:239: background_x_shift = 0; 
 	xor	a, a
 	ld	hl, #_background_x_shift
 	ld	(hl+), a
 	ld	(hl), a
-;geometry_boy.c:229: old_background_x_shift = 8; 
+;geometry_boy.c:240: old_background_x_shift = 8; 
 	ld	hl, #_old_background_x_shift
 	ld	a, #0x08
 	ld	(hl+), a
@@ -2634,23 +2684,50 @@ _game::
 	ldh	(_SCX_REG + 0), a
 	xor	a, a
 	ldh	(_SCY_REG + 0), a
-;geometry_boy.c:232: uint8_t white_tile_ind = 0;
+;geometry_boy.c:243: SHOW_BKG;
+	ldh	a, (_LCDC_REG + 0)
+	or	a, #0x01
+	ldh	(_LCDC_REG + 0), a
+;geometry_boy.c:244: DISPLAY_ON;
+	ldh	a, (_LCDC_REG + 0)
+	or	a, #0x80
+	ldh	(_LCDC_REG + 0), a
+;geometry_boy.c:246: SWITCH_ROM_MBC1(level1Bank);
+	ld	a, #0x02
+	ldh	(__current_bank + 0), a
+	ld	hl, #0x2000
+;geometry_boy.c:248: init_background(level1, level1Width);
+	ld	de, #0x0200
+	ld	(hl), d
+	push	de
+	ld	de, #_level1
+	push	de
+	call	_init_background
+	add	sp, #4
+;geometry_boy.c:249: SWITCH_ROM_MBC1(saved_bank);
+	ld	hl, #_saved_bank
+	ld	a, (hl)
+	ldh	(__current_bank + 0), a
+	ld	de, #0x2000
+	ld	a, (hl)
+	ld	(de), a
+;geometry_boy.c:252: uint8_t white_tile_ind = 0;
 	ld	c, #0x00
-;geometry_boy.c:233: uint8_t green_tile_ind = 128; //8*16;
+;geometry_boy.c:253: uint8_t green_tile_ind = 128; //8*16;
 	ldhl	sp,	#0
 	ld	(hl), #0x80
-;geometry_boy.c:234: while (1){
+;geometry_boy.c:254: while (1){
 00110$:
-;geometry_boy.c:235: wait_vbl_done();
+;geometry_boy.c:255: wait_vbl_done();
 	call	_wait_vbl_done
-;geometry_boy.c:237: prev_jpad = jpad;
+;geometry_boy.c:257: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ld	(#_prev_jpad),a
-;geometry_boy.c:238: jpad = joypad();
+;geometry_boy.c:258: jpad = joypad();
 	call	_joypad
 	ld	hl, #_jpad
 	ld	(hl), e
-;geometry_boy.c:240: if (debounce_input(J_A, jpad, prev_jpad)){ // press A to exit
+;geometry_boy.c:260: if (debounce_input(J_A, jpad, prev_jpad)){ // press A to exit
 	push	bc
 	ld	a, (#_prev_jpad)
 	push	af
@@ -2665,23 +2742,23 @@ _game::
 	pop	bc
 	or	a, a
 	jr	Z, 00102$
-;geometry_boy.c:241: return TITLE;
+;geometry_boy.c:261: return TITLE;
 	ld	e, #0x00
 	jp	00114$
 00102$:
-;geometry_boy.c:245: tick_player();
+;geometry_boy.c:265: tick_player();
 	push	bc
 	call	_tick_player
 	call	_render_player
 	pop	bc
-;geometry_boy.c:249: SWITCH_ROM_MBC1(level1Bank);
-	ld	a, #0x03
+;geometry_boy.c:269: SWITCH_ROM_MBC1(level1Bank);
+	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
-	ld	(hl), #0x03
-;geometry_boy.c:250: scroll_bkg_x(player_dx, level1, level1Width);
+	ld	(hl), #0x02
+;geometry_boy.c:270: scroll_bkg_x(player_dx, level1, level1Width);
 	push	bc
-	ld	de, #0x0100
+	ld	de, #0x0200
 	push	de
 	ld	de, #_level1
 	push	de
@@ -2691,70 +2768,64 @@ _game::
 	call	_scroll_bkg_x
 	add	sp, #5
 	pop	bc
-;geometry_boy.c:251: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:271: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:253: if (lose){ // TODO: add this to a reset function
+;geometry_boy.c:273: if (lose){ // TODO: add this to a reset function
 	ld	a, (#_lose)
 	or	a, a
 	jr	Z, 00104$
-;geometry_boy.c:254: background_x_shift = 0; 
+;geometry_boy.c:274: background_x_shift = 0; 
 	xor	a, a
 	ld	hl, #_background_x_shift
 	ld	(hl+), a
 	ld	(hl), a
-;geometry_boy.c:255: player_y = PLAYER_START_Y;
+;geometry_boy.c:275: player_y = PLAYER_START_Y;
 	ld	hl, #_player_y
 	ld	(hl), #0x90
-;geometry_boy.c:256: player_x = PLAYER_START_X;
+;geometry_boy.c:276: player_x = PLAYER_START_X;
 	ld	hl, #_player_x
 	ld	(hl), #0x20
-;geometry_boy.c:257: player_dx = 3;
+;geometry_boy.c:277: player_dx = 3;
 	ld	hl, #_player_dx
 	ld	(hl), #0x03
-;geometry_boy.c:258: on_ground = 1;
+;geometry_boy.c:278: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
-;geometry_boy.c:259: old_background_x_shift = 8;
+;geometry_boy.c:279: old_background_x_shift = 8;
 	ld	hl, #_old_background_x_shift
 	ld	a, #0x08
 	ld	(hl+), a
 	xor	a, a
 	ld	(hl), a
-;geometry_boy.c:260: lose = 0;
+;geometry_boy.c:280: lose = 0;
 	ld	hl, #_lose
 	ld	(hl), #0x00
-;geometry_boy.c:261: SWITCH_ROM_MBC1(level1Bank);
-	ld	a, #0x03
+;geometry_boy.c:281: SWITCH_ROM_MBC1(level1Bank);
+	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
-	ld	(hl), #0x03
-;geometry_boy.c:262: set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
+	ld	(hl), #0x02
+;geometry_boy.c:282: init_background(level1, level1Width);
 	push	bc
-	xor	a, a
-	push	af
-	inc	sp
+	ld	de, #0x0200
+	push	de
 	ld	de, #_level1
 	push	de
-	ld	hl, #0x1220
-	push	hl
-	xor	a, a
-	rrca
-	push	af
-	call	_set_bkg_submap
-	add	sp, #7
+	call	_init_background
+	add	sp, #4
 	pop	bc
-;geometry_boy.c:263: move_bkg(background_x_shift, 0);
+;geometry_boy.c:284: move_bkg(background_x_shift, 0);
 	ld	a, (#_background_x_shift)
 	ldh	(_SCX_REG + 0), a
 ;../gbdk/include/gb/gb.h:1009: SCX_REG=x, SCY_REG=y;
 	xor	a, a
 	ldh	(_SCY_REG + 0), a
-;geometry_boy.c:264: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:285: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
@@ -2762,29 +2833,29 @@ _game::
 	ld	a, (hl)
 	ld	(de), a
 00104$:
-;geometry_boy.c:267: white_tile_ind -= 16; 
+;geometry_boy.c:288: white_tile_ind -= 16; 
 	ld	a, c
 	add	a, #0xf0
-;geometry_boy.c:268: if (white_tile_ind <= 0){
+;geometry_boy.c:289: if (white_tile_ind <= 0){
 	ld	c, a
 	or	a, a
 	jr	NZ, 00106$
-;geometry_boy.c:269: white_tile_ind = 240;
+;geometry_boy.c:290: white_tile_ind = 240;
 	ld	c, #0xf0
 00106$:
-;geometry_boy.c:271: green_tile_ind -= 16;
+;geometry_boy.c:292: green_tile_ind -= 16;
 	ldhl	sp,	#0
 	ld	a, (hl)
 	add	a, #0xf0
 	ld	(hl), a
-;geometry_boy.c:272: if (green_tile_ind <= 0){
+;geometry_boy.c:293: if (green_tile_ind <= 0){
 	ld	a, (hl)
 	or	a, a
 	jr	NZ, 00108$
-;geometry_boy.c:273: green_tile_ind = 240; // 16*15
+;geometry_boy.c:294: green_tile_ind = 240; // 16*15
 	ld	(hl), #0xf0
 00108$:
-;geometry_boy.c:275: set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
+;geometry_boy.c:296: set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
 	ld	hl, #_parallax_tileset
 	ld	b, #0x00
 	add	hl, bc
@@ -2793,7 +2864,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:276: set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+;geometry_boy.c:297: set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
 	ld	de, #_parallax_tileset
 	ldhl	sp,	#0
 	ld	l, (hl)
@@ -2804,10 +2875,10 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:278: tick++;
+;geometry_boy.c:299: tick++;
 	ld	hl, #_tick
 	inc	(hl)
-;geometry_boy.c:279: delay(LOOP_DELAY);
+;geometry_boy.c:300: delay(LOOP_DELAY);
 	push	bc
 	ld	de, #0x0014
 	push	de
@@ -2816,18 +2887,18 @@ _game::
 	pop	bc
 	jp	00110$
 00114$:
-;geometry_boy.c:281: }
+;geometry_boy.c:302: }
 	inc	sp
 	ret
-;geometry_boy.c:283: screen_t title(){
+;geometry_boy.c:304: screen_t title(){
 ;	---------------------------------
 ; Function title
 ; ---------------------------------
 _title::
 	add	sp, #-10
-;geometry_boy.c:284: wait_vbl_done();
+;geometry_boy.c:305: wait_vbl_done();
 	call	_wait_vbl_done
-;geometry_boy.c:287: for (uint8_t i = 0; i < TITLE_WIDTH*TITLE_HEIGHT; i++){
+;geometry_boy.c:308: for (uint8_t i = 0; i < TITLE_WIDTH*TITLE_HEIGHT; i++){
 	ldhl	sp,	#9
 	ld	(hl), #0x00
 00128$:
@@ -2835,7 +2906,7 @@ _title::
 	ld	a, (hl)
 	sub	a, #0x10
 	jr	NC, 00104$
-;geometry_boy.c:288: if (game_title[i] == ' '){
+;geometry_boy.c:309: if (game_title[i] == ' '){
 	ld	de, #_game_title
 	ld	l, (hl)
 	ld	h, #0x00
@@ -2848,7 +2919,7 @@ _title::
 	ld	a, (hl)
 	sub	a, #0x20
 	jr	Z, 00103$
-;geometry_boy.c:291: set_sprite_data(1 + i, 1, out_test + 16*(13 + game_title[i] - 65)); // load tiles into VRAM
+;geometry_boy.c:312: set_sprite_data(1 + i, 1, out_test + 16*(13 + game_title[i] - 65)); // load tiles into VRAM
 	ldhl	sp,	#8
 	ld	a, (hl)
 	ld	c, a
@@ -2907,7 +2978,7 @@ _title::
 	inc	sp
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:293: set_sprite_tile(i+1,i+1);
+;geometry_boy.c:314: set_sprite_tile(i+1,i+1);
 	ld	c, b
 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
 	ld	l, b
@@ -2923,89 +2994,71 @@ _title::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:293: set_sprite_tile(i+1,i+1);
+;geometry_boy.c:314: set_sprite_tile(i+1,i+1);
 00103$:
-;geometry_boy.c:287: for (uint8_t i = 0; i < TITLE_WIDTH*TITLE_HEIGHT; i++){
+;geometry_boy.c:308: for (uint8_t i = 0; i < TITLE_WIDTH*TITLE_HEIGHT; i++){
 	ldhl	sp,	#9
 	inc	(hl)
 	jr	00128$
 00104$:
-;geometry_boy.c:296: SHOW_SPRITES;
+;geometry_boy.c:317: SHOW_SPRITES;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x02
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:298: set_bkg_data(0, 13, gb_tileset); // load tiles into VRAM
-	ld	de, #_gb_tileset
-	push	de
-	ld	hl, #0xd00
-	push	hl
-	call	_set_bkg_data
-	add	sp, #4
-;geometry_boy.c:299: set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
-	ld	de, #_parallax_tileset
-	push	de
-	ld	hl, #0x100d
-	push	hl
-	call	_set_bkg_data
-	add	sp, #4
-;geometry_boy.c:301: SHOW_BKG;
+;geometry_boy.c:319: init_tiles();
+	call	_init_tiles
+;geometry_boy.c:321: SHOW_BKG;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x01
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:302: DISPLAY_ON;
+;geometry_boy.c:322: DISPLAY_ON;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x80
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:304: SWITCH_ROM_MBC1(title_mapBank);
+;geometry_boy.c:324: SWITCH_ROM_MBC1(title_mapBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:305: set_bkg_submap(0,0, 32,18, title_map, title_mapWidth);
-	ld	a, #0x3c
-	push	af
-	inc	sp
+;geometry_boy.c:326: init_background(title_map, title_mapWidth);
+	ld	de, #0x003c
+	push	de
 	ld	de, #_title_map
 	push	de
-	ld	hl, #0x1220
-	push	hl
-	xor	a, a
-	rrca
-	push	af
-	call	_set_bkg_submap
-	add	sp, #7
-;geometry_boy.c:306: SWITCH_ROM_MBC1(saved_bank);
+	call	_init_background
+	add	sp, #4
+;geometry_boy.c:328: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:308: uint8_t white_tile_ind = 0;
+;geometry_boy.c:330: uint8_t white_tile_ind = 0;
 	ldhl	sp,	#0
-;geometry_boy.c:309: uint8_t green_tile_ind = 128; //8*16;
+;geometry_boy.c:331: uint8_t green_tile_ind = 128; //8*16;
 	xor	a, a
 	ld	(hl+), a
-;geometry_boy.c:310: uint8_t moving_letter_ind = 0;
+;geometry_boy.c:332: uint8_t moving_letter_ind = 0;
 	ld	a, #0x80
 	ld	(hl+), a
-;geometry_boy.c:311: uint8_t up = 1;
+;geometry_boy.c:333: uint8_t up = 1;
 	xor	a, a
 	ld	(hl+), a
-;geometry_boy.c:312: uint8_t offset = 0;
+;geometry_boy.c:334: uint8_t offset = 0;
 	ld	a, #0x01
 	ld	(hl+), a
 	ld	(hl), #0x00
-;geometry_boy.c:313: while (1){
+;geometry_boy.c:335: while (1){
 00122$:
-;geometry_boy.c:314: wait_vbl_done();
+;geometry_boy.c:336: wait_vbl_done();
 	call	_wait_vbl_done
-;geometry_boy.c:315: SWITCH_ROM_MBC1(title_mapBank);
+;geometry_boy.c:337: SWITCH_ROM_MBC1(title_mapBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:316: scroll_bkg_x(player_dx, title_map, title_mapWidth);
+;geometry_boy.c:338: scroll_bkg_x(player_dx, title_map, title_mapWidth);
 	ld	de, #0x003c
 	push	de
 	ld	de, #_title_map
@@ -3015,17 +3068,17 @@ _title::
 	inc	sp
 	call	_scroll_bkg_x
 	add	sp, #5
-;geometry_boy.c:317: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:339: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:318: saved_bank = _current_bank;
+;geometry_boy.c:340: saved_bank = _current_bank;
 	ldh	a, (__current_bank + 0)
 	ld	(hl), a
-;geometry_boy.c:319: if (tick % 1 == 0){
+;geometry_boy.c:341: if (tick % 1 == 0){
 	xor	a, a
 	ldhl	sp,	#8
 	ld	(hl+), a
@@ -3033,35 +3086,31 @@ _title::
 	ld	a, (hl-)
 	or	a, (hl)
 	jp	NZ, 00117$
-;geometry_boy.c:320: white_tile_ind -= 16; 
+;geometry_boy.c:342: white_tile_ind -= 16; 
 	ldhl	sp,	#0
-	ld	a, (hl)
-	ldhl	sp,	#9
-	ld	(hl), a
 	ld	a, (hl)
 	add	a, #0xf0
-	ldhl	sp,	#0
 	ld	(hl), a
-;geometry_boy.c:321: if (white_tile_ind <= 0){
+;geometry_boy.c:343: if (white_tile_ind <= 0){
 	ld	a, (hl)
 	or	a, a
 	jr	NZ, 00106$
-;geometry_boy.c:322: white_tile_ind = 240;
+;geometry_boy.c:344: white_tile_ind = 240;
 	ld	(hl), #0xf0
 00106$:
-;geometry_boy.c:324: green_tile_ind -= 16;
+;geometry_boy.c:346: green_tile_ind -= 16;
 	ldhl	sp,	#1
 	ld	a, (hl)
 	add	a, #0xf0
 	ld	(hl), a
-;geometry_boy.c:325: if (green_tile_ind <= 0){
+;geometry_boy.c:347: if (green_tile_ind <= 0){
 	ld	a, (hl)
 	or	a, a
 	jr	NZ, 00108$
-;geometry_boy.c:326: green_tile_ind = 240; // 16*15
+;geometry_boy.c:348: green_tile_ind = 240; // 16*15
 	ld	(hl), #0xf0
 00108$:
-;geometry_boy.c:328: set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
+;geometry_boy.c:350: set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
 	ld	de, #_parallax_tileset
 	ldhl	sp,	#0
 	ld	l, (hl)
@@ -3072,7 +3121,7 @@ _title::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:329: set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+;geometry_boy.c:351: set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
 	ld	de, #_parallax_tileset
 	ldhl	sp,	#1
 	ld	l, (hl)
@@ -3083,40 +3132,40 @@ _title::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:332: offset += 1;
+;geometry_boy.c:354: offset += 1;
 	ldhl	sp,	#4
-;geometry_boy.c:331: if (up){
+;geometry_boy.c:353: if (up){
 	ld	a, (hl-)
 	ld	c, a
 	ld	a, (hl)
 	or	a, a
 	jr	Z, 00114$
-;geometry_boy.c:332: offset += 1;
+;geometry_boy.c:354: offset += 1;
 	inc	hl
 	ld	a, c
 	inc	a
 	ld	(hl), a
-;geometry_boy.c:333: if (offset == 2){
+;geometry_boy.c:355: if (offset == 2){
 	ld	a, (hl)
 	sub	a, #0x02
 	jr	NZ, 00115$
-;geometry_boy.c:334: up = 0;
+;geometry_boy.c:356: up = 0;
 	ldhl	sp,	#3
 	ld	(hl), #0x00
 	jr	00115$
 00114$:
-;geometry_boy.c:337: offset -=1;
+;geometry_boy.c:359: offset -=1;
 	ld	a, c
 	dec	a
 	ldhl	sp,	#4
 	ld	(hl), a
-;geometry_boy.c:338: if (offset == 0){
+;geometry_boy.c:360: if (offset == 0){
 	ld	a, (hl)
 	or	a, a
 	jr	NZ, 00115$
-;geometry_boy.c:339: up = 1;
+;geometry_boy.c:361: up = 1;
 	dec	hl
-;geometry_boy.c:340: moving_letter_ind = (moving_letter_ind + 1) % (TITLE_WIDTH*TITLE_HEIGHT);
+;geometry_boy.c:362: moving_letter_ind = (moving_letter_ind + 1) % (TITLE_WIDTH*TITLE_HEIGHT);
 	ld	a, #0x01
 	ld	(hl-), a
 	ld	c, (hl)
@@ -3130,7 +3179,7 @@ _title::
 	ldhl	sp,	#2
 	ld	(hl), e
 00115$:
-;geometry_boy.c:347: TITLE_START_Y + (8 + SPACE_PX)*(moving_letter_ind/TITLE_WIDTH) - offset
+;geometry_boy.c:369: TITLE_START_Y + (8 + SPACE_PX)*(moving_letter_ind/TITLE_WIDTH) - offset
 	ldhl	sp,	#2
 	ld	c, (hl)
 	ld	b, #0x00
@@ -3186,7 +3235,7 @@ _title::
 	sub	a, e
 	ldhl	sp,	#8
 	ld	(hl), a
-;geometry_boy.c:346: TITLE_START_X + (8 + SPACE_PX)*(moving_letter_ind%TITLE_WIDTH) + 4*(moving_letter_ind/TITLE_WIDTH),
+;geometry_boy.c:368: TITLE_START_X + (8 + SPACE_PX)*(moving_letter_ind%TITLE_WIDTH) + 4*(moving_letter_ind/TITLE_WIDTH),
 	ld	a, c
 	and	a, #0x07
 	ld	e, a
@@ -3220,7 +3269,7 @@ _title::
 	ldhl	sp,	#9
 	add	a, (hl)
 	ld	c, a
-;geometry_boy.c:345: moving_letter_ind+1, 
+;geometry_boy.c:367: moving_letter_ind+1, 
 	ldhl	sp,	#2
 	ld	b, (hl)
 	inc	b
@@ -3244,16 +3293,16 @@ _title::
 	inc	de
 	ld	a, c
 	ld	(de), a
-;geometry_boy.c:348: );
+;geometry_boy.c:370: );
 00117$:
-;geometry_boy.c:352: prev_jpad = jpad;
+;geometry_boy.c:374: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ld	(#_prev_jpad),a
-;geometry_boy.c:353: jpad = joypad();
+;geometry_boy.c:375: jpad = joypad();
 	call	_joypad
 	ld	hl, #_jpad
 	ld	(hl), e
-;geometry_boy.c:355: if (debounce_input(J_START, jpad, prev_jpad)){
+;geometry_boy.c:377: if (debounce_input(J_START, jpad, prev_jpad)){
 	ld	a, (#_prev_jpad)
 	push	af
 	inc	sp
@@ -3266,7 +3315,7 @@ _title::
 	ld	a, e
 	or	a, a
 	jr	Z, 00120$
-;geometry_boy.c:356: for (uint8_t i = 1; i < TITLE_WIDTH*TITLE_HEIGHT+1; i++){
+;geometry_boy.c:378: for (uint8_t i = 1; i < TITLE_WIDTH*TITLE_HEIGHT+1; i++){
 	ld	c, #0x01
 00130$:
 	ld	a, c
@@ -3284,67 +3333,67 @@ _title::
 	add	hl, hl
 	add	hl, de
 	ld	(hl), #0x00
-;geometry_boy.c:356: for (uint8_t i = 1; i < TITLE_WIDTH*TITLE_HEIGHT+1; i++){
+;geometry_boy.c:378: for (uint8_t i = 1; i < TITLE_WIDTH*TITLE_HEIGHT+1; i++){
 	inc	c
 	jr	00130$
 00118$:
-;geometry_boy.c:359: return GAME;
+;geometry_boy.c:381: return GAME;
 	ld	e, #0x01
 	jr	00132$
 00120$:
-;geometry_boy.c:361: tick++;
+;geometry_boy.c:383: tick++;
 	ld	hl, #_tick
 	inc	(hl)
-;geometry_boy.c:362: delay(LOOP_DELAY);
+;geometry_boy.c:384: delay(LOOP_DELAY);
 	ld	de, #0x0014
 	push	de
 	call	_delay
 	pop	hl
 	jp	00122$
 00132$:
-;geometry_boy.c:364: }
+;geometry_boy.c:386: }
 	add	sp, #10
 	ret
-;geometry_boy.c:367: void main(){
+;geometry_boy.c:389: void main(){
 ;	---------------------------------
 ; Function main
 ; ---------------------------------
 _main::
 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
 	ei
-;geometry_boy.c:370: BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
+;geometry_boy.c:392: BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
 	ld	a, #0xe4
 	ldh	(_OBP1_REG + 0), a
 	ld	a, #0xe4
 	ldh	(_OBP0_REG + 0), a
 	ld	a, #0xe4
 	ldh	(_BGP_REG + 0), a
-;geometry_boy.c:371: SPRITES_8x8;
+;geometry_boy.c:393: SPRITES_8x8;
 	ldh	a, (_LCDC_REG + 0)
 	and	a, #0xfb
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:372: saved_bank = _current_bank;
+;geometry_boy.c:394: saved_bank = _current_bank;
 	ldh	a, (__current_bank + 0)
 	ld	(#_saved_bank),a
-;geometry_boy.c:373: screen_t current_screen = TITLE;
+;geometry_boy.c:395: screen_t current_screen = TITLE;
 	ld	e, #0x00
-;geometry_boy.c:375: while (1){
+;geometry_boy.c:397: while (1){
 00107$:
-;geometry_boy.c:376: if (current_screen == TITLE){
+;geometry_boy.c:398: if (current_screen == TITLE){
 	ld	a, e
 	or	a, a
 	jr	NZ, 00104$
-;geometry_boy.c:377: current_screen = title();
+;geometry_boy.c:399: current_screen = title();
 	call	_title
 	jr	00107$
 00104$:
-;geometry_boy.c:378: } else if (current_screen == GAME){
+;geometry_boy.c:400: } else if (current_screen == GAME){
 	ld	a, e
 	dec	a
 	jr	NZ, 00107$
-;geometry_boy.c:379: current_screen = game();
+;geometry_boy.c:401: current_screen = game();
 	call	_game
-;geometry_boy.c:382: }
+;geometry_boy.c:404: }
 	jr	00107$
 	.area _CODE
 	.area _INITIALIZER
