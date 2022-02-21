@@ -1,13 +1,13 @@
 /*
 
- LEVEL1.H
+ TITLE_MAP.H
 
  Map Include File.
 
  Info:
    Section       : 
    Bank          : 0
-   Map size      : 256 x 18
+   Map size      : 60 x 18
    Tile set      : Z:\home\agrobenj\MIE438_Project\sprites\src\gb_tileset.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
@@ -18,10 +18,10 @@
 
 */
 
-#define level1Width 256
-#define level1Height 18
-#define level1Bank 0
+#define title_mapWidth 60
+#define title_mapHeight 18
+#define title_mapBank 0
 
-extern unsigned char level1[];
+extern unsigned char title_map[];
 
-/* End of LEVEL1.H */
+/* End of TITLE_MAP.H */

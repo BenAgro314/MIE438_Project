@@ -7,7 +7,7 @@
  Info:
    Section       : 
    Bank          : 0
-   Map size      : 20 x 18
+   Map size      : 32 x 18
    Tile set      : Z:\home\agrobenj\MIE438_Project\sprites\parallax_test_2.gbr
    Plane count   : 1 plane (8 bits)
    Plane order   : Tiles are continues
@@ -18,7 +18,7 @@
 
 */
 
-#define parallax_mapWidth 20
+#define parallax_mapWidth 32
 #define parallax_mapHeight 18
 #define parallax_mapBank 0
 

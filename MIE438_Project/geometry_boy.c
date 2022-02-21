@@ -5,15 +5,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-//#include "sprites/player.c"
-#include "sprites/test_map.c"
-#include "sprites/test_tiles.c"
-#include "sprites/player8x8.c"
-#include "sprites/simple_map.c"
+// sprites and tiles
+#include "sprites/player.c"
+#include "sprites/gb_tileset.c"
+#include "sprites/parallax_tileset.c"
+#include "utils/out_test.c"
+
+//maps
+#include "sprites/title_map.c"
 #include "sprites/level1.c"
-#include "sprites/long_map.c"
-#include "sprites/parallax_map.c"
-#include "sprites/parallax_tiles.c"
 
 // debug flags
 //#define INVINCIBLE
@@ -27,7 +27,7 @@
 #define FLOOR               144
 #define CEILING             24
 
-#define LOOP_DELAY          25
+#define LOOP_DELAY          20
 
 #define GRAVITY             1
 #define MAX_FALL_SPEED      8
@@ -49,8 +49,11 @@
 
 typedef enum{
     TITLE,
-    GAME
+    GAME,
+    LEVEL_SELECT
 } screen_t;
+
+// parallax tileset
 
 // we use globals because they are faster (not on the stack)
 int8_t player_dy = 0; 
@@ -75,6 +78,16 @@ uint8_t render_row;
 uint16_t count;
 
 
+#define TITLE_WIDTH 8
+#define TITLE_HEIGHT 2
+#define TITLE_START_X 54
+#define TITLE_START_Y 32
+#define SPACE_PX 1
+char game_title[] = {
+    'G', 'E', 'O', 'M', 'E', 'T', 'R', 'Y',
+    ' ', ' ', 'B', 'O', 'Y', ' ', ' ', ' ',
+};
+
 void scroll_bkg_x(uint8_t x_shift, char* map, uint16_t map_width){
     scroll_bkg(x_shift, 0);
     background_x_shift = (background_x_shift + x_shift);
@@ -90,7 +103,6 @@ void scroll_bkg_x(uint8_t x_shift, char* map, uint16_t map_width){
         }
     }
 }
-
 
 uint8_t x_px_to_tile_ind(uint8_t x_px){
     return (x_px - XOFF) / 8;
@@ -125,14 +137,14 @@ void collide(int8_t vel_y){
     for (uint8_t i = 0; i < 4; i++){
         uint8_t tile = tiles[i];
         #ifndef INVINCIBLE
-        if (tile == 0x8){ // TODO: formalize tile indices
+        if (tile == 0x5){ // TODO: formalize tile indices
             player_dx = 0;
             player_dy = 0;
             player_x = (player_x/8)*8;
             lose = 1;
         }
         #endif
-        if (tile == 0x1 || tile == 0x5){ // black block or floor block
+        if (tile == 0x3){ // black block or floor block
             if (vel_y > 0){ // falling down
                 player_y = (player_y/8)*8;
                 player_dy = 0;
@@ -147,6 +159,12 @@ void collide(int8_t vel_y){
                 lose = 1;
                 #endif
             }
+        }
+        if (tile == 0xB){ // jump tile
+            player_dy = -9;
+        }
+        if (tile == 0xA && jpad == J_UP){
+            player_dy = -PLAYER_JUMP_VEL;
         }
     }
     if (vel_y == 0){
@@ -185,16 +203,11 @@ void tick_player(){
 
 void render_player(){ // i want a better name for this function
     move_sprite(0, player_x,     player_y    );
-    //move_sprite(1, player_x,     player_y + 8);
-    //move_sprite(2, player_x + 8, player_y    );
-    //move_sprite(3, player_x + 8, player_y + 8);
 }
 
 void initialize_player(){
-    set_sprite_data(0, 1, player8x8);
-    //for (int i = 0; i < 4; i ++){
-        //set_sprite_tile(i, i);
-    //}
+    set_sprite_data(0, 1, player);
+    set_sprite_tile(0,0);
 }
 
 screen_t game(){
@@ -203,13 +216,16 @@ screen_t game(){
     render_player(); // render at initial position
     SHOW_SPRITES;
 
-    set_bkg_submap(0, 0, 32, 18, long_map, long_mapWidth); // map specifies where tiles go
+    //set_bkg_data(0, 17, test_tiles); // load tiles into VRAM
+    set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
     SHOW_BKG;
     DISPLAY_ON;
     background_x_shift = 0; 
     old_background_x_shift = 8; 
     move_bkg(background_x_shift, 0);
 
+    uint8_t white_tile_ind = 0;
+    uint8_t green_tile_ind = 128; //8*16;
     while (1){
         wait_vbl_done();
 
@@ -220,16 +236,12 @@ screen_t game(){
             return TITLE;
         }
 
+
         tick_player();
 
         render_player();
 
-        scroll_bkg_x(player_dx, long_map, long_mapWidth);
-
-        //if (tick % 5 == 0){
-        //    set_bkg_data(3, 1, test_tiles+16*9 + 16*((2*tick) % 7)); // load tiles into VRAM
-        //    set_bkg_data(0, 1, test_tiles + 16*10 + 16*((2*tick) % 7)); // load tiles into VRAM
-        //}
+        scroll_bkg_x(player_dx, level1, level1Width);
 
         if (lose){ // TODO: add this to a reset function
             background_x_shift = 0; 
@@ -239,51 +251,21 @@ screen_t game(){
             on_ground = 1;
             old_background_x_shift = 8;
             lose = 0;
-            set_bkg_submap(0, 0, 32, 18, long_map, long_mapWidth); // map specifies where tiles go
+            set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
             move_bkg(background_x_shift, 0);
         }
 
-        tick++;
-        delay(LOOP_DELAY);
-    }
-}
-
-screen_t scrolling_test(){
-    wait_vbl_done();
-    set_bkg_data(0, 9, test_tiles); // load tiles into VRAM
-    set_bkg_submap(0,0,32,18, long_map, long_mapWidth);
-    SHOW_BKG;
-    DISPLAY_ON;
-    while (1){
-        wait_vbl_done();
-        scroll_bkg_x(player_dx, long_map, long_mapWidth);
-        delay(LOOP_DELAY);
-    }
-}
-
-screen_t parallax_test(){
-    wait_vbl_done();
-    set_bkg_data(0, 18, parallax_tiles); // load tiles into VRAM
-    set_bkg_submap(0,0,20,18, parallax_map, parallax_mapWidth);
-    SHOW_BKG;
-    DISPLAY_ON;
-    int8_t white_tile_ind = 9;
-    int8_t green_tile_ind = 1;
-    while (1){
-        wait_vbl_done();
-        scroll_bkg_x(player_dx, parallax_map, parallax_mapWidth);
-        if (tick % 1 == 0){
-            white_tile_ind -=1;
-            if (white_tile_ind <= 0){
-                white_tile_ind = 16;
-            }
-            green_tile_ind -=1;
-            if (green_tile_ind <= 0){
-                green_tile_ind = 16;
-            }
-            set_bkg_data(0, 1, parallax_tiles + 16*white_tile_ind); // load tiles into VRAM
-            set_bkg_data(1, 1, parallax_tiles + 16*green_tile_ind); // load tiles into VRAM
+        white_tile_ind -= 16; 
+        if (white_tile_ind <= 0){
+            white_tile_ind = 240;
         }
+        green_tile_ind -= 16;
+        if (green_tile_ind <= 0){
+            green_tile_ind = 240; // 16*15
+        }
+        set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
+        set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+
         tick++;
         delay(LOOP_DELAY);
     }
@@ -291,22 +273,79 @@ screen_t parallax_test(){
 
 screen_t title(){
     wait_vbl_done();
-    set_bkg_data(0, 17, test_tiles); // load tiles into VRAM
-    set_bkg_submap(0, 0, 32, 18, test_map, test_mapWidth); // map specifies where tiles go
+
+    //set_sprite_data(1, 26, out_test + 13*16); // load tiles into VRAM
+    for (uint8_t i = 0; i < TITLE_WIDTH*TITLE_HEIGHT; i++){
+        if (game_title[i] == ' '){
+            continue;
+        }
+        set_sprite_data(1 + i, 1, out_test + 16*(13 + game_title[i] - 65)); // load tiles into VRAM
+        //uint8_t ind = game_title[i] - 65 + 1;
+        set_sprite_tile(i+1,i+1);
+        //move_sprite(i+1, TITLE_START_X + (8 + SPACE_PX)*(i%TITLE_WIDTH) + 4*(i/TITLE_WIDTH), TITLE_START_Y + (8 + SPACE_PX)*(i/TITLE_WIDTH));
+    }
+    SHOW_SPRITES;
+
+    set_bkg_data(0, 13, gb_tileset); // load tiles into VRAM
+    set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
+    set_bkg_submap(0,0, 32,18, title_map, title_mapWidth);
     SHOW_BKG;
     DISPLAY_ON;
-    HIDE_SPRITES;
-    while (1) {
+    uint8_t white_tile_ind = 0;
+    uint8_t green_tile_ind = 128; //8*16;
+    uint8_t moving_letter_ind = 0;
+    uint8_t up = 1;
+    uint8_t offset = 0;
+    while (1){
+        wait_vbl_done();
+        scroll_bkg_x(player_dx, title_map, title_mapWidth);
+        if (tick % 1 == 0){
+            white_tile_ind -= 16; 
+            if (white_tile_ind <= 0){
+                white_tile_ind = 240;
+            }
+            green_tile_ind -= 16;
+            if (green_tile_ind <= 0){
+                green_tile_ind = 240; // 16*15
+            }
+            set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
+            set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+
+            if (up){
+                offset += 1;
+                if (offset == 2){
+                    up = 0;
+                }
+            } else {
+                offset -=1;
+                if (offset == 0){
+                    up = 1;
+                    moving_letter_ind = (moving_letter_ind + 1) % (TITLE_WIDTH*TITLE_HEIGHT);
+                }
+            }
+
+            move_sprite(
+                moving_letter_ind+1, 
+                TITLE_START_X + (8 + SPACE_PX)*(moving_letter_ind%TITLE_WIDTH) + 4*(moving_letter_ind/TITLE_WIDTH),
+                TITLE_START_Y + (8 + SPACE_PX)*(moving_letter_ind/TITLE_WIDTH) - offset
+            );
+
+
+        }
         prev_jpad = jpad;
         jpad = joypad();
         //set_bkg_tile_xy(1, 1, 1);
         if (debounce_input(J_START, jpad, prev_jpad)){
+            for (uint8_t i = 1; i < TITLE_WIDTH*TITLE_HEIGHT+1; i++){
+                hide_sprite(i);
+            }
             return GAME;
         }
-        scroll_bkg_x(player_dx, test_map, test_mapWidth);
+        tick++;
         delay(LOOP_DELAY);
     }
 }
+
 
 void main(){
 
@@ -317,11 +356,10 @@ void main(){
 
     while (1){
         if (current_screen == TITLE){
-            current_screen = parallax_test();
+            current_screen = title();
         } else if (current_screen == GAME){
             current_screen = game();
-            //current_screen = scrolling_test();
-        }
+        } 
     }
 }
 

@@ -1,6 +1,6 @@
 /*
 
- PLAYER.H
+ BOX.H
 
  Include File.
 
@@ -9,7 +9,7 @@
   Format               : Gameboy 4 color.
   Compression          : None.
   Counter              : None.
-  Tile size            : 8 x 8
+  Tile size            : 16 x 16
   Tiles                : 0 to 0
 
   Palette colors       : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define playerBank 0
+#define player 0
 /* Start of tile array. */
-extern unsigned char player[];
+extern const unsigned char player[];
 
-/* End of PLAYER.H */
+/* End of BOX.H */

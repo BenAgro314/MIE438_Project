@@ -1,6 +1,6 @@
 /*
 
- PLAYER.H
+ GB_TILESET.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 0
+  Tiles                : 0 to 12
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -24,8 +24,8 @@
 
 
 /* Bank of tiles. */
-#define playerBank 0
+#define gb_tilesetBank 0
 /* Start of tile array. */
-extern unsigned char player[];
+extern unsigned char gb_tileset[];
 
-/* End of PLAYER.H */
+/* End of GB_TILESET.H */

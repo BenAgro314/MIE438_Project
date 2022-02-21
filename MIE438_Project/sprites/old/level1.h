@@ -7,10 +7,10 @@
  Info:
    Section       : 
    Bank          : 0
-   Map size      : 256 x 18
-   Tile set      : Z:\home\agrobenj\MIE438_Project\sprites\src\gb_tileset.gbr
+   Map size      : 40 x 18
+   Tile set      : Z:\home\agrobenj\MIE438_Project\sprites\background_tiles_1.gbr
    Plane count   : 1 plane (8 bits)
-   Plane order   : Tiles are continues
+   Plane order   : Planes are continues
    Tile offset   : 0
    Split data    : No
 
@@ -18,10 +18,10 @@
 
 */
 
-#define level1Width 256
+#define level1Width 40
 #define level1Height 18
 #define level1Bank 0
 
-extern unsigned char level1[];
+extern const unsigned char level1[];
 
 /* End of LEVEL1.H */
