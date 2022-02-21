@@ -22,6 +22,6 @@
 #define level1Height 18
 #define level1Bank 0
 
-extern unsigned char level1[];
+extern const unsigned char level1[];
 
 /* End of LEVEL1.H */
