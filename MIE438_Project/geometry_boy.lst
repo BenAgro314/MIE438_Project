@@ -3361,81 +3361,74 @@
       000E76                       3361 _main::
                                    3362 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
       000E76 FB                    3363 	ei
-                                   3364 ;geometry_boy.c:392: BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
-      000E77 3E E4                 3365 	ld	a, #0xe4
-      000E79 E0r00                 3366 	ldh	(_OBP1_REG + 0), a
-      000E7B 3E E4                 3367 	ld	a, #0xe4
-      000E7D E0r00                 3368 	ldh	(_OBP0_REG + 0), a
-      000E7F 3E E4                 3369 	ld	a, #0xe4
-      000E81 E0r00                 3370 	ldh	(_BGP_REG + 0), a
-                                   3371 ;geometry_boy.c:393: SPRITES_8x8;
-      000E83 F0r00                 3372 	ldh	a, (_LCDC_REG + 0)
-      000E85 E6 FB                 3373 	and	a, #0xfb
-      000E87 E0r00                 3374 	ldh	(_LCDC_REG + 0), a
-                                   3375 ;geometry_boy.c:394: saved_bank = _current_bank;
-      000E89 F0r00                 3376 	ldh	a, (__current_bank + 0)
-      000E8B EAr04r00              3377 	ld	(#_saved_bank),a
-                                   3378 ;geometry_boy.c:395: screen_t current_screen = TITLE;
-      000E8E 1E 00                 3379 	ld	e, #0x00
-                                   3380 ;geometry_boy.c:397: while (1){
-      000E90                       3381 00107$:
-                                   3382 ;geometry_boy.c:398: if (current_screen == TITLE){
-      000E90 7B                    3383 	ld	a, e
-      000E91 B7                    3384 	or	a, a
-      000E92 20 05                 3385 	jr	NZ, 00104$
-                                   3386 ;geometry_boy.c:399: current_screen = title();
-      000E94 CDr30r0C              3387 	call	_title
-      000E97 18 F7                 3388 	jr	00107$
-      000E99                       3389 00104$:
-                                   3390 ;geometry_boy.c:400: } else if (current_screen == GAME){
-      000E99 7B                    3391 	ld	a, e
-      000E9A 3D                    3392 	dec	a
-      000E9B 20 F3                 3393 	jr	NZ, 00107$
-                                   3394 ;geometry_boy.c:401: current_screen = game();
-      000E9D CDrD8r0A              3395 	call	_game
-                                   3396 ;geometry_boy.c:404: }
-      000EA0 18 EE                 3397 	jr	00107$
-                                   3398 	.area _CODE
-                                   3399 	.area _INITIALIZER
-      000000                       3400 __xinit__player_dy:
-      000000 00                    3401 	.db #0x00	;  0
-      000001                       3402 __xinit__player_dx:
-      000001 03                    3403 	.db #0x03	;  3
-      000002                       3404 __xinit__player_y:
-      000002 90                    3405 	.db #0x90	; 144
-      000003                       3406 __xinit__player_x:
-      000003 20                    3407 	.db #0x20	; 32
-      000004                       3408 __xinit__on_ground:
-      000004 01                    3409 	.db #0x01	; 1
-      000005                       3410 __xinit__win:
-      000005 00                    3411 	.db #0x00	; 0
-      000006                       3412 __xinit__lose:
-      000006 00                    3413 	.db #0x00	; 0
-      000007                       3414 __xinit__prev_jpad:
-      000007 00                    3415 	.db #0x00	; 0
-      000008                       3416 __xinit__jpad:
-      000008 00                    3417 	.db #0x00	; 0
-      000009                       3418 __xinit__tick:
-      000009 00                    3419 	.db #0x00	; 0
-      00000A                       3420 __xinit__background_x_shift:
-      00000A 00 00                 3421 	.dw #0x0000
-      00000C                       3422 __xinit__old_background_x_shift:
-      00000C 08 00                 3423 	.dw #0x0008
-      00000E                       3424 __xinit__game_title:
-      00000E 47                    3425 	.db #0x47	;  71	'G'
-      00000F 45                    3426 	.db #0x45	;  69	'E'
-      000010 4F                    3427 	.db #0x4f	;  79	'O'
-      000011 4D                    3428 	.db #0x4d	;  77	'M'
-      000012 45                    3429 	.db #0x45	;  69	'E'
-      000013 54                    3430 	.db #0x54	;  84	'T'
-      000014 52                    3431 	.db #0x52	;  82	'R'
-      000015 59                    3432 	.db #0x59	;  89	'Y'
-      000016 20                    3433 	.db #0x20	;  32
-      000017 20                    3434 	.db #0x20	;  32
-      000018 42                    3435 	.db #0x42	;  66	'B'
-      000019 4F                    3436 	.db #0x4f	;  79	'O'
-      00001A 59                    3437 	.db #0x59	;  89	'Y'
-      00001B 20                    3438 	.db #0x20	;  32
-      00001C 20                    3439 	.db #0x20	;  32
-      00001D 20                    3440 	.db #0x20	;  32
-                                   3441 	.area _CABS (ABS)
+                                   3364 ;geometry_boy.c:393: SPRITES_8x8;
+      000E77 F0r00                 3365 	ldh	a, (_LCDC_REG + 0)
+      000E79 E6 FB                 3366 	and	a, #0xfb
+      000E7B E0r00                 3367 	ldh	(_LCDC_REG + 0), a
+                                   3368 ;geometry_boy.c:394: saved_bank = _current_bank;
+      000E7D F0r00                 3369 	ldh	a, (__current_bank + 0)
+      000E7F EAr04r00              3370 	ld	(#_saved_bank),a
+                                   3371 ;geometry_boy.c:395: screen_t current_screen = TITLE;
+      000E82 1E 00                 3372 	ld	e, #0x00
+                                   3373 ;geometry_boy.c:397: while (1){
+      000E84                       3374 00107$:
+                                   3375 ;geometry_boy.c:398: if (current_screen == TITLE){
+      000E84 7B                    3376 	ld	a, e
+      000E85 B7                    3377 	or	a, a
+      000E86 20 05                 3378 	jr	NZ, 00104$
+                                   3379 ;geometry_boy.c:399: current_screen = title();
+      000E88 CDr30r0C              3380 	call	_title
+      000E8B 18 F7                 3381 	jr	00107$
+      000E8D                       3382 00104$:
+                                   3383 ;geometry_boy.c:400: } else if (current_screen == GAME){
+      000E8D 7B                    3384 	ld	a, e
+      000E8E 3D                    3385 	dec	a
+      000E8F 20 F3                 3386 	jr	NZ, 00107$
+                                   3387 ;geometry_boy.c:401: current_screen = game();
+      000E91 CDrD8r0A              3388 	call	_game
+                                   3389 ;geometry_boy.c:404: }
+      000E94 18 EE                 3390 	jr	00107$
+                                   3391 	.area _CODE
+                                   3392 	.area _INITIALIZER
+      000000                       3393 __xinit__player_dy:
+      000000 00                    3394 	.db #0x00	;  0
+      000001                       3395 __xinit__player_dx:
+      000001 03                    3396 	.db #0x03	;  3
+      000002                       3397 __xinit__player_y:
+      000002 90                    3398 	.db #0x90	; 144
+      000003                       3399 __xinit__player_x:
+      000003 20                    3400 	.db #0x20	; 32
+      000004                       3401 __xinit__on_ground:
+      000004 01                    3402 	.db #0x01	; 1
+      000005                       3403 __xinit__win:
+      000005 00                    3404 	.db #0x00	; 0
+      000006                       3405 __xinit__lose:
+      000006 00                    3406 	.db #0x00	; 0
+      000007                       3407 __xinit__prev_jpad:
+      000007 00                    3408 	.db #0x00	; 0
+      000008                       3409 __xinit__jpad:
+      000008 00                    3410 	.db #0x00	; 0
+      000009                       3411 __xinit__tick:
+      000009 00                    3412 	.db #0x00	; 0
+      00000A                       3413 __xinit__background_x_shift:
+      00000A 00 00                 3414 	.dw #0x0000
+      00000C                       3415 __xinit__old_background_x_shift:
+      00000C 08 00                 3416 	.dw #0x0008
+      00000E                       3417 __xinit__game_title:
+      00000E 47                    3418 	.db #0x47	;  71	'G'
+      00000F 45                    3419 	.db #0x45	;  69	'E'
+      000010 4F                    3420 	.db #0x4f	;  79	'O'
+      000011 4D                    3421 	.db #0x4d	;  77	'M'
+      000012 45                    3422 	.db #0x45	;  69	'E'
+      000013 54                    3423 	.db #0x54	;  84	'T'
+      000014 52                    3424 	.db #0x52	;  82	'R'
+      000015 59                    3425 	.db #0x59	;  89	'Y'
+      000016 20                    3426 	.db #0x20	;  32
+      000017 20                    3427 	.db #0x20	;  32
+      000018 42                    3428 	.db #0x42	;  66	'B'
+      000019 4F                    3429 	.db #0x4f	;  79	'O'
+      00001A 59                    3430 	.db #0x59	;  89	'Y'
+      00001B 20                    3431 	.db #0x20	;  32
+      00001C 20                    3432 	.db #0x20	;  32
+      00001D 20                    3433 	.db #0x20	;  32
+                                   3434 	.area _CABS (ABS)

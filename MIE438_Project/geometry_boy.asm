@@ -3361,13 +3361,6 @@ _title::
 _main::
 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
 	ei
-;geometry_boy.c:392: BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
-	ld	a, #0xe4
-	ldh	(_OBP1_REG + 0), a
-	ld	a, #0xe4
-	ldh	(_OBP0_REG + 0), a
-	ld	a, #0xe4
-	ldh	(_BGP_REG + 0), a
 ;geometry_boy.c:393: SPRITES_8x8;
 	ldh	a, (_LCDC_REG + 0)
 	and	a, #0xfb

@@ -389,7 +389,7 @@ screen_t title(){
 void main(){
 
     enable_interrupts();
-    BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
+    //BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
     SPRITES_8x8;
     saved_bank = _current_bank;
     screen_t current_screen = TITLE;
