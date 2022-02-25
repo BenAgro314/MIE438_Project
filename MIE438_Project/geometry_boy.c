@@ -78,16 +78,35 @@ uint8_t jpad = 0;
 uint8_t tick = 0;
 uint16_t background_x_shift = 0;
 uint16_t old_background_x_shift = 8;
+uint16_t old_scroll_x = 0;
 // vars for scrolling
 uint8_t scx_cnt;
 uint8_t render_row;
 uint16_t count;
 // for bank restoring
 uint8_t saved_bank;
+uint8_t vbl_count;
+
+void lcd_interrupt_game(){
+    HIDE_WIN;
+}//hide the window, triggers at the scanline LYC
+
+void vbl_interrupt_game(){
+    SHOW_WIN;
+    vbl_count ++;
+    old_scroll_x += (background_x_shift - old_scroll_x + 1) >> 1;
+    SCX_REG = old_scroll_x + player_dx;
+}
+
+void vbl_interrupt_title(){
+    vbl_count++;
+    old_scroll_x += (background_x_shift - old_scroll_x + 1) >> 1;
+    SCX_REG = old_scroll_x + player_dx;
+}
 
 void scroll_bkg_x(uint8_t x_shift, char *map, uint16_t map_width)
 {
-    scroll_bkg(x_shift, 0);
+    //scroll_bkg(x_shift, 0);
     background_x_shift = (background_x_shift + x_shift);
     // scx_cnt += x_shift;
     if (background_x_shift >= old_background_x_shift)
@@ -163,7 +182,7 @@ void collide(int8_t vel_y)
     {
         uint8_t tile = tiles[i];
 #ifndef INVINCIBLE
-        if (tile == 0x5)
+        if (tile == 0x5 || tile == 0x4)
         { // TODO: formalize tile indices
             player_dx = 0;
             player_dy = 0;
@@ -262,17 +281,30 @@ void init_tiles()
 
 screen_t game()
 {
+    STAT_REG|=0x40;//enable LYC=LY interrupt
+    LYC_REG=16;//the scanline on which to trigger
+    disable_interrupts();
+    add_LCD(lcd_interrupt_game);
+    add_VBL(vbl_interrupt_game);
+    enable_interrupts();
+    set_interrupts(LCD_IFLAG|VBL_IFLAG);
+
     wait_vbl_done();
 
     initialize_player();
     render_player(); // render at initial position
     SHOW_SPRITES;
+    vbl_count = 0;
 
     init_tiles();
 
+    vbl_count = 0;
     background_x_shift = 0;
+    old_scroll_x = 0;
     old_background_x_shift = 8;
     move_bkg(background_x_shift, 0);
+
+    //set_win_tiles()
 
     SHOW_BKG;
     DISPLAY_ON;
@@ -285,9 +317,13 @@ screen_t game()
     uint8_t white_tile_ind = 0;
     uint8_t green_tile_ind = 128; // 8*16;
     tick = 0;
+
     while (1)
     {
-        wait_vbl_done();
+        if (vbl_count == 0){
+            wait_vbl_done();
+        }
+        vbl_count = 0;
 
         prev_jpad = jpad;
         jpad = joypad();
@@ -307,18 +343,20 @@ screen_t game()
 
         if (lose)
         { // TODO: add this to a reset function
+            wait_vbl_done();
+            vbl_count = 0;
             background_x_shift = 0;
+            old_scroll_x = 0;
+            old_background_x_shift = 8;
+            SWITCH_ROM_MBC1(level1Bank);
+            init_background(level1, level1Width);
+            move_bkg(background_x_shift, 0);
+            SWITCH_ROM_MBC1(saved_bank);
             player_y = PLAYER_START_Y;
             player_x = PLAYER_START_X;
             player_dx = 3;
             on_ground = 1;
-            old_background_x_shift = 8;
             lose = 0;
-            SWITCH_ROM_MBC1(level1Bank);
-            init_background(level1, level1Width);
-            // set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
-            move_bkg(background_x_shift, 0);
-            SWITCH_ROM_MBC1(saved_bank);
         }
 
         white_tile_ind -= 16;
@@ -366,7 +404,16 @@ uint8_t title_loaded = 0; // only want to delay the first time
 
 screen_t title()
 {
+    disable_interrupts();
+    add_VBL(vbl_interrupt_title);
+    enable_interrupts();
+    set_interrupts(VBL_IFLAG);
     wait_vbl_done();
+
+    vbl_count = 0;
+    background_x_shift = 0;
+    old_scroll_x = 0;
+    old_background_x_shift = 8;
 
     init_tiles();
 
@@ -422,7 +469,10 @@ screen_t title()
     uint8_t green_tile_ind = 128; //8*16;
     while (1)
     {
-        wait_vbl_done();
+        if (vbl_count == 0){
+            wait_vbl_done();
+        }
+        vbl_count = 0;
 
         SWITCH_ROM_MBC1(title_mapBank);
         scroll_bkg_x(player_dx, title_map, title_mapWidth);
@@ -529,7 +579,10 @@ screen_t title()
 
             else if (debounce_input(J_SELECT, jpad, prev_jpad))
             {
+                disable_interrupts();
                 clear_background();
+                remove_VBL(vbl_interrupt_title);
+                enable_interrupts();
                 for (uint8_t i = 0; i < 40; i++)
                 {
                     hide_sprite(i);
@@ -557,6 +610,7 @@ screen_t title()
 
 screen_t player_select()
 {
+
     wait_vbl_done();
 
     // Load cursor
@@ -586,11 +640,16 @@ screen_t player_select()
     uint8_t is_up = 0;
     prev_jpad = 0;
     jpad = 0;
+    vbl_count = 0;
 
     tick = 0;
     while (1)
     {
-        wait_vbl_done();
+        if (vbl_count == 0){
+            wait_vbl_done();
+        }
+        vbl_count = 0;
+
         prev_jpad = jpad;
         jpad = joypad();
 
@@ -683,6 +742,7 @@ screen_t player_select()
     }
 }
 
+
 void main()
 {
 
@@ -691,6 +751,7 @@ void main()
     SPRITES_8x8;
     saved_bank = _current_bank;
     screen_t current_screen = TITLE;
+
 
     while (1)
     {
