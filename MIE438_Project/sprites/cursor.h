@@ -1,6 +1,6 @@
 /*
 
- PLAYER.H
+ CURSOR.H
 
  Include File.
 
@@ -22,14 +22,14 @@
 
 */
 
-#ifndef __player_h_INCLUDE
-#define __player_h_INCLUDE
+#ifndef __cursor_h_INCLUDE
+#define __cursor_h_INCLUDE
 
 /* Bank of tiles. */
-#define playerBank 0
+#define cursorBank 0
 /* Start of tile array. */
-extern const unsigned char player[];
+extern const unsigned char cursor[];
 
 #endif
 
-/* End of PLAYER.H */
+/* End of CURSOR.H */

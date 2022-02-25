@@ -7,10 +7,12 @@
 #include <stdlib.h>
 
 // sprites and tiles
-#include "sprites/player.c"
+#include "sprites/players.c"
 #include "sprites/gb_tileset.c"
 #include "sprites/parallax_tileset.c"
-#include "sprites/text_sprites.h"
+#include "sprites/nima.c"
+#include "sprites/aero.c"
+#include "sprites/aero_cursors.c"
 
 // maps
 #include "sprites/title_map.h"
@@ -109,6 +111,19 @@ void init_background(char *map, uint16_t map_width)
     {
         set_bkg_tiles(0, render_row, 32, 1, map + count);
         count += map_width;
+    }
+}
+
+void clear_background(){
+    background_x_shift = 0;
+    old_background_x_shift = 8;
+    move_bkg(background_x_shift, 0);
+    char empty[] = {0x00};
+    for (render_row = 0; render_row < 18; render_row++)
+    {
+        for (int render_col = 0; render_col < 20; render_col ++ ){
+            set_bkg_tiles(render_col, render_row, 1, 1, empty);
+        }
     }
 }
 
@@ -235,7 +250,7 @@ void render_player()
 
 void initialize_player()
 {
-    set_sprite_data(0, 1, all_players+(16*player_sprite_num));
+    set_sprite_data(0, 1, players+(16*player_sprite_num));
     set_sprite_tile(0, 0);
 }
 
@@ -255,7 +270,6 @@ screen_t game()
 
     init_tiles();
 
-    // set_bkg_data(0, 17, test_tiles); // load tiles into VRAM
     background_x_shift = 0;
     old_background_x_shift = 8;
     move_bkg(background_x_shift, 0);
@@ -270,6 +284,7 @@ screen_t game()
 
     uint8_t white_tile_ind = 0;
     uint8_t green_tile_ind = 128; // 8*16;
+    tick = 0;
     while (1)
     {
         wait_vbl_done();
@@ -345,142 +360,192 @@ char player_text[] = {'P', 'L', 'A', 'Y', 'E', 'R'};
 
 #define CURSOR_TEXT_OAM 10
 #define TITLE_CURSOR_START_X 48
+#define LIGHT_CURSOR (aero_cursors)
+#define DARK_CURSOR (aero_cursors + 16)
+uint8_t title_loaded = 0; // only want to delay the first time
 
 screen_t title()
 {
     wait_vbl_done();
 
+    init_tiles();
+
+    SWITCH_ROM_MBC1(title_mapBank);
+    init_background(title_map, title_mapWidth);
+    SWITCH_ROM_MBC1(saved_bank);
+    
+    if (title_loaded) {
+        for (int i = 0; i < 11; i++){
+            set_sprite_data(TITLE_OAM + i, 1, nima + 16 * (13 + game_title[i] - 65)); // load tiles into VRAM
+            set_sprite_tile(TITLE_OAM + i, TITLE_OAM + i);
+            if (i > 7)
+            {
+                move_sprite(TITLE_OAM + i, TITLE_START_X + XOFF + 8 * (i - 8) + 20, TITLE_START_Y + YOFF + 10);
+            }
+            else
+            {
+                move_sprite(TITLE_OAM + i, TITLE_START_X + XOFF + 8 * i, TITLE_START_Y + YOFF);
+            }
+        }
+        for (uint8_t i = 0; i < 6; i++)
+        {
+            // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
+            if (i < 5) {
+                set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
+                set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
+                move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+            }
+            set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
+            set_sprite_tile(PLAYER_TEXT_OAM + i, PLAYER_TEXT_OAM + i);
+            move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+        }
+        // Load cursor
+        set_sprite_data(CURSOR_TEXT_OAM, 1, (char *) LIGHT_CURSOR); // Load into VRAM
+        // Starting at OAM 10 want to use 0-9 for something else. Title at 11
+        set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
+        move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
+        scroll_sprite(TITLE_OAM + 10, 0, -2);
+    }
+
+    SHOW_BKG;
+    DISPLAY_ON;
+
     SHOW_SPRITES;
 
-    // Loading in Text "Geometry Boy"
-    for (uint8_t i = 0; i < 11; i++)
-    {
-        // ASCII Letters - 65, plus 11 to skip the numbers
-        set_sprite_data(TITLE_OAM + i, 1, nima + 16 * (10 + game_title[i] - 65)); // load tiles into VRAM
-        set_sprite_tile(TITLE_OAM + i, TITLE_OAM + i);
-        if (i > 7)
-        {
-            move_sprite(TITLE_OAM + i, TITLE_START_X + XOFF + 8 * (i - 8) + 20, TITLE_START_Y + YOFF + 10);
-        }
-        else
-        {
-            move_sprite(TITLE_OAM + i, TITLE_START_X + XOFF + 8 * i, TITLE_START_Y + YOFF);
-        }
-        delay(LOOP_DELAY * 6);
-    }
-
-    // Loading in Text "START"
-    for (uint8_t i = 0; i < 5; i++)
-    {
-        // ASCII Letters - 65, plus 10 to skip the numbers
-        set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (10 + start_text[i] - 65)); // load tiles into VRAM
-        set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
-        move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
-    }
-
-    // Loading in Text "PLAYER"
-    for (uint8_t i = 0; i < 6; i++)
-    {
-        // ASCII Letters - 65, plus 160 to skip the numbers
-        set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (10 + player_text[i] - 65)); // load tiles into VRAM
-        set_sprite_tile(PLAYER_TEXT_OAM + i, PLAYER_TEXT_OAM + i);
-        move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
-    }
-
-    // Load cursor
     uint8_t cursor_position = 0;
-    set_sprite_data(CURSOR_TEXT_OAM, 1, cursor); // Load into VRAM
-    // Starting at OAM 10 want to use 0-9 for something else. Title at 11
-    set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
-    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
-
-    uint8_t bounce_title = 0;
-    scroll_sprite(TITLE_OAM + 10, 0, -2);
+    uint8_t title_index = 0;
 
     prev_jpad = 0;
     jpad = 0;
-    count = 0;
+    tick = 0;
+    uint8_t white_tile_ind = 0;
+    uint8_t green_tile_ind = 128; //8*16;
     while (1)
     {
         wait_vbl_done();
 
-        // Making the letters bounce
-        if (count % 3 == 0)
-        {
-            if (bounce_title == 0)
-            {
-                scroll_sprite(TITLE_OAM + bounce_title, 0, -2);
-                scroll_sprite(TITLE_OAM + 10, 0, +2);
-            }
-            else
-            {
-                scroll_sprite(TITLE_OAM + bounce_title, 0, -2);
-                scroll_sprite(TITLE_OAM + bounce_title - 1, 0, +2);
-            }
+        SWITCH_ROM_MBC1(title_mapBank);
+        scroll_bkg_x(player_dx, title_map, title_mapWidth);
+        SWITCH_ROM_MBC1(saved_bank);
 
-            bounce_title++;
-            if (bounce_title == 11)
-            {
-                bounce_title = 0;
+        if (tick % 1 == 0){
+            white_tile_ind -= 16; 
+            if (white_tile_ind <= 0){
+                white_tile_ind = 240;
             }
-        }
-        count++;
-        //-----Dealing with IO Now-------
-        prev_jpad = jpad;
-        jpad = joypad();
-        if (debounce_input(J_START, jpad, prev_jpad))
-        {
-            for (uint8_t i = 0; i < 40; i++)
-            {
-                hide_sprite(i);
+            green_tile_ind -= 16;
+            if (green_tile_ind <= 0){
+                green_tile_ind = 240; // 16*15
             }
-            return LEVEL_SELECT;
+            set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
+            set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
         }
 
-        if (debounce_input(J_DOWN, jpad, prev_jpad))
-        {
-            cursor_position++;
-            cursor_position %= 2;
-            if (cursor_position == 0)
-            {
-                move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
+        if (!title_loaded) {
+            if (tick % 6 == 0){
+                if (title_index < 11){
+                    set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
+                    set_sprite_tile(TITLE_OAM + title_index, TITLE_OAM + title_index);
+                    if (title_index > 7)
+                    {
+                        move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * (title_index - 8) + 20, TITLE_START_Y + YOFF + 10);
+                    }
+                    else
+                    {
+                        move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * title_index, TITLE_START_Y + YOFF);
+                    }
+                    title_index = title_index + 1;
+                } else {
+                    for (uint8_t i = 0; i < 6; i++)
+                    {
+                        // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
+                        if (i < 5) {
+                            set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
+                            set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
+                            move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+                        }
+                        set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
+                        set_sprite_tile(PLAYER_TEXT_OAM + i, PLAYER_TEXT_OAM + i);
+                        move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+                    }
+                    // Load cursor
+                    set_sprite_data(CURSOR_TEXT_OAM, 1, (char *) LIGHT_CURSOR); // Load into VRAM
+                    // Starting at OAM 10 want to use 0-9 for something else. Title at 11
+                    set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
+                    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
+
+                    title_loaded = 1;
+                    title_index = 0;
+                    scroll_sprite(TITLE_OAM + 10, 0, -2);
+                }
             }
-            else if (cursor_position == 1)
+        } else {
+            // Making the letters bounce
+            if (tick % 3 == 0)
             {
-                move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+                if (title_index == 0)
+                {
+                    scroll_sprite(TITLE_OAM + title_index, 0, -2);
+                    scroll_sprite(TITLE_OAM + 10, 0, +2);
+                }
+                else
+                {
+                    scroll_sprite(TITLE_OAM + title_index, 0, -2);
+                    scroll_sprite(TITLE_OAM + title_index - 1, 0, +2);
+                }
+                title_index  = (title_index + 1)% 11;
+            }
+            //-----Dealing with IO Now-------
+            prev_jpad = jpad;
+            jpad = joypad();
+
+            if (debounce_input(J_DOWN, jpad, prev_jpad))
+            {
+                cursor_position++;
+                cursor_position %= 2;
+                if (cursor_position == 0)
+                {
+                    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
+                }
+                else if (cursor_position == 1)
+                {
+                    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+                }
+            }
+
+            else if (debounce_input(J_UP, jpad, prev_jpad))
+            {
+                cursor_position++;
+                cursor_position %= 2;
+                if (cursor_position == 0)
+                {
+                    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
+                }
+                else if (cursor_position == 1)
+                {
+                    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+                }
+            }
+
+            else if (debounce_input(J_SELECT, jpad, prev_jpad))
+            {
+                clear_background();
+                for (uint8_t i = 0; i < 40; i++)
+                {
+                    hide_sprite(i);
+                }
+                if (cursor_position == 0)
+                {
+                    return LEVEL_SELECT;
+                }
+                else if (cursor_position == 1)
+                {
+                    return PLAYER_SELECT;
+                }
             }
         }
 
-        else if (debounce_input(J_UP, jpad, prev_jpad))
-        {
-            cursor_position++;
-            cursor_position %= 2;
-            if (cursor_position == 0)
-            {
-                move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
-            }
-            else if (cursor_position == 1)
-            {
-                move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
-            }
-        }
-
-        else if (debounce_input(J_SELECT, jpad, prev_jpad))
-        {
-            for (uint8_t i = 0; i < 40; i++)
-            {
-                hide_sprite(i);
-            }
-            if (cursor_position == 0)
-            {
-                return LEVEL_SELECT;
-            }
-            else if (cursor_position == 1)
-            {
-                return PLAYER_SELECT;
-            }
-        }
-
+        tick++;
         delay(LOOP_DELAY);
     }
 }
@@ -496,7 +561,7 @@ screen_t player_select()
 
     // Load cursor
     uint8_t cursor_position = 0;
-    set_sprite_data(CURSOR_TEXT_OAM, 1, cursor); // Load into VRAM
+    set_sprite_data(CURSOR_TEXT_OAM, 1, (char* ) DARK_CURSOR); // Load into VRAM
     // Starting at OAM 10 want to use 0-9 for something else. PLAYER_SPRITES start at 11
     set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
     move_sprite(CURSOR_TEXT_OAM,
@@ -504,7 +569,7 @@ screen_t player_select()
                 ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 
     // Load all character sprites
-    set_sprite_data(PLAYER_SPRITES_OAM, 16, all_players); // Load into VRAM
+    set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
 
     // Loading in characters
 
@@ -522,7 +587,7 @@ screen_t player_select()
     prev_jpad = 0;
     jpad = 0;
 
-    count = 0;
+    tick = 0;
     while (1)
     {
         wait_vbl_done();
@@ -585,17 +650,17 @@ screen_t player_select()
                         ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
         }
 
-        else if (debounce_input(J_SELECT, jpad, prev_jpad) || debounce_input(J_START, jpad, prev_jpad))
+        else if (debounce_input(J_SELECT, jpad, prev_jpad))// || debounce_input(J_START, jpad, prev_jpad))
         {
 
             for (uint8_t i = 0; i < 40; i++)
             {
                 hide_sprite(i);
             }
-            return LEVEL_SELECT;
+            return TITLE;
         }
 
-        if (count % 3 == 0)
+        if (tick % 3 == 0)
         {
             if (is_up)
             {
@@ -612,7 +677,7 @@ screen_t player_select()
                 is_up = 1;
             }
         }
-        count++;
+        tick++;
 
         delay(LOOP_DELAY);
     }

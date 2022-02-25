@@ -6,7 +6,7 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [],
-            "compilerPath": "~/Documents/Education/University/Winter 2021/MIE438/MIE Project/Project Code/gbdk/bin/lcc/ ",
+            "compilerPath": "~/gbdk/bin/lcc/ ",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
             "intelliSenseMode": "linux-gcc-x64"

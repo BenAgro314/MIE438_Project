@@ -11,6 +11,8 @@ BLACK = 3
 parser = argparse.ArgumentParser(description='Convery pixel image to an array of tiles')
 parser.add_argument('in_path', help='path to image file')
 parser.add_argument('out_name', help='name to give the .c, .h, file and output tile array')
+parser.add_argument('--invert', const = True, default = False, action = 'store_const', help='invert the colors in the tileset')
+parser.add_argument('--opaque', const = True, default = False, action = 'store_const', help='remove transparency (white -> lgrey')
 args = parser.parse_args()
 in_path = args.in_path
 out_name = args.out_name
@@ -27,16 +29,18 @@ colors.sort(key = lambda x: sum(x[:-1]))
 assert len(colors) >= 2 and len(colors) <= 4, "Need at least two colors and less than 4 colors."
 if len(colors) == 2:
     color_map = {
-        colors[0]: WHITE,
+        colors[0]: WHITE if (not args.opaque) else (DGREY if (args.invert) else LGREY),
         colors[1]: BLACK,
     }
 elif len(colors) == 3:
     color_map = {
-        colors[0]: WHITE,
+        colors[0]: WHITE if (not args.opaque) else (DGREY if (args.invert) else LGREY),
+        colors[1]: BLACK,
         colors[1]: DGREY,
         colors[2]: BLACK,
     }
 else:
+    assert (not args.opaque), "Four colors not supported with opaque mode"
     color_map = {
         colors[0]: WHITE,
         colors[1]: LGREY,
@@ -46,7 +50,7 @@ else:
 
 # chop into 8x8
 tiles = []
-invert = True
+invert = not args.invert
 zero = '0'
 one = '1'
 if invert:
@@ -89,7 +93,7 @@ out_c.write(f"Input image: {in_path}\n")
 out_c.write(f"Num Tiles: {num_tiles}\n")
 out_c.write("*/\n\n")
 out_c.write("/* Start of tile array. */\n")
-out_c.write("unsigned const char " + out_name + "[] ={\n")
+out_c.write("const unsigned char " + out_name + "[] ={\n")
 for i in range(0, len(tiles), 8):
     row = tiles[i:i+8]
     out_c.write("\t" + ",".join(row) + ",\n")
