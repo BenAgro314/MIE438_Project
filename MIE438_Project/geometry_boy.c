@@ -346,17 +346,17 @@ char game_title[] = {
 
 #define TITLE_OAM 11
 #define TITLE_START_X 48
-#define TITLE_START_Y 24
+#define TITLE_START_Y 16
 
 char start_text[] = {'S', 'T', 'A', 'R', 'T'};
 #define START_TEXT_OAM 22
 #define START_TEXT_START_X 60
-#define START_TEXT_START_Y 104
+#define START_TEXT_START_Y 88
 
 char player_text[] = {'P', 'L', 'A', 'Y', 'E', 'R'};
 #define PLAYER_TEXT_OAM 27
 #define PLAYER_TEXT_START_X 56
-#define PLAYER_TEXT_START_Y 120
+#define PLAYER_TEXT_START_Y 104
 
 #define CURSOR_TEXT_OAM 10
 #define TITLE_CURSOR_START_X 48
