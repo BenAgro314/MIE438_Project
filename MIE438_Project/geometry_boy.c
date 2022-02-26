@@ -84,7 +84,6 @@ uint8_t scx_cnt;
 uint8_t render_row;
 uint8_t render_col;
 uint16_t count;
-const char empty[] = {0x00};
 // for bank restoring
 uint8_t saved_bank;
 // for vbl_wait timing
@@ -99,6 +98,7 @@ uint8_t num_levels = 1;
 unsigned char * level_maps[1] = {level1};
 uint16_t level_widths[1] = {level1Width};
 uint8_t level_banks[1] = {level1Bank};
+uint16_t current_attempts = 0;
 // tracking stats
 // from pan docs: A000 - BFFF	8 KiB External RAM	From cartridge, switchable bank if any
 #define START_RAM 0xa000
@@ -130,6 +130,32 @@ inline void reset_tracking(){
     prev_jpad = 0;
     jpad = 0;
     SCX_REG = 0;
+}
+
+const char attempts_title[] = {
+    'A', 'T', 'T', 'E', 'M', 'P', 'T', 'S'
+};
+
+void init_HUD(){
+    for (render_row = 0; render_row < 3; render_row++){
+        for (render_col = 0; render_col < 20; render_col ++){
+            set_win_tile_xy(render_col, render_row, 0x03);
+        }
+    }
+    for (render_col = 1; render_col < 9; render_col ++){
+        set_win_tile_xy(render_col, 0, 39 + (attempts_title[render_col-1] - 65));
+    }
+    for (render_col = 10; render_col < 13; render_col ++){
+        set_win_tile_xy(render_col, 0, 29);
+    }
+}
+
+void update_HUD(){
+    uint16_t temp = current_attempts;
+    for (render_col = 12; render_col >=10; render_col --){
+        set_win_tile_xy(render_col, 0, temp % 10 + 29);
+        temp = temp / 10;
+    }
 }
 
 void lcd_interrupt_game(){
@@ -181,13 +207,10 @@ void init_background(char *map, uint16_t map_width)
 
 void clear_background(){
     // write 0 to all background tiles
-    background_x_shift = 0;
-    old_background_x_shift = 8;
-    move_bkg(background_x_shift, 0);
     for (render_row = 0; render_row < 18; render_row++)
     {
         for (render_col = 0; render_col < 20; render_col ++){
-            set_bkg_tiles(render_col, render_row, 1, 1, empty);
+            set_bkg_tile_xy(render_col, render_row, 0);
         }
     }
 }
@@ -318,6 +341,7 @@ void init_tiles()
 {
     set_bkg_data(0, 13, gb_tileset);        // load tiles into VRAM
     set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
+    set_bkg_data(29, 36, aero + 3*16);
 }
 
 screen_t game()
@@ -338,6 +362,8 @@ screen_t game()
 
     init_tiles();
     reset_tracking();
+    current_attempts = 0;
+    init_HUD();
 
     SHOW_BKG;
     DISPLAY_ON;
@@ -383,6 +409,8 @@ screen_t game()
                 *(px_progress[level_ind]) = background_x_shift + player_x;
             }
             DISABLE_RAM_MBC1;
+            current_attempts++;
+            update_HUD();
         }
 
         white_tile_ind -= 16;
