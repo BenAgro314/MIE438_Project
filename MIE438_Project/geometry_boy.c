@@ -93,7 +93,27 @@ uint8_t vbl_count;
 uint8_t white_tile_ind = 0;
 uint8_t green_tile_ind = 128; // 8*16;
 
-void reset_tracking(){
+// level stuff
+uint8_t level_ind = 0;
+uint8_t num_levels = 1;
+unsigned char * level_maps[1] = {level1};
+uint16_t level_widths[1] = {level1Width};
+uint8_t level_banks[1] = {level1Bank};
+// tracking stats
+// from pan docs: A000 - BFFF	8 KiB External RAM	From cartridge, switchable bank if any
+#define START_RAM 0xa000
+#define START_ATTEMPTS 0xa001
+#define START_PROGRESS 0xa100
+char * saved = (uint8_t *) START_RAM;
+uint16_t* attempts[1] = {
+    (int *) START_ATTEMPTS, 
+}; // *(attempts[i]) is the number of attempts at level i
+uint16_t* px_progress[1] = {
+    (int *) START_PROGRESS,
+}; // *(px_progress[i]) is the maximum pixel progress at level i
+
+
+inline void reset_tracking(){
     vbl_count = 0;
     background_x_shift = 0;
     old_scroll_x = 0;
@@ -322,8 +342,8 @@ screen_t game()
     SHOW_BKG;
     DISPLAY_ON;
 
-    SWITCH_ROM_MBC1(level1Bank);
-    init_background(level1, level1Width);
+    SWITCH_ROM_MBC1(level_banks[level_ind]);
+    init_background(level_maps[level_ind], level_widths[level_ind]);
     SWITCH_ROM_MBC1(saved_bank);
 
     while (1)
@@ -346,16 +366,23 @@ screen_t game()
         render_player();
 
         SWITCH_ROM_MBC1(level1Bank);
-        scroll_bkg_x(player_dx, level1, level1Width);
+        SWITCH_ROM_MBC1(level_banks[level_ind]);
+        scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
         SWITCH_ROM_MBC1(saved_bank);
 
         if (lose)
         { // TODO: add this to a reset function
             wait_vbl_done();
-            SWITCH_ROM_MBC1(level1Bank);
-            init_background(level1, level1Width);
+            SWITCH_ROM_MBC1(level_banks[level_ind]);
+            init_background(level_maps[level_ind], level_widths[level_ind]);
             SWITCH_ROM_MBC1(saved_bank);
             reset_tracking();
+            ENABLE_RAM_MBC1;
+            *(attempts[level_ind])++;
+            if (background_x_shift + player_x > *(px_progress[level_ind])){
+                *(px_progress[level_ind]) = background_x_shift + player_x;
+            }
+            DISABLE_RAM_MBC1;
         }
 
         white_tile_ind -= 16;
@@ -400,6 +427,8 @@ const char player_text[] = {'P', 'L', 'A', 'Y', 'E', 'R'};
 #define LIGHT_CURSOR (aero_cursors)
 #define DARK_CURSOR (aero_cursors + 16)
 uint8_t title_loaded = 0; // only want to delay the first time
+uint8_t cursor_title_position = 0;
+uint8_t cursor_title_position_old = 0;
 
 screen_t title()
 {
@@ -454,7 +483,6 @@ screen_t title()
 
     SHOW_SPRITES;
 
-    uint8_t cursor_position = 0;
     uint8_t title_index = 0;
 
     while (1)
@@ -537,33 +565,25 @@ screen_t title()
             prev_jpad = jpad;
             jpad = joypad();
 
-            if (debounce_input(J_DOWN, jpad, prev_jpad))
-            {
-                cursor_position++;
-                cursor_position %= 2;
-                if (cursor_position == 0)
-                {
-                    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
-                }
-                else if (cursor_position == 1)
-                {
-                    move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
-                }
+            
+            if (debounce_input(J_DOWN, jpad, prev_jpad)){
+                cursor_title_position = 1;
+            } else if (debounce_input(J_UP, jpad, prev_jpad)){
+                cursor_title_position = 0;
             }
 
-            else if (debounce_input(J_UP, jpad, prev_jpad))
-            {
-                cursor_position++;
-                cursor_position %= 2;
-                if (cursor_position == 0)
+            if (cursor_title_position != cursor_title_position_old){
+                if (cursor_title_position == 0)
                 {
                     move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
                 }
-                else if (cursor_position == 1)
+                else if (cursor_title_position == 1)
                 {
                     move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
                 }
+                cursor_title_position_old = cursor_title_position;
             }
+
 
             else if (debounce_input(J_SELECT, jpad, prev_jpad))
             {
@@ -575,12 +595,14 @@ screen_t title()
                 {
                     hide_sprite(i);
                 }
-                if (cursor_position == 0)
+                if (cursor_title_position == 0)
                 {
+                    cursor_title_position_old = 1; // force a change the next time title runs
                     return LEVEL_SELECT;
                 }
-                else if (cursor_position == 1)
+                else if (cursor_title_position == 1)
                 {
+                    cursor_title_position_old = 0; 
                     return PLAYER_SELECT;
                 }
             }
@@ -739,6 +761,15 @@ void main()
     saved_bank = _current_bank;
     screen_t current_screen = TITLE;
 
+    ENABLE_RAM_MBC1;
+    if (*saved != 's'){
+        *saved = 's';
+        for (uint8_t i = 0; i < num_levels; i++){
+            *(attempts[i]) = 0;
+            *(px_progress[i]) = 0;
+        }
+    }
+    DISABLE_RAM_MBC1;
 
     while (1)
     {
@@ -748,6 +779,7 @@ void main()
         }
         else if (current_screen == LEVEL_SELECT)
         {
+            level_ind = 0;
             current_screen = GAME;
         }
         else if (current_screen == PLAYER_SELECT)
