@@ -25,18 +25,18 @@ Area                       Addr        Size        Decimal Bytes (Attributes)
      00000002  l__HEADER |    00000002  l__HEADER |    00000002  l__HEADER
      00000003  l__HEADER |    00000003  l__HEADER |    00000003  l__HRAM12
      00000005  l__HEADER |    00000006  l__HEADER |    00000007  l__HEADER
-     00000008  l__HEADER |    0000000C  l__GSINIT |    00000028  l__INITIA
-     00000028  l__INITIA |    0000002F  l__DATA   |    00000030  l__HEADER
+     00000008  l__HEADER |    0000000C  l__GSINIT |    00000014  l__INITIA
+     00000014  l__INITIA |    00000030  l__DATA   |    00000030  l__HEADER
      0000004E  l__HEADER |    00000082  l__HEADER |    00000200  s__CODE  
-     00000324  l__HOME   |    00000438  l__CODE_2 |    00001E5D  l__CODE  
-     00002000  _rROMB0   |    0000205D  s__HOME   |    00002381  s__BASE  
-     00002381  s__CODE_0 |    00002381  s__INITIA |    00002381  s__LIT   
-     000023A9  s__GSINIT |    000023B5  s__GSFINA |    00002400  l__CODE_3
+     00000324  l__HOME   |    00000438  l__CODE_2 |    00001D81  l__CODE  
+     00001F81  s__HOME   |    00002000  _rROMB0   |    000022A5  s__BASE  
+     000022A5  s__CODE_0 |    000022A5  s__INITIA |    000022A5  s__LIT   
+     000022B9  s__GSINIT |    000022C5  s__GSFINA |    00002400  l__CODE_3
      00003000  _rROMB1   |    00004000  _rRAMB    |    00008000  __VRAM   
      00008000  __VRAM800 |    00008800  __VRAM880 |    00009000  __VRAM900
      00009800  __SCRN0   |    00009C00  __SCRN1   |    0000A000  __SRAM   
      0000C000  __RAM     |    0000C000  _shadow_O |    0000C0A0  s__DATA  
-     0000C0CF  s__BSS    |    0000C0CF  s__INITIA |    0000C0F7  s__HEAP  
+     0000C0D0  s__BSS    |    0000C0D0  s__INITIA |    0000C0E4  s__HEAP  
      0000D000  __RAMBANK |    0000E000  .STACK    |    0000FE00  __OAMRAM 
      0000FF00  _P1_REG   |    0000FF00  __IO      |    0000FF01  _SB_REG  
      0000FF02  _SC_REG   |    0000FF04  _DIV_REG  |    0000FF05  _TIMA_REG
@@ -74,20 +74,21 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_CODE                  00000200    00001E5D =        7773. bytes (REL,CON)
+_CODE                  00000200    00001D81 =        7553. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     00000200  _lcd_inte |    00000207  _players  |    00000317  _gb_tiles
-     000003E7  _parallax |    000004E7  _nima     |    00000967  _aero    
-     00000DE7  _aero_cur |    00000E07  _vbl_inte |    00000E3D  _vbl_inte
-     00000E6D  _scroll_b |    00000F32  _init_bac |    00000F78  _clear_ba
-     00000FD7  _x_px_to_ |    0000100E  _y_px_to_ |    00001045  _get_tile
-     00001065  _debounce |    00001078  _collide  |    000012B1  _tick_pla
-     00001309  _render_p |    00001318  _initiali |    00001335  _init_til
-     00001350  _game     |    000014FC  _title    |    00001B96  _player_s
-     00001FEF  _main     |    00002021  _get_vram |    0000202E  _get_win_
-     00002036  _get_bkg_
+     00000200  _reset_tr |    00000254  _players  |    00000364  _gb_tiles
+     00000434  _parallax |    00000534  _nima     |    000009B4  _aero    
+     00000E34  _aero_cur |    00000E54  _empty    |    00000E55  _lcd_inte
+     00000E5C  _vbl_inte |    00000E8E  _vbl_inte |    00000EBE  _scroll_b
+     00000F87  _init_bac |    00000FCD  _clear_ba |    00001014  _x_px_to_
+     0000102D  _y_px_to_ |    00001046  _get_tile |    00001066  _debounce
+     00001079  _collide  |    000012B2  _tick_pla |    0000130A  _render_p
+     00001319  _initiali |    00001336  _init_til |    00001351  _game    
+     00001499  _title    |    00001AD1  _game_tit |    00001ADC  _start_te
+     00001AE1  _player_t |    00001AE7  _player_s |    00001F10  _main    
+     00001F45  _get_vram |    00001F52  _get_win_ |    00001F5A  _get_bkg_
 ASxxxx Linker V03.00 + NoICE + sdld,  page 4.
 Hexadecimal  [32-Bits]
 
@@ -262,34 +263,34 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_HOME                  0000205D    00000324 =         804. bytes (REL,CON)
+_HOME                  00001F81    00000324 =         804. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     0000205D  .memset_s |    00002066  .memcpy_s |    00002083  .remove_V
-     00002086  .remove_i |    000020A3  .add_VBL  |    000020A6  .add_int 
-     000020B1  .wait_vbl |    000020B1  _wait_vbl |    000020C1  .display_
-     000020C1  _display_ |    000020D9  _remove_V |    000020E4  _add_VBL 
-     000020EF  _set_tile |    000020F4  _set_bkg_ |    000020F4  _set_win_
-     000020FC  _set_spri |    0000212C  .padup    |    0000212C  _waitpadu
-     0000213C  .jpad     |    0000213C  _joypad   |    00002164  _waitpad 
-     00002167  .wait_pad |    0000216E  _delay    |    00002173  .delay   
-     000021CE  _add_LCD  |    000021D9  .add_LCD  |    000021DF  _remove_L
-     000021EA  .remove_L |    000021F0  __divsuch |    000021FD  __modsuch
-     00002207  __divusch |    00002219  __modusch |    00002229  __divscha
-     00002235  __modscha |    0000223F  __divsint |    00002250  __modsint
-     0000225F  __divucha |    0000226B  __moducha |    00002275  __divuint
-     00002286  __moduint |    00002295  .div8     |    00002295  .mod8    
-     0000229D  .div16    |    0000229D  .mod16    |    000022D3  .divu8   
-     000022D3  .modu8    |    000022D6  .divu16   |    000022D6  .modu16  
-     00002317  _set_bkg_ |    0000232B  .set_xy_w |    00002334  .set_xy_b
-     00002343  .set_xy_t
+     00001F81  .memset_s |    00001F8A  .memcpy_s |    00001FA7  .remove_V
+     00001FAA  .remove_i |    00001FC7  .add_VBL  |    00001FCA  .add_int 
+     00001FD5  .wait_vbl |    00001FD5  _wait_vbl |    00001FE5  .display_
+     00001FE5  _display_ |    00001FFD  _remove_V |    00002008  _add_VBL 
+     00002013  _set_tile |    00002018  _set_bkg_ |    00002018  _set_win_
+     00002020  _set_spri |    00002050  .padup    |    00002050  _waitpadu
+     00002060  .jpad     |    00002060  _joypad   |    00002088  _waitpad 
+     0000208B  .wait_pad |    00002092  _delay    |    00002097  .delay   
+     000020F2  _add_LCD  |    000020FD  .add_LCD  |    00002103  _remove_L
+     0000210E  .remove_L |    00002114  __divsuch |    00002121  __modsuch
+     0000212B  __divusch |    0000213D  __modusch |    0000214D  __divscha
+     00002159  __modscha |    00002163  __divsint |    00002174  __modsint
+     00002183  __divucha |    0000218F  __moducha |    00002199  __divuint
+     000021AA  __moduint |    000021B9  .div8     |    000021B9  .mod8    
+     000021C1  .div16    |    000021C1  .mod16    |    000021F7  .divu8   
+     000021F7  .modu8    |    000021FA  .divu16   |    000021FA  .modu16  
+     0000223B  _set_bkg_ |    0000224F  .set_xy_w |    00002258  .set_xy_b
+     00002267  .set_xy_t
 ASxxxx Linker V03.00 + NoICE + sdld,  page 23.
 Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_INITIALIZER           00002381    00000028 =          40. bytes (REL,CON)
+_INITIALIZER           000022A5    00000014 =          20. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
@@ -298,17 +299,17 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_GSINIT                000023A9    0000000C =          12. bytes (REL,CON)
+_GSINIT                000022B9    0000000C =          12. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     000023A9  gsinit   
+     000022B9  gsinit   
 ASxxxx Linker V03.00 + NoICE + sdld,  page 25.
 Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_GSFINAL               000023B5    00000001 =           1. bytes (REL,CON)
+_GSFINAL               000022C5    00000001 =           1. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
@@ -317,29 +318,30 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_DATA                  0000C0A0    0000002F =          47. bytes (REL,CON)
+_DATA                  0000C0A0    00000030 =          48. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
      0000C0A0  __cpu     |    0000C0A1  __is_GBA  |    0000C0A2  .mode    
      0000C0A3  .sys_time |    0000C0A3  _sys_time |    0000C0A5  .int_0x40
-     0000C0B9  _scx_cnt  |    0000C0BA  _render_r |    0000C0BB  _count   
-     0000C0BD  _saved_ba |    0000C0BE  _vbl_coun |    0000C0BF  .int_0x48
+     0000C0B9  _scx_cnt  |    0000C0BA  _render_r |    0000C0BB  _render_c
+     0000C0BC  _count    |    0000C0BE  _saved_ba |    0000C0BF  _vbl_coun
+     0000C0C0  .int_0x48
 ASxxxx Linker V03.00 + NoICE + sdld,  page 27.
 Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_INITIALIZED           0000C0CF    00000028 =          40. bytes (REL,CON)
+_INITIALIZED           0000C0D0    00000014 =          20. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     0000C0CF  _player_d |    0000C0D0  _player_d |    0000C0D1  _player_y
-     0000C0D2  _player_x |    0000C0D3  _player_s |    0000C0D4  _on_groun
-     0000C0D5  _win      |    0000C0D6  _lose     |    0000C0D7  _prev_jpa
-     0000C0D8  _jpad     |    0000C0D9  _tick     |    0000C0DA  _backgrou
-     0000C0DC  _old_back |    0000C0DE  _old_scro |    0000C0E0  _game_tit
-     0000C0EB  _start_te |    0000C0F0  _player_t |    0000C0F6  _title_lo
+     0000C0D0  _player_d |    0000C0D1  _player_d |    0000C0D2  _player_y
+     0000C0D3  _player_x |    0000C0D4  _player_s |    0000C0D5  _on_groun
+     0000C0D6  _win      |    0000C0D7  _lose     |    0000C0D8  _prev_jpa
+     0000C0D9  _jpad     |    0000C0DA  _tick     |    0000C0DB  _backgrou
+     0000C0DD  _old_back |    0000C0DF  _old_scro |    0000C0E1  _white_ti
+     0000C0E2  _green_ti |    0000C0E3  _title_lo
 ASxxxx Linker V03.00 + NoICE + sdld,  page 28.
 Hexadecimal  [32-Bits]
 

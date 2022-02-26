@@ -77,25 +77,51 @@ uint8_t jpad = 0;
 // game/level state
 uint8_t tick = 0;
 uint16_t background_x_shift = 0;
-uint16_t old_background_x_shift = 8;
+uint16_t old_background_x_shift = 8 + 3;
 uint16_t old_scroll_x = 0;
 // vars for scrolling
 uint8_t scx_cnt;
 uint8_t render_row;
+uint8_t render_col;
 uint16_t count;
+const char empty[] = {0x00};
 // for bank restoring
 uint8_t saved_bank;
+// for vbl_wait timing
 uint8_t vbl_count;
+// for parallax
+uint8_t white_tile_ind = 0;
+uint8_t green_tile_ind = 128; // 8*16;
+
+void reset_tracking(){
+    vbl_count = 0;
+    background_x_shift = 0;
+    old_scroll_x = 0;
+    old_background_x_shift = 8 + 3;
+    player_y = PLAYER_START_Y;
+    player_x = PLAYER_START_X;
+    player_dx = 3;
+    on_ground = 1;
+    lose = 0;
+    win = 0;
+    tick = 0;
+    white_tile_ind = 0;
+    green_tile_ind = 128; // 8*16;
+    prev_jpad = 0;
+    jpad = 0;
+    SCX_REG = 0;
+}
 
 void lcd_interrupt_game(){
     HIDE_WIN;
 }//hide the window, triggers at the scanline LYC
 
+// see this for info: http://zalods.blogspot.com/2016/07/game-boy-development-tips-and-tricks-ii.html
 void vbl_interrupt_game(){
     SHOW_WIN;
     vbl_count ++;
     old_scroll_x += (background_x_shift - old_scroll_x + 1) >> 1;
-    SCX_REG = old_scroll_x + player_dx;
+    SCX_REG = old_scroll_x;// + player_dx;
 }
 
 void vbl_interrupt_title(){
@@ -106,18 +132,17 @@ void vbl_interrupt_title(){
 
 void scroll_bkg_x(uint8_t x_shift, char *map, uint16_t map_width)
 {
-    //scroll_bkg(x_shift, 0);
     background_x_shift = (background_x_shift + x_shift);
-    // scx_cnt += x_shift;
     if (background_x_shift >= old_background_x_shift)
     {
-        old_background_x_shift = (background_x_shift / 8) * 8 + 8;
-        // scx_cnt = 0;
-        count = background_x_shift / 8 - 1;
+        // + x_shift ensures we don't ever see the newly written data
+        old_background_x_shift = ((background_x_shift >> 3) << 3) + 8 + x_shift; //old_background_x_shift = (background_x_shift / 8) * 8 + 8 + x_shift;
+        count = (background_x_shift >> 3) - 1;
         count = (count + 32) % map_width;
         for (render_row = 0; render_row < 18; render_row++)
         {
-            set_bkg_tiles((background_x_shift / 8 - 1) % 32, render_row, 1, 1, map + count);
+            // & 31 is the same as modulo 32
+            set_bkg_tiles(((background_x_shift >> 3) - 1) & 31, render_row, 1, 1, map + count);
             count += map_width;
         }
     }
@@ -125,6 +150,7 @@ void scroll_bkg_x(uint8_t x_shift, char *map, uint16_t map_width)
 
 void init_background(char *map, uint16_t map_width)
 {
+    // initialize the background to map
     count = 0;
     for (render_row = 0; render_row < 18; render_row++)
     {
@@ -134,13 +160,13 @@ void init_background(char *map, uint16_t map_width)
 }
 
 void clear_background(){
+    // write 0 to all background tiles
     background_x_shift = 0;
     old_background_x_shift = 8;
     move_bkg(background_x_shift, 0);
-    char empty[] = {0x00};
     for (render_row = 0; render_row < 18; render_row++)
     {
-        for (int render_col = 0; render_col < 20; render_col ++ ){
+        for (render_col = 0; render_col < 20; render_col ++){
             set_bkg_tiles(render_col, render_row, 1, 1, empty);
         }
     }
@@ -148,20 +174,20 @@ void clear_background(){
 
 uint8_t x_px_to_tile_ind(uint8_t x_px)
 {
-    return (x_px - XOFF) / 8;
+    return (x_px - XOFF) >> 3; // >> 3 is the same as /8
 }
 
 uint8_t y_px_to_tile_ind(uint8_t y_px)
 {
-    return (y_px - YOFF) / 8;
+    return (y_px - YOFF) >> 3;
 }
 
 uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px)
 {
     return get_bkg_tile_xy(
-        x_px_to_tile_ind(
-            x_px + background_x_shift),
-        y_px_to_tile_ind(y_px));
+        x_px_to_tile_ind(x_px + background_x_shift),
+        y_px_to_tile_ind(y_px)
+    );
 }
 
 uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button)
@@ -235,7 +261,7 @@ void collide(int8_t vel_y)
 void tick_player()
 {
     if (jpad == J_UP)
-    { // debounce_input(J_UP, prev_jpad, jpad)){ // if jumping
+    { 
         if (on_ground)
         {
             player_dy = -PLAYER_JUMP_VEL;
@@ -243,13 +269,8 @@ void tick_player()
     }
     if (!on_ground)
     {
-        // if (tick % APPLY_GRAV_EVERY == 0){
         player_dy += GRAVITY;
-        //}
-        if (player_dy > MAX_FALL_SPEED)
-        { // terminal velocity
-            player_dy = MAX_FALL_SPEED;
-        }
+        if (player_dy > MAX_FALL_SPEED) player_dy = MAX_FALL_SPEED;
     }
     // x axis collisions
     collide(0);
@@ -269,7 +290,7 @@ void render_player()
 
 void initialize_player()
 {
-    set_sprite_data(0, 1, players+(16*player_sprite_num));
+    set_sprite_data(0, 1, players+(player_sprite_num << 4)); // << 4 is the same as *16
     set_sprite_tile(0, 0);
 }
 
@@ -294,29 +315,16 @@ screen_t game()
     initialize_player();
     render_player(); // render at initial position
     SHOW_SPRITES;
-    vbl_count = 0;
 
     init_tiles();
-
-    vbl_count = 0;
-    background_x_shift = 0;
-    old_scroll_x = 0;
-    old_background_x_shift = 8;
-    move_bkg(background_x_shift, 0);
-
-    //set_win_tiles()
+    reset_tracking();
 
     SHOW_BKG;
     DISPLAY_ON;
 
     SWITCH_ROM_MBC1(level1Bank);
-    // set_bkg_submap(0, 0, 32, 18, level1, level1Width); // map specifies where tiles go
     init_background(level1, level1Width);
     SWITCH_ROM_MBC1(saved_bank);
-
-    uint8_t white_tile_ind = 0;
-    uint8_t green_tile_ind = 128; // 8*16;
-    tick = 0;
 
     while (1)
     {
@@ -344,19 +352,10 @@ screen_t game()
         if (lose)
         { // TODO: add this to a reset function
             wait_vbl_done();
-            vbl_count = 0;
-            background_x_shift = 0;
-            old_scroll_x = 0;
-            old_background_x_shift = 8;
             SWITCH_ROM_MBC1(level1Bank);
             init_background(level1, level1Width);
-            move_bkg(background_x_shift, 0);
             SWITCH_ROM_MBC1(saved_bank);
-            player_y = PLAYER_START_Y;
-            player_x = PLAYER_START_X;
-            player_dx = 3;
-            on_ground = 1;
-            lose = 0;
+            reset_tracking();
         }
 
         white_tile_ind -= 16;
@@ -379,19 +378,19 @@ screen_t game()
 
 //------------------------TITLE AND SELECTION SCREEN------------------------------------
 // Length 11
-char game_title[] = {
+const char game_title[] = {
     'G', 'E', 'O', 'M', 'E', 'T', 'R', 'Y', 'B', 'O', 'Y'};
 
 #define TITLE_OAM 11
 #define TITLE_START_X 48
 #define TITLE_START_Y 16
 
-char start_text[] = {'S', 'T', 'A', 'R', 'T'};
+const char start_text[] = {'S', 'T', 'A', 'R', 'T'};
 #define START_TEXT_OAM 22
 #define START_TEXT_START_X 60
 #define START_TEXT_START_Y 88
 
-char player_text[] = {'P', 'L', 'A', 'Y', 'E', 'R'};
+const char player_text[] = {'P', 'L', 'A', 'Y', 'E', 'R'};
 #define PLAYER_TEXT_OAM 27
 #define PLAYER_TEXT_START_X 56
 #define PLAYER_TEXT_START_Y 104
@@ -410,12 +409,8 @@ screen_t title()
     set_interrupts(VBL_IFLAG);
     wait_vbl_done();
 
-    vbl_count = 0;
-    background_x_shift = 0;
-    old_scroll_x = 0;
-    old_background_x_shift = 8;
-
     init_tiles();
+    reset_tracking();
 
     SWITCH_ROM_MBC1(title_mapBank);
     init_background(title_map, title_mapWidth);
@@ -462,11 +457,6 @@ screen_t title()
     uint8_t cursor_position = 0;
     uint8_t title_index = 0;
 
-    prev_jpad = 0;
-    jpad = 0;
-    tick = 0;
-    uint8_t white_tile_ind = 0;
-    uint8_t green_tile_ind = 128; //8*16;
     while (1)
     {
         if (vbl_count == 0){
@@ -478,21 +468,19 @@ screen_t title()
         scroll_bkg_x(player_dx, title_map, title_mapWidth);
         SWITCH_ROM_MBC1(saved_bank);
 
-        if (tick % 1 == 0){
-            white_tile_ind -= 16; 
-            if (white_tile_ind <= 0){
-                white_tile_ind = 240;
-            }
-            green_tile_ind -= 16;
-            if (green_tile_ind <= 0){
-                green_tile_ind = 240; // 16*15
-            }
-            set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
-            set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+        white_tile_ind -= 16; 
+        if (white_tile_ind <= 0){
+            white_tile_ind = 240;
         }
+        green_tile_ind -= 16;
+        if (green_tile_ind <= 0){
+            green_tile_ind = 240; // 16*15
+        }
+        set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
+        set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
 
         if (!title_loaded) {
-            if (tick % 6 == 0){
+            if (tick % 4 == 0){ // change from 6 to 4 because power of 2 modulu is optimized
                 if (title_index < 11){
                     set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
                     set_sprite_tile(TITLE_OAM + title_index, TITLE_OAM + title_index);
@@ -531,7 +519,7 @@ screen_t title()
             }
         } else {
             // Making the letters bounce
-            if (tick % 3 == 0)
+            if (tick % 4 == 0)
             {
                 if (title_index == 0)
                 {
@@ -612,6 +600,7 @@ screen_t player_select()
 {
 
     wait_vbl_done();
+    clear_background();
 
     // Load cursor
     uint8_t cursor_position = 0;
@@ -638,11 +627,9 @@ screen_t player_select()
     SHOW_SPRITES;
 
     uint8_t is_up = 0;
-    prev_jpad = 0;
-    jpad = 0;
-    vbl_count = 0;
 
-    tick = 0;
+    reset_tracking();
+
     while (1)
     {
         if (vbl_count == 0){
@@ -719,7 +706,7 @@ screen_t player_select()
             return TITLE;
         }
 
-        if (tick % 3 == 0)
+        if (tick % 4 == 0)
         {
             if (is_up)
             {
@@ -745,7 +732,7 @@ screen_t player_select()
 
 void main()
 {
-
+    reset_tracking();
     enable_interrupts();
     // BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
     SPRITES_8x8;
