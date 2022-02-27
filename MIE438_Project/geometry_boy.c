@@ -13,6 +13,7 @@
 #include "sprites/nima.c"
 #include "sprites/aero.c"
 #include "sprites/aero_cursors.c"
+#include "sprites/progress_bar_tiles.c"
 
 // maps
 #include "sprites/title_map.h"
@@ -99,6 +100,8 @@ unsigned char * level_maps[1] = {level1};
 uint16_t level_widths[1] = {level1Width};
 uint8_t level_banks[1] = {level1Bank};
 uint16_t current_attempts = 0;
+uint16_t px_progress_bar = 0;
+uint16_t old_px_progress_bar = 0;
 // tracking stats
 // from pan docs: A000 - BFFF	8 KiB External RAM	From cartridge, switchable bank if any
 #define START_RAM 0xa000
@@ -133,7 +136,7 @@ inline void reset_tracking(){
 }
 
 const char attempts_title[] = {
-    'A', 'T', 'T', 'E', 'M', 'P', 'T', 'S'
+    'A', 'T', 'T', 'E', 'M', 'P', 'T', 
 };
 
 void init_HUD(){
@@ -142,20 +145,44 @@ void init_HUD(){
             set_win_tile_xy(render_col, render_row, 0x03);
         }
     }
-    for (render_col = 1; render_col < 9; render_col ++){
-        set_win_tile_xy(render_col, 0, 39 + (attempts_title[render_col-1] - 65));
+    for (render_col = 0; render_col < 7; render_col ++){
+        set_win_tile_xy(render_col, 0, 39 + (attempts_title[render_col] - 65));
     }
-    for (render_col = 10; render_col < 13; render_col ++){
+    set_win_tile_xy(7, 0, 65); // colon
+    for (render_col = 8; render_col < 11; render_col ++){
         set_win_tile_xy(render_col, 0, 29);
     }
+    old_px_progress_bar = 0;
+    px_progress_bar = 0;
 }
 
-void update_HUD(){
+void update_HUD_attempts(){
     uint16_t temp = current_attempts;
-    for (render_col = 12; render_col >=10; render_col --){
+    for (render_col = 10; render_col >=8; render_col --){
         set_win_tile_xy(render_col, 0, temp % 10 + 29);
         temp = temp / 10;
     }
+    // progress bar is 8 tiles = 64 px:
+}
+
+#define PROGRESS_BAR_TILES 18
+
+void update_HUD_bar(){
+    px_progress_bar = PROGRESS_BAR_TILES*(background_x_shift + player_x)/(level_widths[level_ind]); // 20 *8 * (px_progress)/(level_width*8)
+    render_col = 0;
+    if (px_progress_bar >= old_px_progress_bar){
+        while (px_progress_bar > 8){
+            render_col++;
+            px_progress_bar -= 8;
+        }
+        set_win_tile_xy(render_col, 1, 0x42 + px_progress_bar); 
+    } else {
+        while (render_col < PROGRESS_BAR_TILES){
+            set_win_tile_xy(render_col, 1, 0x42); 
+            render_col++;
+        }
+    }
+    old_px_progress_bar = px_progress_bar;
 }
 
 void lcd_interrupt_game(){
@@ -342,6 +369,8 @@ void init_tiles()
     set_bkg_data(0, 13, gb_tileset);        // load tiles into VRAM
     set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
     set_bkg_data(29, 36, aero + 3*16);
+    set_bkg_data(65, 1, aero + 47*16);
+    set_bkg_data(66, 9, progress_bar_tiles);
 }
 
 screen_t game()
@@ -410,7 +439,8 @@ screen_t game()
             }
             DISABLE_RAM_MBC1;
             current_attempts++;
-            update_HUD();
+            update_HUD_attempts();
+            update_HUD_bar();
         }
 
         white_tile_ind -= 16;
@@ -425,6 +455,10 @@ screen_t game()
         }
         set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
         set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+
+        if (tick % 4 == 0){
+            update_HUD_bar();
+        }
 
         tick++;
         delay(LOOP_DELAY);
