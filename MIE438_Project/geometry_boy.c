@@ -287,7 +287,7 @@ void collide(int8_t vel_y)
         }
 #endif
         if (tile == 0x3)
-        { // black block or floor block
+        {
             if (vel_y > 0)
             { // falling down
                 player_y = (player_y / 8) * 8;
@@ -321,7 +321,7 @@ void collide(int8_t vel_y)
     {
         uint8_t down_right = get_tile_by_px(player_x + PLAYER_WIDTH, player_y + PLAYER_WIDTH);
         uint8_t down_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH);
-        if (down_right == 0x1 || down_right == 0x5 || down_left == 0x1 || down_right == 0x5)
+        if (down_right == 0x3 || down_left == 0x3)
         {
             on_ground = 1;
         }
