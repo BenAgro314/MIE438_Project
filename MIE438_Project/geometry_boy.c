@@ -377,6 +377,7 @@ void collide(int8_t vel_y)
         {
             on_ground = 1;
         }
+        //TODO: clean this crap up
         if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0xC || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0xC)
         {
             tile_x = (player_x) & 0xF8;
