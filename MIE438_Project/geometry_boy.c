@@ -36,6 +36,7 @@
 #define GRAVITY 1
 #define MAX_FALL_SPEED 7
 #define PLAYER_JUMP_VEL 6
+#define PLAYER_SUPER_JUMP_VEL 9
 #define ACCELERATION 1
 #define ROTATION_SPEED 15
 
@@ -139,7 +140,7 @@ const char attempts_title[] = {
     'A', 'T', 'T', 'E', 'M', 'P', 'T', 
 };
 
-void init_HUD(){
+inline void init_HUD(){
     for (render_row = 0; render_row < 3; render_row++){
         for (render_col = 0; render_col < 20; render_col ++){
             set_win_tile_xy(render_col, render_row, 0x03);
@@ -156,7 +157,7 @@ void init_HUD(){
     px_progress_bar = 0;
 }
 
-void update_HUD_attempts(){
+inline void update_HUD_attempts(){
     uint16_t temp = current_attempts;
     for (render_col = 10; render_col >=8; render_col --){
         set_win_tile_xy(render_col, 0, temp % 10 + 29);
@@ -232,7 +233,7 @@ void init_background(char *map, uint16_t map_width)
     }
 }
 
-void clear_background(){
+inline void clear_background(){
     // write 0 to all background tiles
     for (render_row = 0; render_row < 18; render_row++)
     {
@@ -242,17 +243,17 @@ void clear_background(){
     }
 }
 
-uint8_t x_px_to_tile_ind(uint8_t x_px)
+inline uint8_t x_px_to_tile_ind(uint8_t x_px)
 {
     return (x_px - XOFF) >> 3; // >> 3 is the same as /8
 }
 
-uint8_t y_px_to_tile_ind(uint8_t y_px)
+inline uint8_t y_px_to_tile_ind(uint8_t y_px)
 {
     return (y_px - YOFF) >> 3;
 }
 
-uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px)
+inline uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px)
 {
     return get_bkg_tile_xy(
         x_px_to_tile_ind(x_px + background_x_shift),
@@ -260,70 +261,133 @@ uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px)
     );
 }
 
-uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button)
+inline uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button)
 {
     return (button == target) && !(prev_button == target);
+}
+
+inline uint8_t inside_player(uint8_t x, uint8_t y){
+    // returns 1 if (x,y) is inside the player, otherwise returns 0
+    if (x >= player_x && x < (player_x + PLAYER_WIDTH) && y >= player_y && y < (player_y + PLAYER_WIDTH)){
+        return 1;
+    }
+    return 0;
+}
+
+inline uint8_t rect_collision_with_player(uint8_t x_left, uint8_t x_right, uint8_t y_top, uint8_t y_bot){
+    return (
+        player_x <= x_right &&
+        player_x + PLAYER_WIDTH - 1 >= x_left  &&
+        player_y <= y_bot &&
+        player_y + PLAYER_WIDTH - 1 >= y_top
+    );
 }
 
 void collide(int8_t vel_y)
 {
     // get all tiles the sprite is colliding with
-    int tiles[4] = {
-        get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y),                    // top right
-        get_tile_by_px(player_x, player_y),                                       // top left
-        get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH - 1), // bottom right
-        get_tile_by_px(player_x, player_y + PLAYER_WIDTH - 1)                     // bottom left
-    };
+    //uint8_t tiles[4] = {
+        //get_tile_by_px(player_x, player_y),                    // top right
+        //get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y),                                       // top left
+        //get_tile_by_px(player_x, player_y + PLAYER_WIDTH - 1), // bottom right
+        //get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH - 1)                     // bottom left
+    //};
+    uint8_t tile_x;
+    uint8_t tile_y;
+    uint8_t tile;
     for (uint8_t i = 0; i < 4; i++)
     {
-        uint8_t tile = tiles[i];
-#ifndef INVINCIBLE
+        tile_x = (player_x + (PLAYER_WIDTH - 1) * (i % 2));
+        tile_y = (player_y + (PLAYER_WIDTH - 1) * (i < 2));
+        tile = get_tile_by_px(tile_x, tile_y);
+        tile_x = tile_x & 0xF8;  // divide by 8 then multiply by 8
+        tile_y = tile_y & 0xF8;
         if (tile == 0x5 || tile == 0x4)
         { // TODO: formalize tile indices
+#ifndef INVINCIBLE
             player_dx = 0;
             player_dy = 0;
             player_x = (player_x / 8) * 8;
             lose = 1;
-        }
 #endif
-        if (tile == 0x3)
+        }
+        else if (tile == 0x3)
         {
             if (vel_y > 0)
             { // falling down
-                player_y = (player_y / 8) * 8;
+                player_y = player_y & 0xF8; //(player_y / 8) * 8;
                 player_dy = 0;
                 on_ground = 1;
             }
             else if (vel_y < 0)
             { // jumping up
-                player_y = (player_y / 8) * 8 + 8;
+                player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
             }
             else
             { // player cannot go through walls
 #ifndef INVINCIBLE
                 player_dx = 0;
                 player_dy = 0;
-                player_x = (player_x / 8) * 8;
+                player_x = player_x & 0xF8 ; //(player_x / 8) * 8;
                 lose = 1;
 #endif
             }
+        } 
+        else if (tile == 0xC){ // half block
+            if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 4, tile_y + 7)){
+                if (vel_y > 0)
+                { // falling down
+                    player_y = tile_y - 4;
+                    player_dy = 0;
+                    on_ground = 1;
+                }
+                else if (vel_y < 0)
+                { // jumping up
+                    player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                }
+                else
+                { // player cannot go through walls
+    #ifndef INVINCIBLE
+                    player_dx = 0;
+                    player_dy = 0;
+                    player_x = player_x & 0xF8 ; //(player_x / 8) * 8;
+                    lose = 1;
+    #endif
+                }
+            }
+
         }
-        if (tile == 0xB)
-        { // jump tile
-            player_dy = -9;
+        else if (tile == 0xB) { // jump tile, hitbox is 2x8 rectangle at bottom, and no lookahead
+            if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) && vel_y == 0){
+                player_dy = -PLAYER_SUPER_JUMP_VEL;
+            }
         }
-        if (tile == 0xA && jpad == J_UP)
+        else if (tile == 0xA) // jump circle , hitbox is 4x4 square in center
         {
-            player_dy = -PLAYER_JUMP_VEL;
+            if (jpad == J_UP && vel_y == 0){ // pressing up and no lookadhead
+                if (rect_collision_with_player(tile_x + 2, tile_x + 5, tile_y + 2, tile_y + 5)){
+                    player_dy = -PLAYER_JUMP_VEL;
+                }
+            }
         }
     }
     if (vel_y == 0)
     {
-        uint8_t down_right = get_tile_by_px(player_x + PLAYER_WIDTH, player_y + PLAYER_WIDTH);
-        uint8_t down_left = get_tile_by_px(player_x, player_y + PLAYER_WIDTH);
-        if (down_right == 0x3 || down_left == 0x3)
+        if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0x3 || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0x3)
         {
             on_ground = 1;
+        }
+        if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0xC || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0xC)
+        {
+            tile_x = (player_x) & 0xF8;
+            tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
+            if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
+                on_ground = 1;
+            }
+            tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
+            if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
+                on_ground = 1;
+            }
         }
     }
 }
