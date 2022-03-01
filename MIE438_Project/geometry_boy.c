@@ -172,18 +172,19 @@ void update_HUD_bar(){
     px_progress_bar = PROGRESS_BAR_TILES*(background_x_shift + player_x)/(level_widths[level_ind]); // 20 *8 * (px_progress)/(level_width*8)
     render_col = 0;
     if (px_progress_bar >= old_px_progress_bar){
+        old_px_progress_bar = px_progress_bar;
         while (px_progress_bar > 8){
             render_col++;
             px_progress_bar -= 8;
         }
         set_win_tile_xy(render_col, 1, 0x42 + px_progress_bar); 
     } else {
+        old_px_progress_bar = px_progress_bar;
         while (render_col < PROGRESS_BAR_TILES){
             set_win_tile_xy(render_col, 1, 0x42); 
             render_col++;
         }
     }
-    old_px_progress_bar = px_progress_bar;
 }
 
 void lcd_interrupt_game(){
@@ -285,13 +286,6 @@ inline uint8_t rect_collision_with_player(uint8_t x_left, uint8_t x_right, uint8
 
 void collide(int8_t vel_y)
 {
-    // get all tiles the sprite is colliding with
-    //uint8_t tiles[4] = {
-        //get_tile_by_px(player_x, player_y),                    // top right
-        //get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y),                                       // top left
-        //get_tile_by_px(player_x, player_y + PLAYER_WIDTH - 1), // bottom right
-        //get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH - 1)                     // bottom left
-    //};
     uint8_t tile_x;
     uint8_t tile_y;
     uint8_t tile;
@@ -371,23 +365,26 @@ void collide(int8_t vel_y)
             }
         }
     }
+    // ground checks
     if (vel_y == 0)
     {
         if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0x3 || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0x3)
         {
             on_ground = 1;
-        }
-        //TODO: clean this crap up
-        if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0xC || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0xC)
-        {
-            tile_x = (player_x) & 0xF8;
-            tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
-            if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
-                on_ground = 1;
-            }
-            tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
-            if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
-                on_ground = 1;
+        } else {
+            //TODO: clean this up
+            if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0xC || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0xC)
+            {
+                tile_x = (player_x) & 0xF8;
+                tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
+                if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
+                    on_ground = 1;
+                } else {
+                    tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
+                    if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
+                        on_ground = 1;
+                    }
+                }
             }
         }
     }
@@ -482,7 +479,6 @@ screen_t game()
         }
 
         tick_player();
-
         render_player();
 
         SWITCH_ROM_MBC1(level1Bank);
@@ -490,9 +486,10 @@ screen_t game()
         scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
         SWITCH_ROM_MBC1(saved_bank);
 
+        update_HUD_bar();
+
         if (lose)
-        { // TODO: add this to a reset function
-            wait_vbl_done();
+        { 
             SWITCH_ROM_MBC1(level_banks[level_ind]);
             init_background(level_maps[level_ind], level_widths[level_ind]);
             SWITCH_ROM_MBC1(saved_bank);
@@ -506,6 +503,7 @@ screen_t game()
             current_attempts++;
             update_HUD_attempts();
             update_HUD_bar();
+            wait_vbl_done();
         }
 
         white_tile_ind -= 16;
@@ -521,9 +519,6 @@ screen_t game()
         set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
         set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
 
-        if (tick % 4 == 0){
-            update_HUD_bar();
-        }
 
         tick++;
         delay(LOOP_DELAY);
