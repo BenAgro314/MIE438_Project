@@ -28,6 +28,18 @@
 11. jump tile
 12. black half platform
 
+`gb_tileset_v2.c`
+
+0. white
+1. light grey
+2. dark grey
+3. black
+4. big black spike
+5. small black spike
+6. jump circle
+7. jump tile
+8. black half platform
+
 `parallax_tileset.c`
 
 w represents white column, g represents light grey column

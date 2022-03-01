@@ -8,16 +8,23 @@
 
 // sprites and tiles
 #include "sprites/players.c"
-#include "sprites/gb_tileset.c"
-#include "sprites/parallax_tileset.c"
+#include "sprites/gb_tileset_v2.c"
+
+#include "sprites/parallax_tileset_v2.c"
+#include "sprites/small_spike_parallax.c"
+#include "sprites/big_spike_parallax.c"
+#include "sprites/half_block_parallax.c"
+#include "sprites/jump_circle_parallax.c"
+#include "sprites/jump_tile_parallax.c"
+
 #include "sprites/nima.c"
 #include "sprites/aero.c"
 #include "sprites/aero_cursors.c"
 #include "sprites/progress_bar_tiles.c"
 
 // maps
-#include "sprites/title_map.h"
-#include "sprites/level1.h"
+#include "sprites/title_map_v2.h"
+#include "sprites/level1_v2.h"
 
 // debug flags
 //#define INVINCIBLE
@@ -43,6 +50,7 @@
 #define PLAYER_START_Y 144
 #define PLAYER_START_X 32
 #define PLAYER_WIDTH 8
+
 //#define APPLY_GRAV_EVERY 1
 
 // TODO: docstrings
@@ -91,15 +99,16 @@ uint8_t saved_bank;
 // for vbl_wait timing
 uint8_t vbl_count;
 // for parallax
-uint8_t white_tile_ind = 0;
-uint8_t green_tile_ind = 128; // 8*16;
+uint8_t parallax_tile_ind = 0;
+//uint8_t white_tile_ind = 0;
+//uint8_t green_tile_ind = 128; // 8*16;
 
 // level stuff
 uint8_t level_ind = 0;
 uint8_t num_levels = 1;
-unsigned char * level_maps[1] = {level1};
-uint16_t level_widths[1] = {level1Width};
-uint8_t level_banks[1] = {level1Bank};
+unsigned char * level_maps[1] = {level1_v2};
+uint16_t level_widths[1] = {level1_v2Width};
+uint8_t level_banks[1] = {level1_v2Bank};
 uint16_t current_attempts = 0;
 uint16_t px_progress_bar = 0;
 uint16_t old_px_progress_bar = 0;
@@ -116,6 +125,27 @@ uint16_t* px_progress[1] = {
     (int *) START_PROGRESS,
 }; // *(px_progress[i]) is the maximum pixel progress at level i
 
+#define NUMBER_TILES 9
+#define LETTER_TILES 19
+#define COLON_TILE 45
+#define PROGRESS_BAR_TILES 46
+#define WHITE_TILE 0
+#define LGREY_TILE 1
+#define DGREY_TILE 2
+#define BLACK_TILE 3
+#define BIG_SPIKE_TILE 4
+#define SMALL_SPIKE_TILE 5
+#define JUMP_CIRCLE_TILE 6
+#define JUMP_TILE_TILE 7
+#define HALF_BLOCK_TILE 8
+
+inline void init_tiles()
+{
+    set_bkg_data(0, 9, gb_tileset_v2);        // load tiles into VRAM
+    set_bkg_data(9, 36, aero + 3*16);
+    set_bkg_data(45, 1, aero + 47*16);
+    set_bkg_data(46, 9, progress_bar_tiles);
+}
 
 inline void reset_tracking(){
     vbl_count = 0;
@@ -129,8 +159,9 @@ inline void reset_tracking(){
     lose = 0;
     win = 0;
     tick = 0;
-    white_tile_ind = 0;
-    green_tile_ind = 128; // 8*16;
+    parallax_tile_ind = 0;
+    //white_tile_ind = 0;
+    //green_tile_ind = 128; // 8*16;
     prev_jpad = 0;
     jpad = 0;
     SCX_REG = 0;
@@ -143,15 +174,15 @@ const char attempts_title[] = {
 inline void init_HUD(){
     for (render_row = 0; render_row < 3; render_row++){
         for (render_col = 0; render_col < 20; render_col ++){
-            set_win_tile_xy(render_col, render_row, 0x03);
+            set_win_tile_xy(render_col, render_row, BLACK_TILE);
         }
     }
-    for (render_col = 0; render_col < 7; render_col ++){
-        set_win_tile_xy(render_col, 0, 39 + (attempts_title[render_col] - 65));
+    for (render_col = 0; render_col < 7; render_col ++){ // attempts
+        set_win_tile_xy(render_col, 0, LETTER_TILES + (attempts_title[render_col] - 65));
     }
-    set_win_tile_xy(7, 0, 65); // colon
-    for (render_col = 8; render_col < 11; render_col ++){
-        set_win_tile_xy(render_col, 0, 29);
+    set_win_tile_xy(7, 0, COLON_TILE); // colon
+    for (render_col = 8; render_col < 11; render_col ++){ //initialize attempts to 000
+        set_win_tile_xy(render_col, 0, NUMBER_TILES); 
     }
     old_px_progress_bar = 0;
     px_progress_bar = 0;
@@ -160,16 +191,16 @@ inline void init_HUD(){
 inline void update_HUD_attempts(){
     uint16_t temp = current_attempts;
     for (render_col = 10; render_col >=8; render_col --){
-        set_win_tile_xy(render_col, 0, temp % 10 + 29);
+        set_win_tile_xy(render_col, 0, temp % 10 + NUMBER_TILES);
         temp = temp / 10;
     }
     // progress bar is 8 tiles = 64 px:
 }
 
-#define PROGRESS_BAR_TILES 18
+#define NUM_PROGRESS_BAR_TILES 18
 
 void update_HUD_bar(){
-    px_progress_bar = PROGRESS_BAR_TILES*(background_x_shift + player_x)/(level_widths[level_ind]); // 20 *8 * (px_progress)/(level_width*8)
+    px_progress_bar = NUM_PROGRESS_BAR_TILES*(background_x_shift + player_x)/(level_widths[level_ind]); // 20 *8 * (px_progress)/(level_width*8)
     render_col = 0;
     if (px_progress_bar >= old_px_progress_bar){
         old_px_progress_bar = px_progress_bar;
@@ -177,11 +208,11 @@ void update_HUD_bar(){
             render_col++;
             px_progress_bar -= 8;
         }
-        set_win_tile_xy(render_col, 1, 0x42 + px_progress_bar); 
+        set_win_tile_xy(render_col, 1, PROGRESS_BAR_TILES + px_progress_bar); 
     } else {
         old_px_progress_bar = px_progress_bar;
-        while (render_col < PROGRESS_BAR_TILES){
-            set_win_tile_xy(render_col, 1, 0x42); 
+        while (render_col < NUM_PROGRESS_BAR_TILES){
+            set_win_tile_xy(render_col, 1, PROGRESS_BAR_TILES); 
             render_col++;
         }
     }
@@ -236,6 +267,8 @@ void init_background(char *map, uint16_t map_width)
 
 inline void clear_background(){
     // write 0 to all background tiles
+
+    set_bkg_data(0, 1, gb_tileset_v2);        // load tiles into VRAM
     for (render_row = 0; render_row < 18; render_row++)
     {
         for (render_col = 0; render_col < 20; render_col ++){
@@ -296,8 +329,7 @@ void collide(int8_t vel_y)
         tile = get_tile_by_px(tile_x, tile_y);
         tile_x = tile_x & 0xF8;  // divide by 8 then multiply by 8
         tile_y = tile_y & 0xF8;
-        if (tile == 0x5 || tile == 0x4)
-        { // TODO: formalize tile indices
+        if (tile == SMALL_SPIKE_TILE || tile == BIG_SPIKE_TILE) {
 #ifndef INVINCIBLE
             player_dx = 0;
             player_dy = 0;
@@ -305,7 +337,7 @@ void collide(int8_t vel_y)
             lose = 1;
 #endif
         }
-        else if (tile == 0x3)
+        else if (tile == BLACK_TILE)
         {
             if (vel_y > 0)
             { // falling down
@@ -327,7 +359,7 @@ void collide(int8_t vel_y)
 #endif
             }
         } 
-        else if (tile == 0xC){ // half block
+        else if (tile == HALF_BLOCK_TILE){ 
             if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 4, tile_y + 7)){
                 if (vel_y > 0)
                 { // falling down
@@ -351,12 +383,12 @@ void collide(int8_t vel_y)
             }
 
         }
-        else if (tile == 0xB) { // jump tile, hitbox is 2x8 rectangle at bottom, and no lookahead
+        else if (tile == JUMP_TILE_TILE) { // hitbox is 2x8 rectangle at bottom, and no lookahead
             if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) && vel_y == 0){
                 player_dy = -PLAYER_SUPER_JUMP_VEL;
             }
         }
-        else if (tile == 0xA) // jump circle , hitbox is 4x4 square in center
+        else if (tile == JUMP_CIRCLE_TILE) // jump circle , hitbox is 4x4 square in center
         {
             if (jpad == J_UP && vel_y == 0){ // pressing up and no lookadhead
                 if (rect_collision_with_player(tile_x + 2, tile_x + 5, tile_y + 2, tile_y + 5)){
@@ -368,12 +400,12 @@ void collide(int8_t vel_y)
     // ground checks
     if (vel_y == 0)
     {
-        if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0x3 || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0x3)
+        if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
         {
             on_ground = 1;
         } else {
             //TODO: clean this up
-            if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == 0xC || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == 0xC)
+            if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
             {
                 tile_x = (player_x) & 0xF8;
                 tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
@@ -426,14 +458,7 @@ void initialize_player()
     set_sprite_tile(0, 0);
 }
 
-void init_tiles()
-{
-    set_bkg_data(0, 13, gb_tileset);        // load tiles into VRAM
-    set_bkg_data(13, 16, parallax_tileset); // load tiles into VRAM
-    set_bkg_data(29, 36, aero + 3*16);
-    set_bkg_data(65, 1, aero + 47*16);
-    set_bkg_data(66, 9, progress_bar_tiles);
-}
+
 
 screen_t game()
 {
@@ -481,7 +506,6 @@ screen_t game()
         tick_player();
         render_player();
 
-        SWITCH_ROM_MBC1(level1Bank);
         SWITCH_ROM_MBC1(level_banks[level_ind]);
         scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
         SWITCH_ROM_MBC1(saved_bank);
@@ -506,18 +530,16 @@ screen_t game()
             wait_vbl_done();
         }
 
-        white_tile_ind -= 16;
-        if (white_tile_ind <= 0)
-        {
-            white_tile_ind = 240;
+        parallax_tile_ind += 16; 
+        if (parallax_tile_ind > 112){
+            parallax_tile_ind = 0;
         }
-        green_tile_ind -= 16;
-        if (green_tile_ind <= 0)
-        {
-            green_tile_ind = 240; // 16*15
-        }
-        set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
-        set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+        set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(0x5, 1, small_spike_parallax + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(0x4, 1, big_spike_parallax + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(0x08, 1, half_block_parallax + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(0x06, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(0x07, 1, jump_tile_parallax + parallax_tile_ind); // load tiles into VRAM
 
 
         tick++;
@@ -563,8 +585,8 @@ screen_t title()
     init_tiles();
     reset_tracking();
 
-    SWITCH_ROM_MBC1(title_mapBank);
-    init_background(title_map, title_mapWidth);
+    SWITCH_ROM_MBC1(title_map_v2Bank);
+    init_background(title_map_v2, title_map_v2Width);
     SWITCH_ROM_MBC1(saved_bank);
     
     if (title_loaded) {
@@ -614,20 +636,15 @@ screen_t title()
         }
         vbl_count = 0;
 
-        SWITCH_ROM_MBC1(title_mapBank);
-        scroll_bkg_x(player_dx, title_map, title_mapWidth);
+        SWITCH_ROM_MBC1(title_map_v2Bank);
+        scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
         SWITCH_ROM_MBC1(saved_bank);
 
-        white_tile_ind -= 16; 
-        if (white_tile_ind <= 0){
-            white_tile_ind = 240;
+        parallax_tile_ind += 16; 
+        if (parallax_tile_ind > 112){
+            parallax_tile_ind = 0;
         }
-        green_tile_ind -= 16;
-        if (green_tile_ind <= 0){
-            green_tile_ind = 240; // 16*15
-        }
-        set_bkg_data(6, 1, parallax_tileset + white_tile_ind); // load tiles into VRAM
-        set_bkg_data(7, 1, parallax_tileset + green_tile_ind); // load tiles into VRAM
+        set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
 
         if (!title_loaded) {
             if (tick % 4 == 0){ // change from 6 to 4 because power of 2 modulu is optimized
