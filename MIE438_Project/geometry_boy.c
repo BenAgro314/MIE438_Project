@@ -929,7 +929,7 @@ void main()
     while (1)
     {
         wait_vbl_done(); //wait until finished drawing the screen
-        gbt_update(); // This will change to ROM bank 1. Basically play the music
+        //play the music within while(1) of each function below. (currently only done in game()). done via gbt_update()
         
         if (current_screen == TITLE)
         {
