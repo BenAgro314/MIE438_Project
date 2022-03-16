@@ -6505,15 +6505,15 @@ _game::
 	inc	(hl)
 ;geometry_boy.c:553: gbt_update(); // This will change to ROM bank 1. Basically play the music
 	call	_gbt_update
-;geometry_boy.c:554: delay(LOOP_DELAY >> 1);
-	ld	de, #0x000a
+;geometry_boy.c:554: delay(8); // LOOP_DELAY
+	ld	de, #0x0008
 	push	de
 	call	_delay
 	pop	hl
 ;geometry_boy.c:555: gbt_update(); // This will change to ROM bank 1. Basically play the music
 	call	_gbt_update
-;geometry_boy.c:556: delay(LOOP_DELAY >> 1);
-	ld	de, #0x000a
+;geometry_boy.c:556: delay(8); // LOOP_DELAY
+	ld	de, #0x0008
 	push	de
 	call	_delay
 	pop	hl
@@ -7900,14 +7900,16 @@ _title::
 ;geometry_boy.c:760: tick++;
 	ld	hl, #_tick
 	inc	(hl)
-;geometry_boy.c:761: delay(LOOP_DELAY);
-	ld	de, #0x0014
+;geometry_boy.c:761: gbt_update(); // This will change to ROM bank 1. Basically play the music
+	call	_gbt_update
+;geometry_boy.c:762: delay(18); // LOOP_DELAY
+	ld	de, #0x0012
 	push	de
 	call	_delay
 	pop	hl
 	jp	00155$
 00212$:
-;geometry_boy.c:763: }
+;geometry_boy.c:764: }
 	add	sp, #9
 	ret
 _game_title:
@@ -7935,13 +7937,13 @@ _player_text:
 	.db #0x59	;  89	'Y'
 	.db #0x45	;  69	'E'
 	.db #0x52	;  82	'R'
-;geometry_boy.c:770: screen_t player_select()
+;geometry_boy.c:771: screen_t player_select()
 ;	---------------------------------
 ; Function player_select
 ; ---------------------------------
 _player_select::
 	add	sp, #-9
-;geometry_boy.c:773: wait_vbl_done();
+;geometry_boy.c:774: wait_vbl_done();
 	call	_wait_vbl_done
 ;geometry_boy.c:278: set_bkg_data(0, 1, gb_tileset_v2);        // load tiles into VRAM
 	ld	de, #_gb_tileset_v2
@@ -7982,7 +7984,7 @@ _player_select::
 	ld	a, (hl)
 	sub	a, #0x12
 	jr	C, 00153$
-;geometry_boy.c:778: set_sprite_data(CURSOR_TEXT_OAM, 1, (char* ) DARK_CURSOR); // Load into VRAM
+;geometry_boy.c:779: set_sprite_data(CURSOR_TEXT_OAM, 1, (char* ) DARK_CURSOR); // Load into VRAM
 	ld	de, #(_aero_cursors + 16)
 	push	de
 	ld	a, #0x01
@@ -7996,7 +7998,7 @@ _player_select::
 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
 	ld	hl, #(_shadow_OAM + 42)
 	ld	(hl), #0x0a
-;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	hl, #_player_sprite_num
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8024,7 +8026,7 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	b, a
-;geometry_boy.c:782: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+;geometry_boy.c:783: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
 	ld	a, l
 	and	a, #0x03
 	swap	a
@@ -8038,14 +8040,14 @@ _player_select::
 	ld	a, b
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:786: set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
+;geometry_boy.c:787: set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
 	ld	de, #_players
 	push	de
 	ld	hl, #0x100b
 	push	hl
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:790: for (uint8_t i = 0; i < 16; i++)
+;geometry_boy.c:791: for (uint8_t i = 0; i < 16; i++)
 	ldhl	sp,	#8
 	ld	(hl), #0x00
 00156$:
@@ -8053,7 +8055,7 @@ _player_select::
 	ld	a, (hl)
 	sub	a, #0x10
 	jr	NC, 00101$
-;geometry_boy.c:792: set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
+;geometry_boy.c:793: set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
 	ld	a, (hl)
 	add	a, #0x0b
 	ld	c, a
@@ -8071,7 +8073,7 @@ _player_select::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:795: ((i / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:796: ((i / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#8
 	ld	c, (hl)
 	ld	b, #0x00
@@ -8103,7 +8105,7 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	d, a
-;geometry_boy.c:794: ((i % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:795: ((i % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
 	ld	a, c
 	and	a, #0x03
 	swap	a
@@ -8111,7 +8113,7 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	e, a
-;geometry_boy.c:793: move_sprite(PLAYER_SPRITES_OAM + i,
+;geometry_boy.c:794: move_sprite(PLAYER_SPRITES_OAM + i,
 	ldhl	sp,	#8
 	ld	a, (hl)
 	add	a, #0x0b
@@ -8130,16 +8132,16 @@ _player_select::
 	ld	a, d
 	ld	(hl+), a
 	ld	(hl), e
-;geometry_boy.c:790: for (uint8_t i = 0; i < 16; i++)
+;geometry_boy.c:791: for (uint8_t i = 0; i < 16; i++)
 	ldhl	sp,	#8
 	inc	(hl)
 	jr	00156$
 00101$:
-;geometry_boy.c:798: SHOW_SPRITES;
+;geometry_boy.c:799: SHOW_SPRITES;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x02
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:800: uint8_t is_up = 0;
+;geometry_boy.c:801: uint8_t is_up = 0;
 	ldhl	sp,	#0
 	ld	(hl), #0x00
 ;geometry_boy.c:158: vbl_count = 0;
@@ -8194,30 +8196,30 @@ _player_select::
 ;geometry_boy.c:174: SCX_REG = 0;
 	xor	a, a
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:804: while (1)
+;geometry_boy.c:805: while (1)
 00125$:
-;geometry_boy.c:806: if (vbl_count == 0){
+;geometry_boy.c:807: if (vbl_count == 0){
 	ld	a, (#_vbl_count)
 	or	a, a
 	jr	NZ, 00103$
-;geometry_boy.c:807: wait_vbl_done();
+;geometry_boy.c:808: wait_vbl_done();
 	call	_wait_vbl_done
 00103$:
-;geometry_boy.c:809: vbl_count = 0;
+;geometry_boy.c:810: vbl_count = 0;
 	ld	hl, #_vbl_count
 	ld	(hl), #0x00
-;geometry_boy.c:811: prev_jpad = jpad;
+;geometry_boy.c:812: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ld	(#_prev_jpad),a
-;geometry_boy.c:812: jpad = joypad();
+;geometry_boy.c:813: jpad = joypad();
 	call	_joypad
 	ld	hl, #_jpad
 	ld	(hl), e
-;geometry_boy.c:814: if (debounce_input(J_UP, jpad, prev_jpad))
+;geometry_boy.c:815: if (debounce_input(J_UP, jpad, prev_jpad))
 	ld	a, (#_prev_jpad)
 	ldhl	sp,	#1
 	ld	(hl), a
-;geometry_boy.c:811: prev_jpad = jpad;
+;geometry_boy.c:812: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ldhl	sp,	#2
 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
@@ -8235,15 +8237,15 @@ _player_select::
 00166$:
 	ld	c, #0x01
 00167$:
-;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	a, (#_player_sprite_num)
 	ldhl	sp,	#3
 	ld	(hl+), a
 	ld	(hl), #0x00
-;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ld	hl, #_player_sprite_num
 	ld	b, (hl)
-;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#4
 	ld	a, (hl+)
 	rlca
@@ -8263,29 +8265,29 @@ _player_select::
 	ld	a, h
 	ldhl	sp,	#7
 	ld	(hl), a
-;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
 	ldhl	sp,	#3
 	ld	a, (hl)
 	and	a, #0x03
 	ld	e, a
 	ld	d, #0x00
-;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ld	a, b
 	add	a, #0x0b
 	ldhl	sp,	#8
 	ld	(hl), a
-;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
 	ld	a, e
 	swap	a
 	rlca
 	and	a, #0xe0
 	add	a, #0x24
 	ld	e, a
-;geometry_boy.c:814: if (debounce_input(J_UP, jpad, prev_jpad))
+;geometry_boy.c:815: if (debounce_input(J_UP, jpad, prev_jpad))
 	ld	a, c
 	or	a, a
 	jr	Z, 00117$
-;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#3
 	ld	a, (hl+)
 	ld	c, a
@@ -8309,10 +8311,10 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	d, a
-;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ldhl	sp,	#8
-;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8328,19 +8330,19 @@ _player_select::
 	ld	a, d
 	ld	(hl+), a
 	ld	(hl), e
-;geometry_boy.c:820: player_sprite_num += 12;
+;geometry_boy.c:821: player_sprite_num += 12;
 	ld	hl, #_player_sprite_num
 	ld	a, (hl)
 	add	a, #0x0c
 	ld	(hl), a
-;geometry_boy.c:821: player_sprite_num %= 16;
+;geometry_boy.c:822: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
-;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	c, (hl)
 	ld	b, #0x00
-;geometry_boy.c:825: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:826: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	l, c
 ;	spillPairReg hl
 ;	spillPairReg hl
@@ -8369,7 +8371,7 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	e, a
-;geometry_boy.c:824: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+;geometry_boy.c:825: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
 	ld	a, c
 	and	a, #0x03
 	swap	a
@@ -8383,7 +8385,7 @@ _player_select::
 	ld	a, e
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:825: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:826: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	jp	00118$
 00117$:
 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
@@ -8401,10 +8403,10 @@ _player_select::
 00171$:
 	ld	a, #0x01
 00172$:
-;geometry_boy.c:828: else if (debounce_input(J_DOWN, jpad, prev_jpad))
+;geometry_boy.c:829: else if (debounce_input(J_DOWN, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00114$
-;geometry_boy.c:832: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:833: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#3
 	ld	a, (hl+)
 	ld	c, a
@@ -8428,10 +8430,10 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ldhl	sp,	#7
-;geometry_boy.c:831: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-;geometry_boy.c:830: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:832: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:831: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ld	(hl+), a
-;geometry_boy.c:832: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:833: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8452,19 +8454,19 @@ _player_select::
 	inc	bc
 	ld	a, e
 	ld	(bc), a
-;geometry_boy.c:834: player_sprite_num += 4;
+;geometry_boy.c:835: player_sprite_num += 4;
 	ld	hl, #_player_sprite_num
 	ld	a, (hl)
 	add	a, #0x04
 	ld	(hl), a
-;geometry_boy.c:835: player_sprite_num %= 16;
+;geometry_boy.c:836: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
-;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	c, (hl)
 	ld	b, #0x00
-;geometry_boy.c:839: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:840: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	l, c
 ;	spillPairReg hl
 ;	spillPairReg hl
@@ -8493,7 +8495,7 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	e, a
-;geometry_boy.c:838: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+;geometry_boy.c:839: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
 	ld	a, c
 	and	a, #0x03
 	swap	a
@@ -8507,7 +8509,7 @@ _player_select::
 	ld	a, e
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:839: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:840: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	jp	00118$
 00114$:
 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
@@ -8525,10 +8527,10 @@ _player_select::
 00176$:
 	ld	a, #0x01
 00177$:
-;geometry_boy.c:842: else if (debounce_input(J_LEFT, jpad, prev_jpad))
+;geometry_boy.c:843: else if (debounce_input(J_LEFT, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00111$
-;geometry_boy.c:846: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:847: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#3
 	ld	a, (hl+)
 	ld	c, a
@@ -8552,10 +8554,10 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	d, a
-;geometry_boy.c:845: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-;geometry_boy.c:844: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:846: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:845: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ldhl	sp,	#8
-;geometry_boy.c:846: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:847: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8571,19 +8573,19 @@ _player_select::
 	ld	a, d
 	ld	(hl+), a
 	ld	(hl), e
-;geometry_boy.c:848: player_sprite_num += 15;
+;geometry_boy.c:849: player_sprite_num += 15;
 	ld	hl, #_player_sprite_num
 	ld	a, (hl)
 	add	a, #0x0f
 	ld	(hl), a
-;geometry_boy.c:849: player_sprite_num %= 16;
+;geometry_boy.c:850: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
-;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	c, (hl)
 	ld	b, #0x00
-;geometry_boy.c:853: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:854: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	l, c
 ;	spillPairReg hl
 ;	spillPairReg hl
@@ -8612,7 +8614,7 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	e, a
-;geometry_boy.c:852: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+;geometry_boy.c:853: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
 	ld	a, c
 	and	a, #0x03
 	swap	a
@@ -8626,7 +8628,7 @@ _player_select::
 	ld	a, e
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:853: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:854: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	jp	00118$
 00111$:
 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
@@ -8644,10 +8646,10 @@ _player_select::
 00181$:
 	ld	a, #0x01
 00182$:
-;geometry_boy.c:856: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
+;geometry_boy.c:857: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00108$
-;geometry_boy.c:860: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:861: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#3
 	ld	a, (hl+)
 	ld	c, a
@@ -8671,11 +8673,11 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	c, a
-;geometry_boy.c:859: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-;geometry_boy.c:858: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:860: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:859: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ldhl	sp,	#8
 	ld	b, (hl)
-;geometry_boy.c:860: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:861: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	h, #0x00
 ;	spillPairReg hl
@@ -8691,18 +8693,18 @@ _player_select::
 	ld	a, c
 	ld	(hl+), a
 	ld	(hl), e
-;geometry_boy.c:862: player_sprite_num += 1;
+;geometry_boy.c:863: player_sprite_num += 1;
 	ld	hl, #_player_sprite_num
 	inc	(hl)
 	ld	a, (hl)
-;geometry_boy.c:863: player_sprite_num %= 16;
+;geometry_boy.c:864: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
-;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	c, (hl)
 	ld	b, #0x00
-;geometry_boy.c:867: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:868: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	l, c
 ;	spillPairReg hl
 ;	spillPairReg hl
@@ -8731,7 +8733,7 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	e, a
-;geometry_boy.c:866: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+;geometry_boy.c:867: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
 	ld	a, c
 	and	a, #0x03
 	swap	a
@@ -8745,7 +8747,7 @@ _player_select::
 	ld	a, e
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:867: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:868: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	jr	00118$
 00108$:
 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
@@ -8763,10 +8765,10 @@ _player_select::
 00186$:
 	ld	a, #0x01
 00187$:
-;geometry_boy.c:870: else if (debounce_input(J_SELECT, jpad, prev_jpad))// || debounce_input(J_START, jpad, prev_jpad))
+;geometry_boy.c:871: else if (debounce_input(J_SELECT, jpad, prev_jpad))// || debounce_input(J_START, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00118$
-;geometry_boy.c:873: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:874: for (uint8_t i = 0; i < 40; i++)
 	ldhl	sp,	#8
 	ld	(hl), #0x00
 00159$:
@@ -8782,28 +8784,28 @@ _player_select::
 	add	hl, hl
 	add	hl, bc
 	ld	(hl), #0x00
-;geometry_boy.c:873: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:874: for (uint8_t i = 0; i < 40; i++)
 	ldhl	sp,	#8
 	inc	(hl)
 	jr	00159$
 00104$:
-;geometry_boy.c:877: return TITLE;
+;geometry_boy.c:878: return TITLE;
 	ld	e, #0x00
 	jp	00161$
 00118$:
-;geometry_boy.c:880: if (tick % 4 == 0)
+;geometry_boy.c:881: if (tick % 4 == 0)
 	ld	a, (#_tick)
 	and	a, #0x03
 	jp	NZ,00123$
-;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ld	a, (#_player_sprite_num)
 	ldhl	sp,	#4
 	ld	(hl+), a
 	ld	(hl), #0x00
-;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ld	hl, #_player_sprite_num
 	ld	b, (hl)
-;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#5
 	ld	a, (hl+)
 	rlca
@@ -8812,7 +8814,7 @@ _player_select::
 	dec	hl
 	ld	a, (hl+)
 	ld	e, a
-;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
 	ld	a, (hl-)
 	ld	d, a
 	inc	de
@@ -8824,14 +8826,14 @@ _player_select::
 	ld	l, #0x00
 ;	spillPairReg hl
 ;	spillPairReg hl
-;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ld	a, b
 	add	a, #0x0b
 	push	hl
 	ldhl	sp,	#9
 	ld	(hl), a
 	pop	hl
-;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
 	ld	a, c
 	swap	a
 	rlca
@@ -8839,12 +8841,12 @@ _player_select::
 	add	a, #0x24
 	ldhl	sp,	#8
 	ld	(hl), a
-;geometry_boy.c:882: if (is_up)
+;geometry_boy.c:883: if (is_up)
 	ldhl	sp,	#0
 	ld	a, (hl)
 	or	a, a
 	jr	Z, 00120$
-;geometry_boy.c:886: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
+;geometry_boy.c:887: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
 	ldhl	sp,	#4
 	ld	a, (hl+)
 	ld	c, a
@@ -8866,13 +8868,13 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x22
 	ldhl	sp,	#6
-;geometry_boy.c:885: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:886: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
 	ld	(hl+), a
 	inc	hl
-;geometry_boy.c:884: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:885: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ld	a, (hl-)
 	ld	c, a
-;geometry_boy.c:886: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
+;geometry_boy.c:887: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8893,12 +8895,12 @@ _player_select::
 	inc	de
 	ld	a, c
 	ld	(de), a
-;geometry_boy.c:887: is_up = 0;
+;geometry_boy.c:888: is_up = 0;
 	ldhl	sp,	#0
 	ld	(hl), #0x00
 	jr	00123$
 00120$:
-;geometry_boy.c:893: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:894: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 	ldhl	sp,	#4
 	ld	a, (hl+)
 	ld	c, a
@@ -8920,12 +8922,12 @@ _player_select::
 	and	a, #0xe0
 	add	a, #0x24
 	ld	b, a
-;geometry_boy.c:892: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+;geometry_boy.c:893: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
 	ldhl	sp,	#8
-;geometry_boy.c:891: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+;geometry_boy.c:892: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
 	ld	a, (hl-)
 	ld	c, a
-;geometry_boy.c:893: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+;geometry_boy.c:894: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8941,24 +8943,24 @@ _player_select::
 	ld	a, b
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:894: is_up = 1;
+;geometry_boy.c:895: is_up = 1;
 	ldhl	sp,	#0
 	ld	(hl), #0x01
 00123$:
-;geometry_boy.c:897: tick++;
+;geometry_boy.c:898: tick++;
 	ld	hl, #_tick
 	inc	(hl)
-;geometry_boy.c:899: delay(LOOP_DELAY);
+;geometry_boy.c:900: delay(LOOP_DELAY);
 	ld	de, #0x0014
 	push	de
 	call	_delay
 	pop	hl
 	jp	00125$
 00161$:
-;geometry_boy.c:901: }
+;geometry_boy.c:902: }
 	add	sp, #9
 	ret
-;geometry_boy.c:904: void main()
+;geometry_boy.c:905: void main()
 ;	---------------------------------
 ; Function main
 ; ---------------------------------
@@ -9019,20 +9021,20 @@ _main::
 	ldh	(_SCX_REG + 0), a
 ;../gbdk/include/gb/gb.h:660: __asm__("di");
 	di
-;geometry_boy.c:909: gbt_play(song_Data, 2, 1);
+;geometry_boy.c:910: gbt_play(song_Data, 2, 1);
 	ld	hl, #0x102
 	push	hl
 	ld	de, #_song_Data
 	push	de
 	call	_gbt_play
 	add	sp, #4
-;geometry_boy.c:910: gbt_loop(1);
+;geometry_boy.c:911: gbt_loop(1);
 	ld	a, #0x01
 	push	af
 	inc	sp
 	call	_gbt_loop
 	inc	sp
-;geometry_boy.c:912: set_interrupts(VBL_IFLAG); //interrupt set after finished drawing the screen
+;geometry_boy.c:913: set_interrupts(VBL_IFLAG); //interrupt set after finished drawing the screen
 	ld	a, #0x01
 	push	af
 	inc	sp
@@ -9040,20 +9042,20 @@ _main::
 	inc	sp
 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
 	ei
-;geometry_boy.c:917: SPRITES_8x8;
+;geometry_boy.c:918: SPRITES_8x8;
 	ldh	a, (_LCDC_REG + 0)
 	and	a, #0xfb
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:918: saved_bank = _current_bank;
+;geometry_boy.c:919: saved_bank = _current_bank;
 	ldh	a, (__current_bank + 0)
 	ld	(#_saved_bank),a
-;geometry_boy.c:919: screen_t current_screen = TITLE;
+;geometry_boy.c:920: screen_t current_screen = TITLE;
 	ldhl	sp,	#0
 	ld	(hl), #0x00
-;geometry_boy.c:921: ENABLE_RAM_MBC1;
+;geometry_boy.c:922: ENABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x0a
-;geometry_boy.c:922: if (*saved != 's'){
+;geometry_boy.c:923: if (*saved != 's'){
 	ld	hl, #_saved
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -9065,9 +9067,9 @@ _main::
 	ld	a, (hl)
 	sub	a, #0x73
 	jr	Z, 00103$
-;geometry_boy.c:923: *saved = 's';
+;geometry_boy.c:924: *saved = 's';
 	ld	(hl), #0x73
-;geometry_boy.c:924: for (uint8_t i = 0; i < num_levels; i++){
+;geometry_boy.c:925: for (uint8_t i = 0; i < num_levels; i++){
 	ldhl	sp,	#1
 	ld	(hl), #0x00
 00122$:
@@ -9076,7 +9078,7 @@ _main::
 	ld	hl, #_num_levels
 	sub	a, (hl)
 	jr	NC, 00103$
-;geometry_boy.c:925: *(attempts[i]) = 0;
+;geometry_boy.c:926: *(attempts[i]) = 0;
 	ldhl	sp,	#1
 	ld	c, (hl)
 	ld	b, #0x00
@@ -9093,7 +9095,7 @@ _main::
 	xor	a, a
 	ld	(hl+), a
 	ld	(hl), a
-;geometry_boy.c:926: *(px_progress[i]) = 0;
+;geometry_boy.c:927: *(px_progress[i]) = 0;
 	ld	hl, #_px_progress
 	add	hl, bc
 	ld	a, (hl+)
@@ -9103,64 +9105,64 @@ _main::
 	ld	(bc), a
 	inc	bc
 	ld	(bc), a
-;geometry_boy.c:924: for (uint8_t i = 0; i < num_levels; i++){
+;geometry_boy.c:925: for (uint8_t i = 0; i < num_levels; i++){
 	ldhl	sp,	#1
 	inc	(hl)
 	jr	00122$
 00103$:
-;geometry_boy.c:929: DISABLE_RAM_MBC1;
+;geometry_boy.c:930: DISABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x00
-;geometry_boy.c:931: while (1)
+;geometry_boy.c:932: while (1)
 00116$:
-;geometry_boy.c:933: wait_vbl_done(); //wait until finished drawing the screen
+;geometry_boy.c:934: wait_vbl_done(); //wait until finished drawing the screen
 	call	_wait_vbl_done
-;geometry_boy.c:936: if (current_screen == TITLE)
+;geometry_boy.c:937: if (current_screen == TITLE)
 	ldhl	sp,	#0
 	ld	a, (hl)
 	or	a, a
 	jr	NZ, 00113$
-;geometry_boy.c:938: current_screen = title(); 
+;geometry_boy.c:939: current_screen = title(); 
 	call	_title
 	ldhl	sp,	#0
 	ld	(hl), e
 	jr	00116$
 00113$:
-;geometry_boy.c:940: else if (current_screen == LEVEL_SELECT)
+;geometry_boy.c:941: else if (current_screen == LEVEL_SELECT)
 	ldhl	sp,	#0
 	ld	a, (hl)
 	sub	a, #0x02
 	jr	NZ, 00110$
-;geometry_boy.c:942: level_ind = 0;
+;geometry_boy.c:943: level_ind = 0;
 	ld	hl, #_level_ind
 	ld	(hl), #0x00
-;geometry_boy.c:943: current_screen = GAME;
+;geometry_boy.c:944: current_screen = GAME;
 	ldhl	sp,	#0
 	ld	(hl), #0x01
 	jr	00116$
 00110$:
-;geometry_boy.c:945: else if (current_screen == PLAYER_SELECT)
+;geometry_boy.c:946: else if (current_screen == PLAYER_SELECT)
 	ldhl	sp,	#0
 	ld	a, (hl)
 	sub	a, #0x03
 	jr	NZ, 00107$
-;geometry_boy.c:947: current_screen = player_select();
+;geometry_boy.c:948: current_screen = player_select();
 	call	_player_select
 	ldhl	sp,	#0
 	ld	(hl), e
 	jr	00116$
 00107$:
-;geometry_boy.c:949: else if (current_screen == GAME)
+;geometry_boy.c:950: else if (current_screen == GAME)
 	ldhl	sp,	#0
 	ld	a, (hl)
 	dec	a
 	jr	NZ, 00116$
-;geometry_boy.c:951: current_screen = game();
+;geometry_boy.c:952: current_screen = game();
 	call	_game
 	ldhl	sp,	#0
 	ld	(hl), e
 	jr	00116$
-;geometry_boy.c:955: }
+;geometry_boy.c:956: }
 	inc	sp
 	inc	sp
 	ret

@@ -6505,15 +6505,15 @@
       001BB5 34                    6505 	inc	(hl)
                                    6506 ;geometry_boy.c:553: gbt_update(); // This will change to ROM bank 1. Basically play the music
       001BB6 CDr00r00              6507 	call	_gbt_update
-                                   6508 ;geometry_boy.c:554: delay(LOOP_DELAY >> 1);
-      001BB9 11 0A 00              6509 	ld	de, #0x000a
+                                   6508 ;geometry_boy.c:554: delay(8); // LOOP_DELAY
+      001BB9 11 08 00              6509 	ld	de, #0x0008
       001BBC D5                    6510 	push	de
       001BBD CDr00r00              6511 	call	_delay
       001BC0 E1                    6512 	pop	hl
                                    6513 ;geometry_boy.c:555: gbt_update(); // This will change to ROM bank 1. Basically play the music
       001BC1 CDr00r00              6514 	call	_gbt_update
-                                   6515 ;geometry_boy.c:556: delay(LOOP_DELAY >> 1);
-      001BC4 11 0A 00              6516 	ld	de, #0x000a
+                                   6515 ;geometry_boy.c:556: delay(8); // LOOP_DELAY
+      001BC4 11 08 00              6516 	ld	de, #0x0008
       001BC7 D5                    6517 	push	de
       001BC8 CDr00r00              6518 	call	_delay
       001BCB E1                    6519 	pop	hl
@@ -6676,7 +6676,7 @@
       001CB4                       6676 00408$:
       001CB4 D2r25r1E              6677 	jp	NC, 00104$
                                    6678 ;geometry_boy.c:604: set_sprite_data(TITLE_OAM + i, 1, nima + 16 * (13 + game_title[i] - 65)); // load tiles into VRAM
-      001CB7 11r93r22              6679 	ld	de, #_game_title
+      001CB7 11r96r22              6679 	ld	de, #_game_title
       001CBA F8 07                 6680 	ldhl	sp,	#7
       001CBC 2A                    6681 	ld	a,	(hl+)
       001CBD 66                    6682 	ld	h, (hl)
@@ -6979,7 +6979,7 @@
       001E32 D6 05                 6979 	sub	a, #0x05
       001E34 30 5C                 6980 	jr	NC, 00106$
                                    6981 ;geometry_boy.c:619: set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
-      001E36 11r9Er22              6982 	ld	de, #_start_text
+      001E36 11rA1r22              6982 	ld	de, #_start_text
       001E39 6E                    6983 	ld	l, (hl)
       001E3A 26 00                 6984 	ld	h, #0x00
       001E3C 19                    6985 	add	hl, de
@@ -7063,7 +7063,7 @@
                                    7063 ;geometry_boy.c:621: move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
       001E92                       7064 00106$:
                                    7065 ;geometry_boy.c:623: set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
-      001E92 11rA3r22              7066 	ld	de, #_player_text
+      001E92 11rA6r22              7066 	ld	de, #_player_text
       001E95 F8 08                 7067 	ldhl	sp,	#8
       001E97 6E                    7068 	ld	l, (hl)
       001E98 26 00                 7069 	ld	h, #0x00
@@ -7278,7 +7278,7 @@
       001FA6 D6 0B                 7278 	sub	a, #0x0b
       001FA8 30 79                 7279 	jr	NC, 00238$
                                    7280 ;geometry_boy.c:662: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
-      001FAA 11r93r22              7281 	ld	de, #_game_title
+      001FAA 11r96r22              7281 	ld	de, #_game_title
       001FAD 6E                    7282 	ld	l, (hl)
       001FAE 26 00                 7283 	ld	h, #0x00
       001FB0 19                    7284 	add	hl, de
@@ -7399,7 +7399,7 @@
       00202B D6 05                 7399 	sub	a, #0x05
       00202D 30 53                 7400 	jr	NC, 00118$
                                    7401 ;geometry_boy.c:678: set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
-      00202F 21r9Er22              7402 	ld	hl, #_start_text
+      00202F 21rA1r22              7402 	ld	hl, #_start_text
       002032 06 00                 7403 	ld	b, #0x00
       002034 09                    7404 	add	hl, bc
       002035 7E                    7405 	ld	a, (hl)
@@ -7476,7 +7476,7 @@
                                    7476 ;geometry_boy.c:680: move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
       002082                       7477 00118$:
                                    7478 ;geometry_boy.c:682: set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
-      002082 21rA3r22              7479 	ld	hl, #_player_text
+      002082 21rA6r22              7479 	ld	hl, #_player_text
       002085 06 00                 7480 	ld	b, #0x00
       002087 09                    7481 	add	hl, bc
       002088 7E                    7482 	ld	a, (hl)
@@ -7884,7 +7884,7 @@
       00226C 36 01                 7884 	ld	(hl), #0x01
                                    7885 ;geometry_boy.c:750: return LEVEL_SELECT;
       00226E 1E 02                 7886 	ld	e, #0x02
-      002270 18 1E                 7887 	jr	00212$
+      002270 18 21                 7887 	jr	00212$
       002272                       7888 00144$:
                                    7889 ;geometry_boy.c:752: else if (cursor_title_position == 1)
       002272 FAr26r00              7890 	ld	a, (#_cursor_title_position)
@@ -7895,1333 +7895,1335 @@
       00227B 36 00                 7895 	ld	(hl), #0x00
                                    7896 ;geometry_boy.c:755: return PLAYER_SELECT;
       00227D 1E 03                 7897 	ld	e, #0x03
-      00227F 18 0F                 7898 	jr	00212$
+      00227F 18 12                 7898 	jr	00212$
       002281                       7899 00153$:
                                    7900 ;geometry_boy.c:760: tick++;
       002281 21r0Ar00              7901 	ld	hl, #_tick
       002284 34                    7902 	inc	(hl)
-                                   7903 ;geometry_boy.c:761: delay(LOOP_DELAY);
-      002285 11 14 00              7904 	ld	de, #0x0014
-      002288 D5                    7905 	push	de
-      002289 CDr00r00              7906 	call	_delay
-      00228C E1                    7907 	pop	hl
-      00228D C3r29r1F              7908 	jp	00155$
-      002290                       7909 00212$:
-                                   7910 ;geometry_boy.c:763: }
-      002290 E8 09                 7911 	add	sp, #9
-      002292 C9                    7912 	ret
-      002293                       7913 _game_title:
-      002293 47                    7914 	.db #0x47	;  71	'G'
-      002294 45                    7915 	.db #0x45	;  69	'E'
-      002295 4F                    7916 	.db #0x4f	;  79	'O'
-      002296 4D                    7917 	.db #0x4d	;  77	'M'
-      002297 45                    7918 	.db #0x45	;  69	'E'
-      002298 54                    7919 	.db #0x54	;  84	'T'
-      002299 52                    7920 	.db #0x52	;  82	'R'
-      00229A 59                    7921 	.db #0x59	;  89	'Y'
-      00229B 42                    7922 	.db #0x42	;  66	'B'
-      00229C 4F                    7923 	.db #0x4f	;  79	'O'
-      00229D 59                    7924 	.db #0x59	;  89	'Y'
-      00229E                       7925 _start_text:
-      00229E 53                    7926 	.db #0x53	;  83	'S'
-      00229F 54                    7927 	.db #0x54	;  84	'T'
-      0022A0 41                    7928 	.db #0x41	;  65	'A'
-      0022A1 52                    7929 	.db #0x52	;  82	'R'
-      0022A2 54                    7930 	.db #0x54	;  84	'T'
-      0022A3                       7931 _player_text:
-      0022A3 50                    7932 	.db #0x50	;  80	'P'
-      0022A4 4C                    7933 	.db #0x4c	;  76	'L'
-      0022A5 41                    7934 	.db #0x41	;  65	'A'
-      0022A6 59                    7935 	.db #0x59	;  89	'Y'
-      0022A7 45                    7936 	.db #0x45	;  69	'E'
-      0022A8 52                    7937 	.db #0x52	;  82	'R'
-                                   7938 ;geometry_boy.c:770: screen_t player_select()
-                                   7939 ;	---------------------------------
-                                   7940 ; Function player_select
-                                   7941 ; ---------------------------------
-      0022A9                       7942 _player_select::
-      0022A9 E8 F7                 7943 	add	sp, #-9
-                                   7944 ;geometry_boy.c:773: wait_vbl_done();
-      0022AB CDr00r00              7945 	call	_wait_vbl_done
-                                   7946 ;geometry_boy.c:278: set_bkg_data(0, 1, gb_tileset_v2);        // load tiles into VRAM
-      0022AE 11rB6r01              7947 	ld	de, #_gb_tileset_v2
-      0022B1 D5                    7948 	push	de
-      0022B2 AF                    7949 	xor	a, a
-      0022B3 3C                    7950 	inc	a
-      0022B4 F5                    7951 	push	af
-      0022B5 CDr00r00              7952 	call	_set_bkg_data
-      0022B8 E8 04                 7953 	add	sp, #4
-                                   7954 ;geometry_boy.c:279: for (render_row = 0; render_row < 18; render_row++)
-      0022BA 21r01r00              7955 	ld	hl, #_render_row
-      0022BD 36 00                 7956 	ld	(hl), #0x00
-      0022BF                       7957 00153$:
-                                   7958 ;geometry_boy.c:281: for (render_col = 0; render_col < 20; render_col ++){
-      0022BF 21r02r00              7959 	ld	hl, #_render_col
-      0022C2 36 00                 7960 	ld	(hl), #0x00
-      0022C4                       7961 00151$:
-                                   7962 ;geometry_boy.c:282: set_bkg_tile_xy(render_col, render_row, 0);
-      0022C4 AF                    7963 	xor	a, a
-      0022C5 F5                    7964 	push	af
-      0022C6 33                    7965 	inc	sp
-      0022C7 FAr01r00              7966 	ld	a, (#_render_row)
-      0022CA 67                    7967 	ld	h, a
-      0022CB FAr02r00              7968 	ld	a, (#_render_col)
-      0022CE 6F                    7969 	ld	l, a
-      0022CF E5                    7970 	push	hl
-      0022D0 CDr00r00              7971 	call	_set_bkg_tile_xy
-      0022D3 E8 03                 7972 	add	sp, #3
-                                   7973 ;geometry_boy.c:281: for (render_col = 0; render_col < 20; render_col ++){
-      0022D5 21r02r00              7974 	ld	hl, #_render_col
-      0022D8 34                    7975 	inc	(hl)
-      0022D9 7E                    7976 	ld	a, (hl)
-      0022DA D6 14                 7977 	sub	a, #0x14
-      0022DC 38 E6                 7978 	jr	C, 00151$
-                                   7979 ;geometry_boy.c:279: for (render_row = 0; render_row < 18; render_row++)
-      0022DE 21r01r00              7980 	ld	hl, #_render_row
-      0022E1 34                    7981 	inc	(hl)
-      0022E2 7E                    7982 	ld	a, (hl)
-      0022E3 D6 12                 7983 	sub	a, #0x12
-      0022E5 38 D8                 7984 	jr	C, 00153$
-                                   7985 ;geometry_boy.c:778: set_sprite_data(CURSOR_TEXT_OAM, 1, (char* ) DARK_CURSOR); // Load into VRAM
-      0022E7 11r56r0E              7986 	ld	de, #(_aero_cursors + 16)
-      0022EA D5                    7987 	push	de
-      0022EB 3E 01                 7988 	ld	a, #0x01
-      0022ED F5                    7989 	push	af
-      0022EE 33                    7990 	inc	sp
-      0022EF 3E 0A                 7991 	ld	a, #0x0a
-      0022F1 F5                    7992 	push	af
-      0022F2 33                    7993 	inc	sp
-      0022F3 CDr00r00              7994 	call	_set_sprite_data
-      0022F6 E8 04                 7995 	add	sp, #4
-                                   7996 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
-      0022F8 21r2Ar00              7997 	ld	hl, #(_shadow_OAM + 42)
-      0022FB 36 0A                 7998 	ld	(hl), #0x0a
-                                   7999 ;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0022FD 21r04r00              8000 	ld	hl, #_player_sprite_num
-      002300 6E                    8001 	ld	l, (hl)
-                                   8002 ;	spillPairReg hl
-                                   8003 ;	spillPairReg hl
-      002301 26 00                 8004 	ld	h, #0x00
+                                   7903 ;geometry_boy.c:761: gbt_update(); // This will change to ROM bank 1. Basically play the music
+      002285 CDr00r00              7904 	call	_gbt_update
+                                   7905 ;geometry_boy.c:762: delay(18); // LOOP_DELAY
+      002288 11 12 00              7906 	ld	de, #0x0012
+      00228B D5                    7907 	push	de
+      00228C CDr00r00              7908 	call	_delay
+      00228F E1                    7909 	pop	hl
+      002290 C3r29r1F              7910 	jp	00155$
+      002293                       7911 00212$:
+                                   7912 ;geometry_boy.c:764: }
+      002293 E8 09                 7913 	add	sp, #9
+      002295 C9                    7914 	ret
+      002296                       7915 _game_title:
+      002296 47                    7916 	.db #0x47	;  71	'G'
+      002297 45                    7917 	.db #0x45	;  69	'E'
+      002298 4F                    7918 	.db #0x4f	;  79	'O'
+      002299 4D                    7919 	.db #0x4d	;  77	'M'
+      00229A 45                    7920 	.db #0x45	;  69	'E'
+      00229B 54                    7921 	.db #0x54	;  84	'T'
+      00229C 52                    7922 	.db #0x52	;  82	'R'
+      00229D 59                    7923 	.db #0x59	;  89	'Y'
+      00229E 42                    7924 	.db #0x42	;  66	'B'
+      00229F 4F                    7925 	.db #0x4f	;  79	'O'
+      0022A0 59                    7926 	.db #0x59	;  89	'Y'
+      0022A1                       7927 _start_text:
+      0022A1 53                    7928 	.db #0x53	;  83	'S'
+      0022A2 54                    7929 	.db #0x54	;  84	'T'
+      0022A3 41                    7930 	.db #0x41	;  65	'A'
+      0022A4 52                    7931 	.db #0x52	;  82	'R'
+      0022A5 54                    7932 	.db #0x54	;  84	'T'
+      0022A6                       7933 _player_text:
+      0022A6 50                    7934 	.db #0x50	;  80	'P'
+      0022A7 4C                    7935 	.db #0x4c	;  76	'L'
+      0022A8 41                    7936 	.db #0x41	;  65	'A'
+      0022A9 59                    7937 	.db #0x59	;  89	'Y'
+      0022AA 45                    7938 	.db #0x45	;  69	'E'
+      0022AB 52                    7939 	.db #0x52	;  82	'R'
+                                   7940 ;geometry_boy.c:771: screen_t player_select()
+                                   7941 ;	---------------------------------
+                                   7942 ; Function player_select
+                                   7943 ; ---------------------------------
+      0022AC                       7944 _player_select::
+      0022AC E8 F7                 7945 	add	sp, #-9
+                                   7946 ;geometry_boy.c:774: wait_vbl_done();
+      0022AE CDr00r00              7947 	call	_wait_vbl_done
+                                   7948 ;geometry_boy.c:278: set_bkg_data(0, 1, gb_tileset_v2);        // load tiles into VRAM
+      0022B1 11rB6r01              7949 	ld	de, #_gb_tileset_v2
+      0022B4 D5                    7950 	push	de
+      0022B5 AF                    7951 	xor	a, a
+      0022B6 3C                    7952 	inc	a
+      0022B7 F5                    7953 	push	af
+      0022B8 CDr00r00              7954 	call	_set_bkg_data
+      0022BB E8 04                 7955 	add	sp, #4
+                                   7956 ;geometry_boy.c:279: for (render_row = 0; render_row < 18; render_row++)
+      0022BD 21r01r00              7957 	ld	hl, #_render_row
+      0022C0 36 00                 7958 	ld	(hl), #0x00
+      0022C2                       7959 00153$:
+                                   7960 ;geometry_boy.c:281: for (render_col = 0; render_col < 20; render_col ++){
+      0022C2 21r02r00              7961 	ld	hl, #_render_col
+      0022C5 36 00                 7962 	ld	(hl), #0x00
+      0022C7                       7963 00151$:
+                                   7964 ;geometry_boy.c:282: set_bkg_tile_xy(render_col, render_row, 0);
+      0022C7 AF                    7965 	xor	a, a
+      0022C8 F5                    7966 	push	af
+      0022C9 33                    7967 	inc	sp
+      0022CA FAr01r00              7968 	ld	a, (#_render_row)
+      0022CD 67                    7969 	ld	h, a
+      0022CE FAr02r00              7970 	ld	a, (#_render_col)
+      0022D1 6F                    7971 	ld	l, a
+      0022D2 E5                    7972 	push	hl
+      0022D3 CDr00r00              7973 	call	_set_bkg_tile_xy
+      0022D6 E8 03                 7974 	add	sp, #3
+                                   7975 ;geometry_boy.c:281: for (render_col = 0; render_col < 20; render_col ++){
+      0022D8 21r02r00              7976 	ld	hl, #_render_col
+      0022DB 34                    7977 	inc	(hl)
+      0022DC 7E                    7978 	ld	a, (hl)
+      0022DD D6 14                 7979 	sub	a, #0x14
+      0022DF 38 E6                 7980 	jr	C, 00151$
+                                   7981 ;geometry_boy.c:279: for (render_row = 0; render_row < 18; render_row++)
+      0022E1 21r01r00              7982 	ld	hl, #_render_row
+      0022E4 34                    7983 	inc	(hl)
+      0022E5 7E                    7984 	ld	a, (hl)
+      0022E6 D6 12                 7985 	sub	a, #0x12
+      0022E8 38 D8                 7986 	jr	C, 00153$
+                                   7987 ;geometry_boy.c:779: set_sprite_data(CURSOR_TEXT_OAM, 1, (char* ) DARK_CURSOR); // Load into VRAM
+      0022EA 11r56r0E              7988 	ld	de, #(_aero_cursors + 16)
+      0022ED D5                    7989 	push	de
+      0022EE 3E 01                 7990 	ld	a, #0x01
+      0022F0 F5                    7991 	push	af
+      0022F1 33                    7992 	inc	sp
+      0022F2 3E 0A                 7993 	ld	a, #0x0a
+      0022F4 F5                    7994 	push	af
+      0022F5 33                    7995 	inc	sp
+      0022F6 CDr00r00              7996 	call	_set_sprite_data
+      0022F9 E8 04                 7997 	add	sp, #4
+                                   7998 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
+      0022FB 21r2Ar00              7999 	ld	hl, #(_shadow_OAM + 42)
+      0022FE 36 0A                 8000 	ld	(hl), #0x0a
+                                   8001 ;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      002300 21r04r00              8002 	ld	hl, #_player_sprite_num
+      002303 6E                    8003 	ld	l, (hl)
+                                   8004 ;	spillPairReg hl
                                    8005 ;	spillPairReg hl
-                                   8006 ;	spillPairReg hl
-      002303 4D                    8007 	ld	c, l
-      002304 44                    8008 	ld	b, h
-      002305 CB 7C                 8009 	bit	7, h
-      002307 28 05                 8010 	jr	Z, 00163$
-      002309 4D                    8011 	ld	c, l
-      00230A 44                    8012 	ld	b, h
-      00230B 03                    8013 	inc	bc
-      00230C 03                    8014 	inc	bc
-      00230D 03                    8015 	inc	bc
-      00230E                       8016 00163$:
-      00230E CB 28                 8017 	sra	b
-      002310 CB 19                 8018 	rr	c
-      002312 CB 28                 8019 	sra	b
-      002314 CB 19                 8020 	rr	c
-      002316 79                    8021 	ld	a, c
-      002317 CB 37                 8022 	swap	a
-      002319 07                    8023 	rlca
-      00231A E6 E0                 8024 	and	a, #0xe0
-      00231C C6 24                 8025 	add	a, #0x24
-      00231E 47                    8026 	ld	b, a
-                                   8027 ;geometry_boy.c:782: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-      00231F 7D                    8028 	ld	a, l
-      002320 E6 03                 8029 	and	a, #0x03
-      002322 CB 37                 8030 	swap	a
-      002324 07                    8031 	rlca
-      002325 E6 E0                 8032 	and	a, #0xe0
-      002327 C6 14                 8033 	add	a, #0x14
-      002329 4F                    8034 	ld	c, a
-                                   8035 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      00232A 21r28r00              8036 	ld	hl, #(_shadow_OAM + 40)
-                                   8037 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      00232D 78                    8038 	ld	a, b
-      00232E 22                    8039 	ld	(hl+), a
-      00232F 71                    8040 	ld	(hl), c
-                                   8041 ;geometry_boy.c:786: set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
-      002330 11rA6r00              8042 	ld	de, #_players
-      002333 D5                    8043 	push	de
-      002334 21 0B 10              8044 	ld	hl, #0x100b
-      002337 E5                    8045 	push	hl
-      002338 CDr00r00              8046 	call	_set_sprite_data
-      00233B E8 04                 8047 	add	sp, #4
-                                   8048 ;geometry_boy.c:790: for (uint8_t i = 0; i < 16; i++)
-      00233D F8 08                 8049 	ldhl	sp,	#8
-      00233F 36 00                 8050 	ld	(hl), #0x00
-      002341                       8051 00156$:
-      002341 F8 08                 8052 	ldhl	sp,	#8
-      002343 7E                    8053 	ld	a, (hl)
-      002344 D6 10                 8054 	sub	a, #0x10
-      002346 30 52                 8055 	jr	NC, 00101$
-                                   8056 ;geometry_boy.c:792: set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
-      002348 7E                    8057 	ld	a, (hl)
-      002349 C6 0B                 8058 	add	a, #0x0b
-      00234B 4F                    8059 	ld	c, a
-                                   8060 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
-      00234C 6F                    8061 	ld	l, a
-      00234D 11r00r00              8062 	ld	de, #_shadow_OAM+0
-                                   8063 ;	spillPairReg hl
-                                   8064 ;	spillPairReg hl
-      002350 26 00                 8065 	ld	h, #0x00
+      002304 26 00                 8006 	ld	h, #0x00
+                                   8007 ;	spillPairReg hl
+                                   8008 ;	spillPairReg hl
+      002306 4D                    8009 	ld	c, l
+      002307 44                    8010 	ld	b, h
+      002308 CB 7C                 8011 	bit	7, h
+      00230A 28 05                 8012 	jr	Z, 00163$
+      00230C 4D                    8013 	ld	c, l
+      00230D 44                    8014 	ld	b, h
+      00230E 03                    8015 	inc	bc
+      00230F 03                    8016 	inc	bc
+      002310 03                    8017 	inc	bc
+      002311                       8018 00163$:
+      002311 CB 28                 8019 	sra	b
+      002313 CB 19                 8020 	rr	c
+      002315 CB 28                 8021 	sra	b
+      002317 CB 19                 8022 	rr	c
+      002319 79                    8023 	ld	a, c
+      00231A CB 37                 8024 	swap	a
+      00231C 07                    8025 	rlca
+      00231D E6 E0                 8026 	and	a, #0xe0
+      00231F C6 24                 8027 	add	a, #0x24
+      002321 47                    8028 	ld	b, a
+                                   8029 ;geometry_boy.c:783: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+      002322 7D                    8030 	ld	a, l
+      002323 E6 03                 8031 	and	a, #0x03
+      002325 CB 37                 8032 	swap	a
+      002327 07                    8033 	rlca
+      002328 E6 E0                 8034 	and	a, #0xe0
+      00232A C6 14                 8035 	add	a, #0x14
+      00232C 4F                    8036 	ld	c, a
+                                   8037 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      00232D 21r28r00              8038 	ld	hl, #(_shadow_OAM + 40)
+                                   8039 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      002330 78                    8040 	ld	a, b
+      002331 22                    8041 	ld	(hl+), a
+      002332 71                    8042 	ld	(hl), c
+                                   8043 ;geometry_boy.c:787: set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
+      002333 11rA6r00              8044 	ld	de, #_players
+      002336 D5                    8045 	push	de
+      002337 21 0B 10              8046 	ld	hl, #0x100b
+      00233A E5                    8047 	push	hl
+      00233B CDr00r00              8048 	call	_set_sprite_data
+      00233E E8 04                 8049 	add	sp, #4
+                                   8050 ;geometry_boy.c:791: for (uint8_t i = 0; i < 16; i++)
+      002340 F8 08                 8051 	ldhl	sp,	#8
+      002342 36 00                 8052 	ld	(hl), #0x00
+      002344                       8053 00156$:
+      002344 F8 08                 8054 	ldhl	sp,	#8
+      002346 7E                    8055 	ld	a, (hl)
+      002347 D6 10                 8056 	sub	a, #0x10
+      002349 30 52                 8057 	jr	NC, 00101$
+                                   8058 ;geometry_boy.c:793: set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
+      00234B 7E                    8059 	ld	a, (hl)
+      00234C C6 0B                 8060 	add	a, #0x0b
+      00234E 4F                    8061 	ld	c, a
+                                   8062 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
+      00234F 6F                    8063 	ld	l, a
+      002350 11r00r00              8064 	ld	de, #_shadow_OAM+0
+                                   8065 ;	spillPairReg hl
                                    8066 ;	spillPairReg hl
-                                   8067 ;	spillPairReg hl
-      002352 29                    8068 	add	hl, hl
-      002353 29                    8069 	add	hl, hl
-      002354 19                    8070 	add	hl, de
-      002355 23                    8071 	inc	hl
-      002356 23                    8072 	inc	hl
-      002357 71                    8073 	ld	(hl), c
-                                   8074 ;geometry_boy.c:795: ((i / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      002358 F8 08                 8075 	ldhl	sp,	#8
-      00235A 4E                    8076 	ld	c, (hl)
-      00235B 06 00                 8077 	ld	b, #0x00
-      00235D 69                    8078 	ld	l, c
-                                   8079 ;	spillPairReg hl
-                                   8080 ;	spillPairReg hl
-      00235E 60                    8081 	ld	h, b
+      002353 26 00                 8067 	ld	h, #0x00
+                                   8068 ;	spillPairReg hl
+                                   8069 ;	spillPairReg hl
+      002355 29                    8070 	add	hl, hl
+      002356 29                    8071 	add	hl, hl
+      002357 19                    8072 	add	hl, de
+      002358 23                    8073 	inc	hl
+      002359 23                    8074 	inc	hl
+      00235A 71                    8075 	ld	(hl), c
+                                   8076 ;geometry_boy.c:796: ((i / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00235B F8 08                 8077 	ldhl	sp,	#8
+      00235D 4E                    8078 	ld	c, (hl)
+      00235E 06 00                 8079 	ld	b, #0x00
+      002360 69                    8080 	ld	l, c
+                                   8081 ;	spillPairReg hl
                                    8082 ;	spillPairReg hl
-                                   8083 ;	spillPairReg hl
-      00235F CB 78                 8084 	bit	7, b
-      002361 28 05                 8085 	jr	Z, 00164$
-      002363 69                    8086 	ld	l, c
-                                   8087 ;	spillPairReg hl
-                                   8088 ;	spillPairReg hl
-      002364 60                    8089 	ld	h, b
+      002361 60                    8083 	ld	h, b
+                                   8084 ;	spillPairReg hl
+                                   8085 ;	spillPairReg hl
+      002362 CB 78                 8086 	bit	7, b
+      002364 28 05                 8087 	jr	Z, 00164$
+      002366 69                    8088 	ld	l, c
+                                   8089 ;	spillPairReg hl
                                    8090 ;	spillPairReg hl
-                                   8091 ;	spillPairReg hl
-      002365 23                    8092 	inc	hl
-      002366 23                    8093 	inc	hl
-      002367 23                    8094 	inc	hl
-      002368                       8095 00164$:
-      002368 CB 2C                 8096 	sra	h
-      00236A CB 1D                 8097 	rr	l
-      00236C CB 2C                 8098 	sra	h
-      00236E CB 1D                 8099 	rr	l
-      002370 7D                    8100 	ld	a, l
-      002371 CB 37                 8101 	swap	a
-      002373 07                    8102 	rlca
-      002374 E6 E0                 8103 	and	a, #0xe0
-      002376 C6 24                 8104 	add	a, #0x24
-      002378 57                    8105 	ld	d, a
-                                   8106 ;geometry_boy.c:794: ((i % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-      002379 79                    8107 	ld	a, c
-      00237A E6 03                 8108 	and	a, #0x03
-      00237C CB 37                 8109 	swap	a
-      00237E 07                    8110 	rlca
-      00237F E6 E0                 8111 	and	a, #0xe0
-      002381 C6 24                 8112 	add	a, #0x24
-      002383 5F                    8113 	ld	e, a
-                                   8114 ;geometry_boy.c:793: move_sprite(PLAYER_SPRITES_OAM + i,
-      002384 F8 08                 8115 	ldhl	sp,	#8
-      002386 7E                    8116 	ld	a, (hl)
-      002387 C6 0B                 8117 	add	a, #0x0b
-                                   8118 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      002389 6F                    8119 	ld	l, a
-                                   8120 ;	spillPairReg hl
-                                   8121 ;	spillPairReg hl
-      00238A 26 00                 8122 	ld	h, #0x00
+      002367 60                    8091 	ld	h, b
+                                   8092 ;	spillPairReg hl
+                                   8093 ;	spillPairReg hl
+      002368 23                    8094 	inc	hl
+      002369 23                    8095 	inc	hl
+      00236A 23                    8096 	inc	hl
+      00236B                       8097 00164$:
+      00236B CB 2C                 8098 	sra	h
+      00236D CB 1D                 8099 	rr	l
+      00236F CB 2C                 8100 	sra	h
+      002371 CB 1D                 8101 	rr	l
+      002373 7D                    8102 	ld	a, l
+      002374 CB 37                 8103 	swap	a
+      002376 07                    8104 	rlca
+      002377 E6 E0                 8105 	and	a, #0xe0
+      002379 C6 24                 8106 	add	a, #0x24
+      00237B 57                    8107 	ld	d, a
+                                   8108 ;geometry_boy.c:795: ((i % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+      00237C 79                    8109 	ld	a, c
+      00237D E6 03                 8110 	and	a, #0x03
+      00237F CB 37                 8111 	swap	a
+      002381 07                    8112 	rlca
+      002382 E6 E0                 8113 	and	a, #0xe0
+      002384 C6 24                 8114 	add	a, #0x24
+      002386 5F                    8115 	ld	e, a
+                                   8116 ;geometry_boy.c:794: move_sprite(PLAYER_SPRITES_OAM + i,
+      002387 F8 08                 8117 	ldhl	sp,	#8
+      002389 7E                    8118 	ld	a, (hl)
+      00238A C6 0B                 8119 	add	a, #0x0b
+                                   8120 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      00238C 6F                    8121 	ld	l, a
+                                   8122 ;	spillPairReg hl
                                    8123 ;	spillPairReg hl
-                                   8124 ;	spillPairReg hl
-      00238C 29                    8125 	add	hl, hl
-      00238D 29                    8126 	add	hl, hl
-      00238E 01r00r00              8127 	ld	bc, #_shadow_OAM
-      002391 09                    8128 	add	hl, bc
-                                   8129 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      002392 7A                    8130 	ld	a, d
-      002393 22                    8131 	ld	(hl+), a
-      002394 73                    8132 	ld	(hl), e
-                                   8133 ;geometry_boy.c:790: for (uint8_t i = 0; i < 16; i++)
-      002395 F8 08                 8134 	ldhl	sp,	#8
-      002397 34                    8135 	inc	(hl)
-      002398 18 A7                 8136 	jr	00156$
-      00239A                       8137 00101$:
-                                   8138 ;geometry_boy.c:798: SHOW_SPRITES;
-      00239A F0r00                 8139 	ldh	a, (_LCDC_REG + 0)
-      00239C F6 02                 8140 	or	a, #0x02
-      00239E E0r00                 8141 	ldh	(_LCDC_REG + 0), a
-                                   8142 ;geometry_boy.c:800: uint8_t is_up = 0;
-      0023A0 F8 00                 8143 	ldhl	sp,	#0
-      0023A2 36 00                 8144 	ld	(hl), #0x00
-                                   8145 ;geometry_boy.c:158: vbl_count = 0;
-      0023A4 21r06r00              8146 	ld	hl, #_vbl_count
-      0023A7 36 00                 8147 	ld	(hl), #0x00
-                                   8148 ;geometry_boy.c:159: background_x_shift = 0;
-      0023A9 AF                    8149 	xor	a, a
-      0023AA 21r0Br00              8150 	ld	hl, #_background_x_shift
-      0023AD 22                    8151 	ld	(hl+), a
-      0023AE 77                    8152 	ld	(hl), a
-                                   8153 ;geometry_boy.c:160: old_scroll_x = 0;
-      0023AF AF                    8154 	xor	a, a
-      0023B0 21r0Fr00              8155 	ld	hl, #_old_scroll_x
-      0023B3 22                    8156 	ld	(hl+), a
-      0023B4 77                    8157 	ld	(hl), a
-                                   8158 ;geometry_boy.c:161: old_background_x_shift = 8 + 3;
-      0023B5 21r0Dr00              8159 	ld	hl, #_old_background_x_shift
-      0023B8 3E 0B                 8160 	ld	a, #0x0b
-      0023BA 22                    8161 	ld	(hl+), a
-      0023BB AF                    8162 	xor	a, a
-      0023BC 77                    8163 	ld	(hl), a
-                                   8164 ;geometry_boy.c:162: player_y = PLAYER_START_Y;
-      0023BD 21r02r00              8165 	ld	hl, #_player_y
-      0023C0 36 90                 8166 	ld	(hl), #0x90
-                                   8167 ;geometry_boy.c:163: player_x = PLAYER_START_X;
-      0023C2 21r03r00              8168 	ld	hl, #_player_x
-      0023C5 36 20                 8169 	ld	(hl), #0x20
-                                   8170 ;geometry_boy.c:164: player_dx = 3;
-      0023C7 21r01r00              8171 	ld	hl, #_player_dx
-      0023CA 36 03                 8172 	ld	(hl), #0x03
-                                   8173 ;geometry_boy.c:165: on_ground = 1;
-      0023CC 21r05r00              8174 	ld	hl, #_on_ground
-      0023CF 36 01                 8175 	ld	(hl), #0x01
-                                   8176 ;geometry_boy.c:166: lose = 0;
-      0023D1 21r07r00              8177 	ld	hl, #_lose
-      0023D4 36 00                 8178 	ld	(hl), #0x00
-                                   8179 ;geometry_boy.c:167: win = 0;
-      0023D6 21r06r00              8180 	ld	hl, #_win
-      0023D9 36 00                 8181 	ld	(hl), #0x00
-                                   8182 ;geometry_boy.c:168: tick = 0;
-      0023DB 21r0Ar00              8183 	ld	hl, #_tick
-      0023DE 36 00                 8184 	ld	(hl), #0x00
-                                   8185 ;geometry_boy.c:169: parallax_tile_ind = 0;
-      0023E0 21r11r00              8186 	ld	hl, #_parallax_tile_ind
-      0023E3 36 00                 8187 	ld	(hl), #0x00
-                                   8188 ;geometry_boy.c:172: prev_jpad = 0;
-      0023E5 21r08r00              8189 	ld	hl, #_prev_jpad
-      0023E8 36 00                 8190 	ld	(hl), #0x00
-                                   8191 ;geometry_boy.c:173: jpad = 0;
-      0023EA 21r09r00              8192 	ld	hl, #_jpad
-      0023ED 36 00                 8193 	ld	(hl), #0x00
-                                   8194 ;geometry_boy.c:174: SCX_REG = 0;
-      0023EF AF                    8195 	xor	a, a
-      0023F0 E0r00                 8196 	ldh	(_SCX_REG + 0), a
-                                   8197 ;geometry_boy.c:804: while (1)
-      0023F2                       8198 00125$:
-                                   8199 ;geometry_boy.c:806: if (vbl_count == 0){
-      0023F2 FAr06r00              8200 	ld	a, (#_vbl_count)
-      0023F5 B7                    8201 	or	a, a
-      0023F6 20 03                 8202 	jr	NZ, 00103$
-                                   8203 ;geometry_boy.c:807: wait_vbl_done();
-      0023F8 CDr00r00              8204 	call	_wait_vbl_done
-      0023FB                       8205 00103$:
-                                   8206 ;geometry_boy.c:809: vbl_count = 0;
-      0023FB 21r06r00              8207 	ld	hl, #_vbl_count
-      0023FE 36 00                 8208 	ld	(hl), #0x00
-                                   8209 ;geometry_boy.c:811: prev_jpad = jpad;
-      002400 FAr09r00              8210 	ld	a, (#_jpad)
-      002403 EAr08r00              8211 	ld	(#_prev_jpad),a
-                                   8212 ;geometry_boy.c:812: jpad = joypad();
-      002406 CDr00r00              8213 	call	_joypad
-      002409 21r09r00              8214 	ld	hl, #_jpad
-      00240C 73                    8215 	ld	(hl), e
-                                   8216 ;geometry_boy.c:814: if (debounce_input(J_UP, jpad, prev_jpad))
-      00240D FAr08r00              8217 	ld	a, (#_prev_jpad)
-      002410 F8 01                 8218 	ldhl	sp,	#1
-      002412 77                    8219 	ld	(hl), a
-                                   8220 ;geometry_boy.c:811: prev_jpad = jpad;
-      002413 FAr09r00              8221 	ld	a, (#_jpad)
-      002416 F8 02                 8222 	ldhl	sp,	#2
-                                   8223 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
-      002418 32                    8224 	ld	(hl-), a
-      002419 7E                    8225 	ld	a, (hl)
-      00241A D6 04                 8226 	sub	a, #0x04
-      00241C 20 07                 8227 	jr	NZ, 00165$
-      00241E F8 02                 8228 	ldhl	sp,	#2
-      002420 7E                    8229 	ld	a, (hl)
-      002421 D6 04                 8230 	sub	a, #0x04
-      002423 20 04                 8231 	jr	NZ, 00166$
-      002425                       8232 00165$:
-      002425 0E 00                 8233 	ld	c, #0x00
-      002427 18 02                 8234 	jr	00167$
-      002429                       8235 00166$:
-      002429 0E 01                 8236 	ld	c, #0x01
-      00242B                       8237 00167$:
-                                   8238 ;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00242B FAr04r00              8239 	ld	a, (#_player_sprite_num)
-      00242E F8 03                 8240 	ldhl	sp,	#3
-      002430 22                    8241 	ld	(hl+), a
-      002431 36 00                 8242 	ld	(hl), #0x00
-                                   8243 ;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      002433 21r04r00              8244 	ld	hl, #_player_sprite_num
-      002436 46                    8245 	ld	b, (hl)
-                                   8246 ;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      002437 F8 04                 8247 	ldhl	sp,	#4
-      002439 2A                    8248 	ld	a, (hl+)
-      00243A 07                    8249 	rlca
-      00243B E6 01                 8250 	and	a,#0x01
-      00243D 32                    8251 	ld	(hl-), a
-      00243E 2B                    8252 	dec	hl
-      00243F 2A                    8253 	ld	a, (hl+)
-      002440 5F                    8254 	ld	e, a
-      002441 56                    8255 	ld	d, (hl)
-      002442 21 03 00              8256 	ld	hl, #0x0003
-      002445 19                    8257 	add	hl, de
-      002446 E5                    8258 	push	hl
-      002447 7D                    8259 	ld	a, l
-      002448 F8 08                 8260 	ldhl	sp,	#8
-      00244A 77                    8261 	ld	(hl), a
-      00244B E1                    8262 	pop	hl
-      00244C 7C                    8263 	ld	a, h
-      00244D F8 07                 8264 	ldhl	sp,	#7
-      00244F 77                    8265 	ld	(hl), a
-                                   8266 ;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-      002450 F8 03                 8267 	ldhl	sp,	#3
-      002452 7E                    8268 	ld	a, (hl)
-      002453 E6 03                 8269 	and	a, #0x03
-      002455 5F                    8270 	ld	e, a
-      002456 16 00                 8271 	ld	d, #0x00
-                                   8272 ;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      002458 78                    8273 	ld	a, b
-      002459 C6 0B                 8274 	add	a, #0x0b
-      00245B F8 08                 8275 	ldhl	sp,	#8
-      00245D 77                    8276 	ld	(hl), a
-                                   8277 ;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-      00245E 7B                    8278 	ld	a, e
-      00245F CB 37                 8279 	swap	a
-      002461 07                    8280 	rlca
-      002462 E6 E0                 8281 	and	a, #0xe0
-      002464 C6 24                 8282 	add	a, #0x24
-      002466 5F                    8283 	ld	e, a
-                                   8284 ;geometry_boy.c:814: if (debounce_input(J_UP, jpad, prev_jpad))
-      002467 79                    8285 	ld	a, c
-      002468 B7                    8286 	or	a, a
-      002469 28 6B                 8287 	jr	Z, 00117$
-                                   8288 ;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00246B F8 03                 8289 	ldhl	sp,	#3
-      00246D 2A                    8290 	ld	a, (hl+)
-      00246E 4F                    8291 	ld	c, a
-      00246F 2A                    8292 	ld	a, (hl+)
-      002470 47                    8293 	ld	b, a
-      002471 7E                    8294 	ld	a, (hl)
-      002472 B7                    8295 	or	a, a
-      002473 28 04                 8296 	jr	Z, 00168$
-      002475 23                    8297 	inc	hl
-      002476 2A                    8298 	ld	a, (hl+)
-      002477 4F                    8299 	ld	c, a
-      002478 46                    8300 	ld	b, (hl)
-      002479                       8301 00168$:
-      002479 CB 28                 8302 	sra	b
-      00247B CB 19                 8303 	rr	c
-      00247D CB 28                 8304 	sra	b
-      00247F CB 19                 8305 	rr	c
-      002481 79                    8306 	ld	a, c
-      002482 CB 37                 8307 	swap	a
-      002484 07                    8308 	rlca
-      002485 E6 E0                 8309 	and	a, #0xe0
-      002487 C6 24                 8310 	add	a, #0x24
-      002489 57                    8311 	ld	d, a
-                                   8312 ;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                                   8313 ;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      00248A F8 08                 8314 	ldhl	sp,	#8
-                                   8315 ;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-                                   8316 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      00248C 6E                    8317 	ld	l, (hl)
-                                   8318 ;	spillPairReg hl
-                                   8319 ;	spillPairReg hl
-      00248D 26 00                 8320 	ld	h, #0x00
+      00238D 26 00                 8124 	ld	h, #0x00
+                                   8125 ;	spillPairReg hl
+                                   8126 ;	spillPairReg hl
+      00238F 29                    8127 	add	hl, hl
+      002390 29                    8128 	add	hl, hl
+      002391 01r00r00              8129 	ld	bc, #_shadow_OAM
+      002394 09                    8130 	add	hl, bc
+                                   8131 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      002395 7A                    8132 	ld	a, d
+      002396 22                    8133 	ld	(hl+), a
+      002397 73                    8134 	ld	(hl), e
+                                   8135 ;geometry_boy.c:791: for (uint8_t i = 0; i < 16; i++)
+      002398 F8 08                 8136 	ldhl	sp,	#8
+      00239A 34                    8137 	inc	(hl)
+      00239B 18 A7                 8138 	jr	00156$
+      00239D                       8139 00101$:
+                                   8140 ;geometry_boy.c:799: SHOW_SPRITES;
+      00239D F0r00                 8141 	ldh	a, (_LCDC_REG + 0)
+      00239F F6 02                 8142 	or	a, #0x02
+      0023A1 E0r00                 8143 	ldh	(_LCDC_REG + 0), a
+                                   8144 ;geometry_boy.c:801: uint8_t is_up = 0;
+      0023A3 F8 00                 8145 	ldhl	sp,	#0
+      0023A5 36 00                 8146 	ld	(hl), #0x00
+                                   8147 ;geometry_boy.c:158: vbl_count = 0;
+      0023A7 21r06r00              8148 	ld	hl, #_vbl_count
+      0023AA 36 00                 8149 	ld	(hl), #0x00
+                                   8150 ;geometry_boy.c:159: background_x_shift = 0;
+      0023AC AF                    8151 	xor	a, a
+      0023AD 21r0Br00              8152 	ld	hl, #_background_x_shift
+      0023B0 22                    8153 	ld	(hl+), a
+      0023B1 77                    8154 	ld	(hl), a
+                                   8155 ;geometry_boy.c:160: old_scroll_x = 0;
+      0023B2 AF                    8156 	xor	a, a
+      0023B3 21r0Fr00              8157 	ld	hl, #_old_scroll_x
+      0023B6 22                    8158 	ld	(hl+), a
+      0023B7 77                    8159 	ld	(hl), a
+                                   8160 ;geometry_boy.c:161: old_background_x_shift = 8 + 3;
+      0023B8 21r0Dr00              8161 	ld	hl, #_old_background_x_shift
+      0023BB 3E 0B                 8162 	ld	a, #0x0b
+      0023BD 22                    8163 	ld	(hl+), a
+      0023BE AF                    8164 	xor	a, a
+      0023BF 77                    8165 	ld	(hl), a
+                                   8166 ;geometry_boy.c:162: player_y = PLAYER_START_Y;
+      0023C0 21r02r00              8167 	ld	hl, #_player_y
+      0023C3 36 90                 8168 	ld	(hl), #0x90
+                                   8169 ;geometry_boy.c:163: player_x = PLAYER_START_X;
+      0023C5 21r03r00              8170 	ld	hl, #_player_x
+      0023C8 36 20                 8171 	ld	(hl), #0x20
+                                   8172 ;geometry_boy.c:164: player_dx = 3;
+      0023CA 21r01r00              8173 	ld	hl, #_player_dx
+      0023CD 36 03                 8174 	ld	(hl), #0x03
+                                   8175 ;geometry_boy.c:165: on_ground = 1;
+      0023CF 21r05r00              8176 	ld	hl, #_on_ground
+      0023D2 36 01                 8177 	ld	(hl), #0x01
+                                   8178 ;geometry_boy.c:166: lose = 0;
+      0023D4 21r07r00              8179 	ld	hl, #_lose
+      0023D7 36 00                 8180 	ld	(hl), #0x00
+                                   8181 ;geometry_boy.c:167: win = 0;
+      0023D9 21r06r00              8182 	ld	hl, #_win
+      0023DC 36 00                 8183 	ld	(hl), #0x00
+                                   8184 ;geometry_boy.c:168: tick = 0;
+      0023DE 21r0Ar00              8185 	ld	hl, #_tick
+      0023E1 36 00                 8186 	ld	(hl), #0x00
+                                   8187 ;geometry_boy.c:169: parallax_tile_ind = 0;
+      0023E3 21r11r00              8188 	ld	hl, #_parallax_tile_ind
+      0023E6 36 00                 8189 	ld	(hl), #0x00
+                                   8190 ;geometry_boy.c:172: prev_jpad = 0;
+      0023E8 21r08r00              8191 	ld	hl, #_prev_jpad
+      0023EB 36 00                 8192 	ld	(hl), #0x00
+                                   8193 ;geometry_boy.c:173: jpad = 0;
+      0023ED 21r09r00              8194 	ld	hl, #_jpad
+      0023F0 36 00                 8195 	ld	(hl), #0x00
+                                   8196 ;geometry_boy.c:174: SCX_REG = 0;
+      0023F2 AF                    8197 	xor	a, a
+      0023F3 E0r00                 8198 	ldh	(_SCX_REG + 0), a
+                                   8199 ;geometry_boy.c:805: while (1)
+      0023F5                       8200 00125$:
+                                   8201 ;geometry_boy.c:807: if (vbl_count == 0){
+      0023F5 FAr06r00              8202 	ld	a, (#_vbl_count)
+      0023F8 B7                    8203 	or	a, a
+      0023F9 20 03                 8204 	jr	NZ, 00103$
+                                   8205 ;geometry_boy.c:808: wait_vbl_done();
+      0023FB CDr00r00              8206 	call	_wait_vbl_done
+      0023FE                       8207 00103$:
+                                   8208 ;geometry_boy.c:810: vbl_count = 0;
+      0023FE 21r06r00              8209 	ld	hl, #_vbl_count
+      002401 36 00                 8210 	ld	(hl), #0x00
+                                   8211 ;geometry_boy.c:812: prev_jpad = jpad;
+      002403 FAr09r00              8212 	ld	a, (#_jpad)
+      002406 EAr08r00              8213 	ld	(#_prev_jpad),a
+                                   8214 ;geometry_boy.c:813: jpad = joypad();
+      002409 CDr00r00              8215 	call	_joypad
+      00240C 21r09r00              8216 	ld	hl, #_jpad
+      00240F 73                    8217 	ld	(hl), e
+                                   8218 ;geometry_boy.c:815: if (debounce_input(J_UP, jpad, prev_jpad))
+      002410 FAr08r00              8219 	ld	a, (#_prev_jpad)
+      002413 F8 01                 8220 	ldhl	sp,	#1
+      002415 77                    8221 	ld	(hl), a
+                                   8222 ;geometry_boy.c:812: prev_jpad = jpad;
+      002416 FAr09r00              8223 	ld	a, (#_jpad)
+      002419 F8 02                 8224 	ldhl	sp,	#2
+                                   8225 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
+      00241B 32                    8226 	ld	(hl-), a
+      00241C 7E                    8227 	ld	a, (hl)
+      00241D D6 04                 8228 	sub	a, #0x04
+      00241F 20 07                 8229 	jr	NZ, 00165$
+      002421 F8 02                 8230 	ldhl	sp,	#2
+      002423 7E                    8231 	ld	a, (hl)
+      002424 D6 04                 8232 	sub	a, #0x04
+      002426 20 04                 8233 	jr	NZ, 00166$
+      002428                       8234 00165$:
+      002428 0E 00                 8235 	ld	c, #0x00
+      00242A 18 02                 8236 	jr	00167$
+      00242C                       8237 00166$:
+      00242C 0E 01                 8238 	ld	c, #0x01
+      00242E                       8239 00167$:
+                                   8240 ;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00242E FAr04r00              8241 	ld	a, (#_player_sprite_num)
+      002431 F8 03                 8242 	ldhl	sp,	#3
+      002433 22                    8243 	ld	(hl+), a
+      002434 36 00                 8244 	ld	(hl), #0x00
+                                   8245 ;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      002436 21r04r00              8246 	ld	hl, #_player_sprite_num
+      002439 46                    8247 	ld	b, (hl)
+                                   8248 ;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00243A F8 04                 8249 	ldhl	sp,	#4
+      00243C 2A                    8250 	ld	a, (hl+)
+      00243D 07                    8251 	rlca
+      00243E E6 01                 8252 	and	a,#0x01
+      002440 32                    8253 	ld	(hl-), a
+      002441 2B                    8254 	dec	hl
+      002442 2A                    8255 	ld	a, (hl+)
+      002443 5F                    8256 	ld	e, a
+      002444 56                    8257 	ld	d, (hl)
+      002445 21 03 00              8258 	ld	hl, #0x0003
+      002448 19                    8259 	add	hl, de
+      002449 E5                    8260 	push	hl
+      00244A 7D                    8261 	ld	a, l
+      00244B F8 08                 8262 	ldhl	sp,	#8
+      00244D 77                    8263 	ld	(hl), a
+      00244E E1                    8264 	pop	hl
+      00244F 7C                    8265 	ld	a, h
+      002450 F8 07                 8266 	ldhl	sp,	#7
+      002452 77                    8267 	ld	(hl), a
+                                   8268 ;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+      002453 F8 03                 8269 	ldhl	sp,	#3
+      002455 7E                    8270 	ld	a, (hl)
+      002456 E6 03                 8271 	and	a, #0x03
+      002458 5F                    8272 	ld	e, a
+      002459 16 00                 8273 	ld	d, #0x00
+                                   8274 ;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      00245B 78                    8275 	ld	a, b
+      00245C C6 0B                 8276 	add	a, #0x0b
+      00245E F8 08                 8277 	ldhl	sp,	#8
+      002460 77                    8278 	ld	(hl), a
+                                   8279 ;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+      002461 7B                    8280 	ld	a, e
+      002462 CB 37                 8281 	swap	a
+      002464 07                    8282 	rlca
+      002465 E6 E0                 8283 	and	a, #0xe0
+      002467 C6 24                 8284 	add	a, #0x24
+      002469 5F                    8285 	ld	e, a
+                                   8286 ;geometry_boy.c:815: if (debounce_input(J_UP, jpad, prev_jpad))
+      00246A 79                    8287 	ld	a, c
+      00246B B7                    8288 	or	a, a
+      00246C 28 6B                 8289 	jr	Z, 00117$
+                                   8290 ;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00246E F8 03                 8291 	ldhl	sp,	#3
+      002470 2A                    8292 	ld	a, (hl+)
+      002471 4F                    8293 	ld	c, a
+      002472 2A                    8294 	ld	a, (hl+)
+      002473 47                    8295 	ld	b, a
+      002474 7E                    8296 	ld	a, (hl)
+      002475 B7                    8297 	or	a, a
+      002476 28 04                 8298 	jr	Z, 00168$
+      002478 23                    8299 	inc	hl
+      002479 2A                    8300 	ld	a, (hl+)
+      00247A 4F                    8301 	ld	c, a
+      00247B 46                    8302 	ld	b, (hl)
+      00247C                       8303 00168$:
+      00247C CB 28                 8304 	sra	b
+      00247E CB 19                 8305 	rr	c
+      002480 CB 28                 8306 	sra	b
+      002482 CB 19                 8307 	rr	c
+      002484 79                    8308 	ld	a, c
+      002485 CB 37                 8309 	swap	a
+      002487 07                    8310 	rlca
+      002488 E6 E0                 8311 	and	a, #0xe0
+      00248A C6 24                 8312 	add	a, #0x24
+      00248C 57                    8313 	ld	d, a
+                                   8314 ;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+                                   8315 ;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      00248D F8 08                 8316 	ldhl	sp,	#8
+                                   8317 ;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+                                   8318 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      00248F 6E                    8319 	ld	l, (hl)
+                                   8320 ;	spillPairReg hl
                                    8321 ;	spillPairReg hl
-                                   8322 ;	spillPairReg hl
-      00248F 29                    8323 	add	hl, hl
-      002490 29                    8324 	add	hl, hl
-      002491 01r00r00              8325 	ld	bc, #_shadow_OAM
-      002494 09                    8326 	add	hl, bc
-                                   8327 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      002495 7A                    8328 	ld	a, d
-      002496 22                    8329 	ld	(hl+), a
-      002497 73                    8330 	ld	(hl), e
-                                   8331 ;geometry_boy.c:820: player_sprite_num += 12;
-      002498 21r04r00              8332 	ld	hl, #_player_sprite_num
-      00249B 7E                    8333 	ld	a, (hl)
-      00249C C6 0C                 8334 	add	a, #0x0c
-      00249E 77                    8335 	ld	(hl), a
-                                   8336 ;geometry_boy.c:821: player_sprite_num %= 16;
-      00249F 7E                    8337 	ld	a, (hl)
-      0024A0 E6 0F                 8338 	and	a, #0x0f
-      0024A2 77                    8339 	ld	(hl), a
-                                   8340 ;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0024A3 4E                    8341 	ld	c, (hl)
-      0024A4 06 00                 8342 	ld	b, #0x00
-                                   8343 ;geometry_boy.c:825: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0024A6 69                    8344 	ld	l, c
-                                   8345 ;	spillPairReg hl
-                                   8346 ;	spillPairReg hl
-      0024A7 60                    8347 	ld	h, b
+      002490 26 00                 8322 	ld	h, #0x00
+                                   8323 ;	spillPairReg hl
+                                   8324 ;	spillPairReg hl
+      002492 29                    8325 	add	hl, hl
+      002493 29                    8326 	add	hl, hl
+      002494 01r00r00              8327 	ld	bc, #_shadow_OAM
+      002497 09                    8328 	add	hl, bc
+                                   8329 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      002498 7A                    8330 	ld	a, d
+      002499 22                    8331 	ld	(hl+), a
+      00249A 73                    8332 	ld	(hl), e
+                                   8333 ;geometry_boy.c:821: player_sprite_num += 12;
+      00249B 21r04r00              8334 	ld	hl, #_player_sprite_num
+      00249E 7E                    8335 	ld	a, (hl)
+      00249F C6 0C                 8336 	add	a, #0x0c
+      0024A1 77                    8337 	ld	(hl), a
+                                   8338 ;geometry_boy.c:822: player_sprite_num %= 16;
+      0024A2 7E                    8339 	ld	a, (hl)
+      0024A3 E6 0F                 8340 	and	a, #0x0f
+      0024A5 77                    8341 	ld	(hl), a
+                                   8342 ;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0024A6 4E                    8343 	ld	c, (hl)
+      0024A7 06 00                 8344 	ld	b, #0x00
+                                   8345 ;geometry_boy.c:826: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0024A9 69                    8346 	ld	l, c
+                                   8347 ;	spillPairReg hl
                                    8348 ;	spillPairReg hl
-                                   8349 ;	spillPairReg hl
-      0024A8 CB 78                 8350 	bit	7, b
-      0024AA 28 05                 8351 	jr	Z, 00169$
-      0024AC 69                    8352 	ld	l, c
-                                   8353 ;	spillPairReg hl
-                                   8354 ;	spillPairReg hl
-      0024AD 60                    8355 	ld	h, b
+      0024AA 60                    8349 	ld	h, b
+                                   8350 ;	spillPairReg hl
+                                   8351 ;	spillPairReg hl
+      0024AB CB 78                 8352 	bit	7, b
+      0024AD 28 05                 8353 	jr	Z, 00169$
+      0024AF 69                    8354 	ld	l, c
+                                   8355 ;	spillPairReg hl
                                    8356 ;	spillPairReg hl
-                                   8357 ;	spillPairReg hl
-      0024AE 23                    8358 	inc	hl
-      0024AF 23                    8359 	inc	hl
-      0024B0 23                    8360 	inc	hl
-      0024B1                       8361 00169$:
-      0024B1 CB 2C                 8362 	sra	h
-      0024B3 CB 1D                 8363 	rr	l
-      0024B5 CB 2C                 8364 	sra	h
-      0024B7 CB 1D                 8365 	rr	l
-      0024B9 7D                    8366 	ld	a, l
-      0024BA CB 37                 8367 	swap	a
-      0024BC 07                    8368 	rlca
-      0024BD E6 E0                 8369 	and	a, #0xe0
-      0024BF C6 24                 8370 	add	a, #0x24
-      0024C1 5F                    8371 	ld	e, a
-                                   8372 ;geometry_boy.c:824: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-      0024C2 79                    8373 	ld	a, c
-      0024C3 E6 03                 8374 	and	a, #0x03
-      0024C5 CB 37                 8375 	swap	a
-      0024C7 07                    8376 	rlca
-      0024C8 E6 E0                 8377 	and	a, #0xe0
-      0024CA C6 14                 8378 	add	a, #0x14
-      0024CC 4F                    8379 	ld	c, a
-                                   8380 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      0024CD 21r28r00              8381 	ld	hl, #(_shadow_OAM + 40)
-                                   8382 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      0024D0 7B                    8383 	ld	a, e
-      0024D1 22                    8384 	ld	(hl+), a
-      0024D2 71                    8385 	ld	(hl), c
-                                   8386 ;geometry_boy.c:825: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0024D3 C3r93r26              8387 	jp	00118$
-      0024D6                       8388 00117$:
-                                   8389 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
-      0024D6 F8 01                 8390 	ldhl	sp,	#1
-      0024D8 7E                    8391 	ld	a, (hl)
-      0024D9 D6 08                 8392 	sub	a, #0x08
-      0024DB 20 07                 8393 	jr	NZ, 00170$
-      0024DD F8 02                 8394 	ldhl	sp,	#2
-      0024DF 7E                    8395 	ld	a, (hl)
-      0024E0 D6 08                 8396 	sub	a, #0x08
-      0024E2 20 03                 8397 	jr	NZ, 00171$
-      0024E4                       8398 00170$:
-      0024E4 AF                    8399 	xor	a, a
-      0024E5 18 02                 8400 	jr	00172$
-      0024E7                       8401 00171$:
-      0024E7 3E 01                 8402 	ld	a, #0x01
-      0024E9                       8403 00172$:
-                                   8404 ;geometry_boy.c:828: else if (debounce_input(J_DOWN, jpad, prev_jpad))
-      0024E9 B7                    8405 	or	a, a
-      0024EA 28 71                 8406 	jr	Z, 00114$
-                                   8407 ;geometry_boy.c:832: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0024EC F8 03                 8408 	ldhl	sp,	#3
-      0024EE 2A                    8409 	ld	a, (hl+)
-      0024EF 4F                    8410 	ld	c, a
-      0024F0 2A                    8411 	ld	a, (hl+)
-      0024F1 47                    8412 	ld	b, a
-      0024F2 7E                    8413 	ld	a, (hl)
-      0024F3 B7                    8414 	or	a, a
-      0024F4 28 04                 8415 	jr	Z, 00173$
-      0024F6 23                    8416 	inc	hl
-      0024F7 2A                    8417 	ld	a, (hl+)
-      0024F8 4F                    8418 	ld	c, a
-      0024F9 46                    8419 	ld	b, (hl)
-      0024FA                       8420 00173$:
-      0024FA CB 28                 8421 	sra	b
-      0024FC CB 19                 8422 	rr	c
-      0024FE CB 28                 8423 	sra	b
-      002500 CB 19                 8424 	rr	c
-      002502 79                    8425 	ld	a, c
-      002503 CB 37                 8426 	swap	a
-      002505 07                    8427 	rlca
-      002506 E6 E0                 8428 	and	a, #0xe0
-      002508 C6 24                 8429 	add	a, #0x24
-      00250A F8 07                 8430 	ldhl	sp,	#7
-                                   8431 ;geometry_boy.c:831: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                                   8432 ;geometry_boy.c:830: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      00250C 22                    8433 	ld	(hl+), a
-                                   8434 ;geometry_boy.c:832: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-                                   8435 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      00250D 6E                    8436 	ld	l, (hl)
-                                   8437 ;	spillPairReg hl
-                                   8438 ;	spillPairReg hl
-      00250E 26 00                 8439 	ld	h, #0x00
+      0024B0 60                    8357 	ld	h, b
+                                   8358 ;	spillPairReg hl
+                                   8359 ;	spillPairReg hl
+      0024B1 23                    8360 	inc	hl
+      0024B2 23                    8361 	inc	hl
+      0024B3 23                    8362 	inc	hl
+      0024B4                       8363 00169$:
+      0024B4 CB 2C                 8364 	sra	h
+      0024B6 CB 1D                 8365 	rr	l
+      0024B8 CB 2C                 8366 	sra	h
+      0024BA CB 1D                 8367 	rr	l
+      0024BC 7D                    8368 	ld	a, l
+      0024BD CB 37                 8369 	swap	a
+      0024BF 07                    8370 	rlca
+      0024C0 E6 E0                 8371 	and	a, #0xe0
+      0024C2 C6 24                 8372 	add	a, #0x24
+      0024C4 5F                    8373 	ld	e, a
+                                   8374 ;geometry_boy.c:825: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+      0024C5 79                    8375 	ld	a, c
+      0024C6 E6 03                 8376 	and	a, #0x03
+      0024C8 CB 37                 8377 	swap	a
+      0024CA 07                    8378 	rlca
+      0024CB E6 E0                 8379 	and	a, #0xe0
+      0024CD C6 14                 8380 	add	a, #0x14
+      0024CF 4F                    8381 	ld	c, a
+                                   8382 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      0024D0 21r28r00              8383 	ld	hl, #(_shadow_OAM + 40)
+                                   8384 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      0024D3 7B                    8385 	ld	a, e
+      0024D4 22                    8386 	ld	(hl+), a
+      0024D5 71                    8387 	ld	(hl), c
+                                   8388 ;geometry_boy.c:826: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0024D6 C3r96r26              8389 	jp	00118$
+      0024D9                       8390 00117$:
+                                   8391 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
+      0024D9 F8 01                 8392 	ldhl	sp,	#1
+      0024DB 7E                    8393 	ld	a, (hl)
+      0024DC D6 08                 8394 	sub	a, #0x08
+      0024DE 20 07                 8395 	jr	NZ, 00170$
+      0024E0 F8 02                 8396 	ldhl	sp,	#2
+      0024E2 7E                    8397 	ld	a, (hl)
+      0024E3 D6 08                 8398 	sub	a, #0x08
+      0024E5 20 03                 8399 	jr	NZ, 00171$
+      0024E7                       8400 00170$:
+      0024E7 AF                    8401 	xor	a, a
+      0024E8 18 02                 8402 	jr	00172$
+      0024EA                       8403 00171$:
+      0024EA 3E 01                 8404 	ld	a, #0x01
+      0024EC                       8405 00172$:
+                                   8406 ;geometry_boy.c:829: else if (debounce_input(J_DOWN, jpad, prev_jpad))
+      0024EC B7                    8407 	or	a, a
+      0024ED 28 71                 8408 	jr	Z, 00114$
+                                   8409 ;geometry_boy.c:833: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0024EF F8 03                 8410 	ldhl	sp,	#3
+      0024F1 2A                    8411 	ld	a, (hl+)
+      0024F2 4F                    8412 	ld	c, a
+      0024F3 2A                    8413 	ld	a, (hl+)
+      0024F4 47                    8414 	ld	b, a
+      0024F5 7E                    8415 	ld	a, (hl)
+      0024F6 B7                    8416 	or	a, a
+      0024F7 28 04                 8417 	jr	Z, 00173$
+      0024F9 23                    8418 	inc	hl
+      0024FA 2A                    8419 	ld	a, (hl+)
+      0024FB 4F                    8420 	ld	c, a
+      0024FC 46                    8421 	ld	b, (hl)
+      0024FD                       8422 00173$:
+      0024FD CB 28                 8423 	sra	b
+      0024FF CB 19                 8424 	rr	c
+      002501 CB 28                 8425 	sra	b
+      002503 CB 19                 8426 	rr	c
+      002505 79                    8427 	ld	a, c
+      002506 CB 37                 8428 	swap	a
+      002508 07                    8429 	rlca
+      002509 E6 E0                 8430 	and	a, #0xe0
+      00250B C6 24                 8431 	add	a, #0x24
+      00250D F8 07                 8432 	ldhl	sp,	#7
+                                   8433 ;geometry_boy.c:832: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+                                   8434 ;geometry_boy.c:831: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      00250F 22                    8435 	ld	(hl+), a
+                                   8436 ;geometry_boy.c:833: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+                                   8437 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      002510 6E                    8438 	ld	l, (hl)
+                                   8439 ;	spillPairReg hl
                                    8440 ;	spillPairReg hl
-                                   8441 ;	spillPairReg hl
-      002510 29                    8442 	add	hl, hl
-      002511 29                    8443 	add	hl, hl
-      002512 01r00r00              8444 	ld	bc, #_shadow_OAM
-      002515 09                    8445 	add	hl, bc
-      002516 4D                    8446 	ld	c, l
-      002517 44                    8447 	ld	b, h
-                                   8448 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      002518 F8 07                 8449 	ldhl	sp,	#7
-      00251A 7E                    8450 	ld	a, (hl)
-      00251B 02                    8451 	ld	(bc), a
-      00251C 03                    8452 	inc	bc
-      00251D 7B                    8453 	ld	a, e
-      00251E 02                    8454 	ld	(bc), a
-                                   8455 ;geometry_boy.c:834: player_sprite_num += 4;
-      00251F 21r04r00              8456 	ld	hl, #_player_sprite_num
-      002522 7E                    8457 	ld	a, (hl)
-      002523 C6 04                 8458 	add	a, #0x04
-      002525 77                    8459 	ld	(hl), a
-                                   8460 ;geometry_boy.c:835: player_sprite_num %= 16;
-      002526 7E                    8461 	ld	a, (hl)
-      002527 E6 0F                 8462 	and	a, #0x0f
-      002529 77                    8463 	ld	(hl), a
-                                   8464 ;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00252A 4E                    8465 	ld	c, (hl)
-      00252B 06 00                 8466 	ld	b, #0x00
-                                   8467 ;geometry_boy.c:839: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00252D 69                    8468 	ld	l, c
-                                   8469 ;	spillPairReg hl
-                                   8470 ;	spillPairReg hl
-      00252E 60                    8471 	ld	h, b
+      002511 26 00                 8441 	ld	h, #0x00
+                                   8442 ;	spillPairReg hl
+                                   8443 ;	spillPairReg hl
+      002513 29                    8444 	add	hl, hl
+      002514 29                    8445 	add	hl, hl
+      002515 01r00r00              8446 	ld	bc, #_shadow_OAM
+      002518 09                    8447 	add	hl, bc
+      002519 4D                    8448 	ld	c, l
+      00251A 44                    8449 	ld	b, h
+                                   8450 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      00251B F8 07                 8451 	ldhl	sp,	#7
+      00251D 7E                    8452 	ld	a, (hl)
+      00251E 02                    8453 	ld	(bc), a
+      00251F 03                    8454 	inc	bc
+      002520 7B                    8455 	ld	a, e
+      002521 02                    8456 	ld	(bc), a
+                                   8457 ;geometry_boy.c:835: player_sprite_num += 4;
+      002522 21r04r00              8458 	ld	hl, #_player_sprite_num
+      002525 7E                    8459 	ld	a, (hl)
+      002526 C6 04                 8460 	add	a, #0x04
+      002528 77                    8461 	ld	(hl), a
+                                   8462 ;geometry_boy.c:836: player_sprite_num %= 16;
+      002529 7E                    8463 	ld	a, (hl)
+      00252A E6 0F                 8464 	and	a, #0x0f
+      00252C 77                    8465 	ld	(hl), a
+                                   8466 ;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00252D 4E                    8467 	ld	c, (hl)
+      00252E 06 00                 8468 	ld	b, #0x00
+                                   8469 ;geometry_boy.c:840: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      002530 69                    8470 	ld	l, c
+                                   8471 ;	spillPairReg hl
                                    8472 ;	spillPairReg hl
-                                   8473 ;	spillPairReg hl
-      00252F CB 78                 8474 	bit	7, b
-      002531 28 05                 8475 	jr	Z, 00174$
-      002533 69                    8476 	ld	l, c
-                                   8477 ;	spillPairReg hl
-                                   8478 ;	spillPairReg hl
-      002534 60                    8479 	ld	h, b
+      002531 60                    8473 	ld	h, b
+                                   8474 ;	spillPairReg hl
+                                   8475 ;	spillPairReg hl
+      002532 CB 78                 8476 	bit	7, b
+      002534 28 05                 8477 	jr	Z, 00174$
+      002536 69                    8478 	ld	l, c
+                                   8479 ;	spillPairReg hl
                                    8480 ;	spillPairReg hl
-                                   8481 ;	spillPairReg hl
-      002535 23                    8482 	inc	hl
-      002536 23                    8483 	inc	hl
-      002537 23                    8484 	inc	hl
-      002538                       8485 00174$:
-      002538 CB 2C                 8486 	sra	h
-      00253A CB 1D                 8487 	rr	l
-      00253C CB 2C                 8488 	sra	h
-      00253E CB 1D                 8489 	rr	l
-      002540 7D                    8490 	ld	a, l
-      002541 CB 37                 8491 	swap	a
-      002543 07                    8492 	rlca
-      002544 E6 E0                 8493 	and	a, #0xe0
-      002546 C6 24                 8494 	add	a, #0x24
-      002548 5F                    8495 	ld	e, a
-                                   8496 ;geometry_boy.c:838: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-      002549 79                    8497 	ld	a, c
-      00254A E6 03                 8498 	and	a, #0x03
-      00254C CB 37                 8499 	swap	a
-      00254E 07                    8500 	rlca
-      00254F E6 E0                 8501 	and	a, #0xe0
-      002551 C6 14                 8502 	add	a, #0x14
-      002553 4F                    8503 	ld	c, a
-                                   8504 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      002554 21r28r00              8505 	ld	hl, #(_shadow_OAM + 40)
-                                   8506 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      002557 7B                    8507 	ld	a, e
-      002558 22                    8508 	ld	(hl+), a
-      002559 71                    8509 	ld	(hl), c
-                                   8510 ;geometry_boy.c:839: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00255A C3r93r26              8511 	jp	00118$
-      00255D                       8512 00114$:
-                                   8513 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
-      00255D F8 01                 8514 	ldhl	sp,	#1
-      00255F 7E                    8515 	ld	a, (hl)
-      002560 D6 02                 8516 	sub	a, #0x02
-      002562 20 07                 8517 	jr	NZ, 00175$
-      002564 F8 02                 8518 	ldhl	sp,	#2
-      002566 7E                    8519 	ld	a, (hl)
-      002567 D6 02                 8520 	sub	a, #0x02
-      002569 20 03                 8521 	jr	NZ, 00176$
-      00256B                       8522 00175$:
-      00256B AF                    8523 	xor	a, a
-      00256C 18 02                 8524 	jr	00177$
-      00256E                       8525 00176$:
-      00256E 3E 01                 8526 	ld	a, #0x01
-      002570                       8527 00177$:
-                                   8528 ;geometry_boy.c:842: else if (debounce_input(J_LEFT, jpad, prev_jpad))
-      002570 B7                    8529 	or	a, a
-      002571 28 6B                 8530 	jr	Z, 00111$
-                                   8531 ;geometry_boy.c:846: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      002573 F8 03                 8532 	ldhl	sp,	#3
-      002575 2A                    8533 	ld	a, (hl+)
-      002576 4F                    8534 	ld	c, a
-      002577 2A                    8535 	ld	a, (hl+)
-      002578 47                    8536 	ld	b, a
-      002579 7E                    8537 	ld	a, (hl)
-      00257A B7                    8538 	or	a, a
-      00257B 28 04                 8539 	jr	Z, 00178$
-      00257D 23                    8540 	inc	hl
-      00257E 2A                    8541 	ld	a, (hl+)
-      00257F 4F                    8542 	ld	c, a
-      002580 46                    8543 	ld	b, (hl)
-      002581                       8544 00178$:
-      002581 CB 28                 8545 	sra	b
-      002583 CB 19                 8546 	rr	c
-      002585 CB 28                 8547 	sra	b
-      002587 CB 19                 8548 	rr	c
-      002589 79                    8549 	ld	a, c
-      00258A CB 37                 8550 	swap	a
-      00258C 07                    8551 	rlca
-      00258D E6 E0                 8552 	and	a, #0xe0
-      00258F C6 24                 8553 	add	a, #0x24
-      002591 57                    8554 	ld	d, a
-                                   8555 ;geometry_boy.c:845: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                                   8556 ;geometry_boy.c:844: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      002592 F8 08                 8557 	ldhl	sp,	#8
-                                   8558 ;geometry_boy.c:846: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-                                   8559 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      002594 6E                    8560 	ld	l, (hl)
-                                   8561 ;	spillPairReg hl
-                                   8562 ;	spillPairReg hl
-      002595 26 00                 8563 	ld	h, #0x00
+      002537 60                    8481 	ld	h, b
+                                   8482 ;	spillPairReg hl
+                                   8483 ;	spillPairReg hl
+      002538 23                    8484 	inc	hl
+      002539 23                    8485 	inc	hl
+      00253A 23                    8486 	inc	hl
+      00253B                       8487 00174$:
+      00253B CB 2C                 8488 	sra	h
+      00253D CB 1D                 8489 	rr	l
+      00253F CB 2C                 8490 	sra	h
+      002541 CB 1D                 8491 	rr	l
+      002543 7D                    8492 	ld	a, l
+      002544 CB 37                 8493 	swap	a
+      002546 07                    8494 	rlca
+      002547 E6 E0                 8495 	and	a, #0xe0
+      002549 C6 24                 8496 	add	a, #0x24
+      00254B 5F                    8497 	ld	e, a
+                                   8498 ;geometry_boy.c:839: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+      00254C 79                    8499 	ld	a, c
+      00254D E6 03                 8500 	and	a, #0x03
+      00254F CB 37                 8501 	swap	a
+      002551 07                    8502 	rlca
+      002552 E6 E0                 8503 	and	a, #0xe0
+      002554 C6 14                 8504 	add	a, #0x14
+      002556 4F                    8505 	ld	c, a
+                                   8506 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      002557 21r28r00              8507 	ld	hl, #(_shadow_OAM + 40)
+                                   8508 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      00255A 7B                    8509 	ld	a, e
+      00255B 22                    8510 	ld	(hl+), a
+      00255C 71                    8511 	ld	(hl), c
+                                   8512 ;geometry_boy.c:840: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00255D C3r96r26              8513 	jp	00118$
+      002560                       8514 00114$:
+                                   8515 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
+      002560 F8 01                 8516 	ldhl	sp,	#1
+      002562 7E                    8517 	ld	a, (hl)
+      002563 D6 02                 8518 	sub	a, #0x02
+      002565 20 07                 8519 	jr	NZ, 00175$
+      002567 F8 02                 8520 	ldhl	sp,	#2
+      002569 7E                    8521 	ld	a, (hl)
+      00256A D6 02                 8522 	sub	a, #0x02
+      00256C 20 03                 8523 	jr	NZ, 00176$
+      00256E                       8524 00175$:
+      00256E AF                    8525 	xor	a, a
+      00256F 18 02                 8526 	jr	00177$
+      002571                       8527 00176$:
+      002571 3E 01                 8528 	ld	a, #0x01
+      002573                       8529 00177$:
+                                   8530 ;geometry_boy.c:843: else if (debounce_input(J_LEFT, jpad, prev_jpad))
+      002573 B7                    8531 	or	a, a
+      002574 28 6B                 8532 	jr	Z, 00111$
+                                   8533 ;geometry_boy.c:847: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      002576 F8 03                 8534 	ldhl	sp,	#3
+      002578 2A                    8535 	ld	a, (hl+)
+      002579 4F                    8536 	ld	c, a
+      00257A 2A                    8537 	ld	a, (hl+)
+      00257B 47                    8538 	ld	b, a
+      00257C 7E                    8539 	ld	a, (hl)
+      00257D B7                    8540 	or	a, a
+      00257E 28 04                 8541 	jr	Z, 00178$
+      002580 23                    8542 	inc	hl
+      002581 2A                    8543 	ld	a, (hl+)
+      002582 4F                    8544 	ld	c, a
+      002583 46                    8545 	ld	b, (hl)
+      002584                       8546 00178$:
+      002584 CB 28                 8547 	sra	b
+      002586 CB 19                 8548 	rr	c
+      002588 CB 28                 8549 	sra	b
+      00258A CB 19                 8550 	rr	c
+      00258C 79                    8551 	ld	a, c
+      00258D CB 37                 8552 	swap	a
+      00258F 07                    8553 	rlca
+      002590 E6 E0                 8554 	and	a, #0xe0
+      002592 C6 24                 8555 	add	a, #0x24
+      002594 57                    8556 	ld	d, a
+                                   8557 ;geometry_boy.c:846: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+                                   8558 ;geometry_boy.c:845: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      002595 F8 08                 8559 	ldhl	sp,	#8
+                                   8560 ;geometry_boy.c:847: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+                                   8561 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      002597 6E                    8562 	ld	l, (hl)
+                                   8563 ;	spillPairReg hl
                                    8564 ;	spillPairReg hl
-                                   8565 ;	spillPairReg hl
-      002597 29                    8566 	add	hl, hl
-      002598 29                    8567 	add	hl, hl
-      002599 01r00r00              8568 	ld	bc, #_shadow_OAM
-      00259C 09                    8569 	add	hl, bc
-                                   8570 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      00259D 7A                    8571 	ld	a, d
-      00259E 22                    8572 	ld	(hl+), a
-      00259F 73                    8573 	ld	(hl), e
-                                   8574 ;geometry_boy.c:848: player_sprite_num += 15;
-      0025A0 21r04r00              8575 	ld	hl, #_player_sprite_num
-      0025A3 7E                    8576 	ld	a, (hl)
-      0025A4 C6 0F                 8577 	add	a, #0x0f
-      0025A6 77                    8578 	ld	(hl), a
-                                   8579 ;geometry_boy.c:849: player_sprite_num %= 16;
-      0025A7 7E                    8580 	ld	a, (hl)
-      0025A8 E6 0F                 8581 	and	a, #0x0f
-      0025AA 77                    8582 	ld	(hl), a
-                                   8583 ;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0025AB 4E                    8584 	ld	c, (hl)
-      0025AC 06 00                 8585 	ld	b, #0x00
-                                   8586 ;geometry_boy.c:853: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0025AE 69                    8587 	ld	l, c
-                                   8588 ;	spillPairReg hl
-                                   8589 ;	spillPairReg hl
-      0025AF 60                    8590 	ld	h, b
+      002598 26 00                 8565 	ld	h, #0x00
+                                   8566 ;	spillPairReg hl
+                                   8567 ;	spillPairReg hl
+      00259A 29                    8568 	add	hl, hl
+      00259B 29                    8569 	add	hl, hl
+      00259C 01r00r00              8570 	ld	bc, #_shadow_OAM
+      00259F 09                    8571 	add	hl, bc
+                                   8572 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      0025A0 7A                    8573 	ld	a, d
+      0025A1 22                    8574 	ld	(hl+), a
+      0025A2 73                    8575 	ld	(hl), e
+                                   8576 ;geometry_boy.c:849: player_sprite_num += 15;
+      0025A3 21r04r00              8577 	ld	hl, #_player_sprite_num
+      0025A6 7E                    8578 	ld	a, (hl)
+      0025A7 C6 0F                 8579 	add	a, #0x0f
+      0025A9 77                    8580 	ld	(hl), a
+                                   8581 ;geometry_boy.c:850: player_sprite_num %= 16;
+      0025AA 7E                    8582 	ld	a, (hl)
+      0025AB E6 0F                 8583 	and	a, #0x0f
+      0025AD 77                    8584 	ld	(hl), a
+                                   8585 ;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0025AE 4E                    8586 	ld	c, (hl)
+      0025AF 06 00                 8587 	ld	b, #0x00
+                                   8588 ;geometry_boy.c:854: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0025B1 69                    8589 	ld	l, c
+                                   8590 ;	spillPairReg hl
                                    8591 ;	spillPairReg hl
-                                   8592 ;	spillPairReg hl
-      0025B0 CB 78                 8593 	bit	7, b
-      0025B2 28 05                 8594 	jr	Z, 00179$
-      0025B4 69                    8595 	ld	l, c
-                                   8596 ;	spillPairReg hl
-                                   8597 ;	spillPairReg hl
-      0025B5 60                    8598 	ld	h, b
+      0025B2 60                    8592 	ld	h, b
+                                   8593 ;	spillPairReg hl
+                                   8594 ;	spillPairReg hl
+      0025B3 CB 78                 8595 	bit	7, b
+      0025B5 28 05                 8596 	jr	Z, 00179$
+      0025B7 69                    8597 	ld	l, c
+                                   8598 ;	spillPairReg hl
                                    8599 ;	spillPairReg hl
-                                   8600 ;	spillPairReg hl
-      0025B6 23                    8601 	inc	hl
-      0025B7 23                    8602 	inc	hl
-      0025B8 23                    8603 	inc	hl
-      0025B9                       8604 00179$:
-      0025B9 CB 2C                 8605 	sra	h
-      0025BB CB 1D                 8606 	rr	l
-      0025BD CB 2C                 8607 	sra	h
-      0025BF CB 1D                 8608 	rr	l
-      0025C1 7D                    8609 	ld	a, l
-      0025C2 CB 37                 8610 	swap	a
-      0025C4 07                    8611 	rlca
-      0025C5 E6 E0                 8612 	and	a, #0xe0
-      0025C7 C6 24                 8613 	add	a, #0x24
-      0025C9 5F                    8614 	ld	e, a
-                                   8615 ;geometry_boy.c:852: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-      0025CA 79                    8616 	ld	a, c
-      0025CB E6 03                 8617 	and	a, #0x03
-      0025CD CB 37                 8618 	swap	a
-      0025CF 07                    8619 	rlca
-      0025D0 E6 E0                 8620 	and	a, #0xe0
-      0025D2 C6 14                 8621 	add	a, #0x14
-      0025D4 4F                    8622 	ld	c, a
-                                   8623 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      0025D5 21r28r00              8624 	ld	hl, #(_shadow_OAM + 40)
-                                   8625 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      0025D8 7B                    8626 	ld	a, e
-      0025D9 22                    8627 	ld	(hl+), a
-      0025DA 71                    8628 	ld	(hl), c
-                                   8629 ;geometry_boy.c:853: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0025DB C3r93r26              8630 	jp	00118$
-      0025DE                       8631 00111$:
-                                   8632 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
-      0025DE F8 01                 8633 	ldhl	sp,	#1
-      0025E0 7E                    8634 	ld	a, (hl)
-      0025E1 3D                    8635 	dec	a
-      0025E2 20 06                 8636 	jr	NZ, 00180$
-      0025E4 F8 02                 8637 	ldhl	sp,	#2
-      0025E6 7E                    8638 	ld	a, (hl)
-      0025E7 3D                    8639 	dec	a
-      0025E8 20 03                 8640 	jr	NZ, 00181$
-      0025EA                       8641 00180$:
-      0025EA AF                    8642 	xor	a, a
-      0025EB 18 02                 8643 	jr	00182$
-      0025ED                       8644 00181$:
-      0025ED 3E 01                 8645 	ld	a, #0x01
-      0025EF                       8646 00182$:
-                                   8647 ;geometry_boy.c:856: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
-      0025EF B7                    8648 	or	a, a
-      0025F0 28 6B                 8649 	jr	Z, 00108$
-                                   8650 ;geometry_boy.c:860: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0025F2 F8 03                 8651 	ldhl	sp,	#3
-      0025F4 2A                    8652 	ld	a, (hl+)
-      0025F5 4F                    8653 	ld	c, a
-      0025F6 2A                    8654 	ld	a, (hl+)
-      0025F7 47                    8655 	ld	b, a
-      0025F8 7E                    8656 	ld	a, (hl)
-      0025F9 B7                    8657 	or	a, a
-      0025FA 28 04                 8658 	jr	Z, 00183$
-      0025FC 23                    8659 	inc	hl
-      0025FD 2A                    8660 	ld	a, (hl+)
-      0025FE 4F                    8661 	ld	c, a
-      0025FF 46                    8662 	ld	b, (hl)
-      002600                       8663 00183$:
-      002600 CB 28                 8664 	sra	b
-      002602 CB 19                 8665 	rr	c
-      002604 CB 28                 8666 	sra	b
-      002606 CB 19                 8667 	rr	c
-      002608 79                    8668 	ld	a, c
-      002609 CB 37                 8669 	swap	a
-      00260B 07                    8670 	rlca
-      00260C E6 E0                 8671 	and	a, #0xe0
-      00260E C6 24                 8672 	add	a, #0x24
-      002610 4F                    8673 	ld	c, a
-                                   8674 ;geometry_boy.c:859: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                                   8675 ;geometry_boy.c:858: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      002611 F8 08                 8676 	ldhl	sp,	#8
-      002613 46                    8677 	ld	b, (hl)
-                                   8678 ;geometry_boy.c:860: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-                                   8679 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      002614 26 00                 8680 	ld	h, #0x00
-                                   8681 ;	spillPairReg hl
-                                   8682 ;	spillPairReg hl
-      002616 68                    8683 	ld	l, b
-      002617 29                    8684 	add	hl, hl
-      002618 29                    8685 	add	hl, hl
-      002619 D5                    8686 	push	de
-      00261A 11r00r00              8687 	ld	de, #_shadow_OAM
-      00261D 19                    8688 	add	hl, de
-      00261E D1                    8689 	pop	de
-                                   8690 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      00261F 79                    8691 	ld	a, c
-      002620 22                    8692 	ld	(hl+), a
-      002621 73                    8693 	ld	(hl), e
-                                   8694 ;geometry_boy.c:862: player_sprite_num += 1;
-      002622 21r04r00              8695 	ld	hl, #_player_sprite_num
-      002625 34                    8696 	inc	(hl)
-      002626 7E                    8697 	ld	a, (hl)
-                                   8698 ;geometry_boy.c:863: player_sprite_num %= 16;
-      002627 7E                    8699 	ld	a, (hl)
-      002628 E6 0F                 8700 	and	a, #0x0f
-      00262A 77                    8701 	ld	(hl), a
-                                   8702 ;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00262B 4E                    8703 	ld	c, (hl)
-      00262C 06 00                 8704 	ld	b, #0x00
-                                   8705 ;geometry_boy.c:867: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00262E 69                    8706 	ld	l, c
-                                   8707 ;	spillPairReg hl
-                                   8708 ;	spillPairReg hl
-      00262F 60                    8709 	ld	h, b
+      0025B8 60                    8600 	ld	h, b
+                                   8601 ;	spillPairReg hl
+                                   8602 ;	spillPairReg hl
+      0025B9 23                    8603 	inc	hl
+      0025BA 23                    8604 	inc	hl
+      0025BB 23                    8605 	inc	hl
+      0025BC                       8606 00179$:
+      0025BC CB 2C                 8607 	sra	h
+      0025BE CB 1D                 8608 	rr	l
+      0025C0 CB 2C                 8609 	sra	h
+      0025C2 CB 1D                 8610 	rr	l
+      0025C4 7D                    8611 	ld	a, l
+      0025C5 CB 37                 8612 	swap	a
+      0025C7 07                    8613 	rlca
+      0025C8 E6 E0                 8614 	and	a, #0xe0
+      0025CA C6 24                 8615 	add	a, #0x24
+      0025CC 5F                    8616 	ld	e, a
+                                   8617 ;geometry_boy.c:853: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+      0025CD 79                    8618 	ld	a, c
+      0025CE E6 03                 8619 	and	a, #0x03
+      0025D0 CB 37                 8620 	swap	a
+      0025D2 07                    8621 	rlca
+      0025D3 E6 E0                 8622 	and	a, #0xe0
+      0025D5 C6 14                 8623 	add	a, #0x14
+      0025D7 4F                    8624 	ld	c, a
+                                   8625 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      0025D8 21r28r00              8626 	ld	hl, #(_shadow_OAM + 40)
+                                   8627 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      0025DB 7B                    8628 	ld	a, e
+      0025DC 22                    8629 	ld	(hl+), a
+      0025DD 71                    8630 	ld	(hl), c
+                                   8631 ;geometry_boy.c:854: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0025DE C3r96r26              8632 	jp	00118$
+      0025E1                       8633 00111$:
+                                   8634 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
+      0025E1 F8 01                 8635 	ldhl	sp,	#1
+      0025E3 7E                    8636 	ld	a, (hl)
+      0025E4 3D                    8637 	dec	a
+      0025E5 20 06                 8638 	jr	NZ, 00180$
+      0025E7 F8 02                 8639 	ldhl	sp,	#2
+      0025E9 7E                    8640 	ld	a, (hl)
+      0025EA 3D                    8641 	dec	a
+      0025EB 20 03                 8642 	jr	NZ, 00181$
+      0025ED                       8643 00180$:
+      0025ED AF                    8644 	xor	a, a
+      0025EE 18 02                 8645 	jr	00182$
+      0025F0                       8646 00181$:
+      0025F0 3E 01                 8647 	ld	a, #0x01
+      0025F2                       8648 00182$:
+                                   8649 ;geometry_boy.c:857: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
+      0025F2 B7                    8650 	or	a, a
+      0025F3 28 6B                 8651 	jr	Z, 00108$
+                                   8652 ;geometry_boy.c:861: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0025F5 F8 03                 8653 	ldhl	sp,	#3
+      0025F7 2A                    8654 	ld	a, (hl+)
+      0025F8 4F                    8655 	ld	c, a
+      0025F9 2A                    8656 	ld	a, (hl+)
+      0025FA 47                    8657 	ld	b, a
+      0025FB 7E                    8658 	ld	a, (hl)
+      0025FC B7                    8659 	or	a, a
+      0025FD 28 04                 8660 	jr	Z, 00183$
+      0025FF 23                    8661 	inc	hl
+      002600 2A                    8662 	ld	a, (hl+)
+      002601 4F                    8663 	ld	c, a
+      002602 46                    8664 	ld	b, (hl)
+      002603                       8665 00183$:
+      002603 CB 28                 8666 	sra	b
+      002605 CB 19                 8667 	rr	c
+      002607 CB 28                 8668 	sra	b
+      002609 CB 19                 8669 	rr	c
+      00260B 79                    8670 	ld	a, c
+      00260C CB 37                 8671 	swap	a
+      00260E 07                    8672 	rlca
+      00260F E6 E0                 8673 	and	a, #0xe0
+      002611 C6 24                 8674 	add	a, #0x24
+      002613 4F                    8675 	ld	c, a
+                                   8676 ;geometry_boy.c:860: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+                                   8677 ;geometry_boy.c:859: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      002614 F8 08                 8678 	ldhl	sp,	#8
+      002616 46                    8679 	ld	b, (hl)
+                                   8680 ;geometry_boy.c:861: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+                                   8681 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      002617 26 00                 8682 	ld	h, #0x00
+                                   8683 ;	spillPairReg hl
+                                   8684 ;	spillPairReg hl
+      002619 68                    8685 	ld	l, b
+      00261A 29                    8686 	add	hl, hl
+      00261B 29                    8687 	add	hl, hl
+      00261C D5                    8688 	push	de
+      00261D 11r00r00              8689 	ld	de, #_shadow_OAM
+      002620 19                    8690 	add	hl, de
+      002621 D1                    8691 	pop	de
+                                   8692 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      002622 79                    8693 	ld	a, c
+      002623 22                    8694 	ld	(hl+), a
+      002624 73                    8695 	ld	(hl), e
+                                   8696 ;geometry_boy.c:863: player_sprite_num += 1;
+      002625 21r04r00              8697 	ld	hl, #_player_sprite_num
+      002628 34                    8698 	inc	(hl)
+      002629 7E                    8699 	ld	a, (hl)
+                                   8700 ;geometry_boy.c:864: player_sprite_num %= 16;
+      00262A 7E                    8701 	ld	a, (hl)
+      00262B E6 0F                 8702 	and	a, #0x0f
+      00262D 77                    8703 	ld	(hl), a
+                                   8704 ;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00262E 4E                    8705 	ld	c, (hl)
+      00262F 06 00                 8706 	ld	b, #0x00
+                                   8707 ;geometry_boy.c:868: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      002631 69                    8708 	ld	l, c
+                                   8709 ;	spillPairReg hl
                                    8710 ;	spillPairReg hl
-                                   8711 ;	spillPairReg hl
-      002630 CB 78                 8712 	bit	7, b
-      002632 28 05                 8713 	jr	Z, 00184$
-      002634 69                    8714 	ld	l, c
-                                   8715 ;	spillPairReg hl
-                                   8716 ;	spillPairReg hl
-      002635 60                    8717 	ld	h, b
+      002632 60                    8711 	ld	h, b
+                                   8712 ;	spillPairReg hl
+                                   8713 ;	spillPairReg hl
+      002633 CB 78                 8714 	bit	7, b
+      002635 28 05                 8715 	jr	Z, 00184$
+      002637 69                    8716 	ld	l, c
+                                   8717 ;	spillPairReg hl
                                    8718 ;	spillPairReg hl
-                                   8719 ;	spillPairReg hl
-      002636 23                    8720 	inc	hl
-      002637 23                    8721 	inc	hl
-      002638 23                    8722 	inc	hl
-      002639                       8723 00184$:
-      002639 CB 2C                 8724 	sra	h
-      00263B CB 1D                 8725 	rr	l
-      00263D CB 2C                 8726 	sra	h
-      00263F CB 1D                 8727 	rr	l
-      002641 7D                    8728 	ld	a, l
-      002642 CB 37                 8729 	swap	a
-      002644 07                    8730 	rlca
-      002645 E6 E0                 8731 	and	a, #0xe0
-      002647 C6 24                 8732 	add	a, #0x24
-      002649 5F                    8733 	ld	e, a
-                                   8734 ;geometry_boy.c:866: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-      00264A 79                    8735 	ld	a, c
-      00264B E6 03                 8736 	and	a, #0x03
-      00264D CB 37                 8737 	swap	a
-      00264F 07                    8738 	rlca
-      002650 E6 E0                 8739 	and	a, #0xe0
-      002652 C6 14                 8740 	add	a, #0x14
-      002654 4F                    8741 	ld	c, a
-                                   8742 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      002655 21r28r00              8743 	ld	hl, #(_shadow_OAM + 40)
-                                   8744 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      002658 7B                    8745 	ld	a, e
-      002659 22                    8746 	ld	(hl+), a
-      00265A 71                    8747 	ld	(hl), c
-                                   8748 ;geometry_boy.c:867: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00265B 18 36                 8749 	jr	00118$
-      00265D                       8750 00108$:
-                                   8751 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
-      00265D F8 01                 8752 	ldhl	sp,	#1
-      00265F 7E                    8753 	ld	a, (hl)
-      002660 D6 40                 8754 	sub	a, #0x40
-      002662 20 07                 8755 	jr	NZ, 00185$
-      002664 F8 02                 8756 	ldhl	sp,	#2
-      002666 7E                    8757 	ld	a, (hl)
-      002667 D6 40                 8758 	sub	a, #0x40
-      002669 20 03                 8759 	jr	NZ, 00186$
-      00266B                       8760 00185$:
-      00266B AF                    8761 	xor	a, a
-      00266C 18 02                 8762 	jr	00187$
-      00266E                       8763 00186$:
-      00266E 3E 01                 8764 	ld	a, #0x01
-      002670                       8765 00187$:
-                                   8766 ;geometry_boy.c:870: else if (debounce_input(J_SELECT, jpad, prev_jpad))// || debounce_input(J_START, jpad, prev_jpad))
-      002670 B7                    8767 	or	a, a
-      002671 28 20                 8768 	jr	Z, 00118$
-                                   8769 ;geometry_boy.c:873: for (uint8_t i = 0; i < 40; i++)
-      002673 F8 08                 8770 	ldhl	sp,	#8
-      002675 36 00                 8771 	ld	(hl), #0x00
-      002677                       8772 00159$:
-      002677 F8 08                 8773 	ldhl	sp,	#8
-      002679 7E                    8774 	ld	a, (hl)
-      00267A D6 28                 8775 	sub	a, #0x28
-      00267C 30 10                 8776 	jr	NC, 00104$
-                                   8777 ;../gbdk/include/gb/gb.h:1425: shadow_OAM[nb].y = 0;
-      00267E 01r00r00              8778 	ld	bc, #_shadow_OAM+0
-      002681 6E                    8779 	ld	l, (hl)
-      002682 26 00                 8780 	ld	h, #0x00
-      002684 29                    8781 	add	hl, hl
-      002685 29                    8782 	add	hl, hl
-      002686 09                    8783 	add	hl, bc
-      002687 36 00                 8784 	ld	(hl), #0x00
-                                   8785 ;geometry_boy.c:873: for (uint8_t i = 0; i < 40; i++)
-      002689 F8 08                 8786 	ldhl	sp,	#8
-      00268B 34                    8787 	inc	(hl)
-      00268C 18 E9                 8788 	jr	00159$
-      00268E                       8789 00104$:
-                                   8790 ;geometry_boy.c:877: return TITLE;
-      00268E 1E 00                 8791 	ld	e, #0x00
-      002690 C3r4Fr27              8792 	jp	00161$
-      002693                       8793 00118$:
-                                   8794 ;geometry_boy.c:880: if (tick % 4 == 0)
-      002693 FAr0Ar00              8795 	ld	a, (#_tick)
-      002696 E6 03                 8796 	and	a, #0x03
-      002698 C2r40r27              8797 	jp	NZ,00123$
-                                   8798 ;geometry_boy.c:783: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00269B FAr04r00              8799 	ld	a, (#_player_sprite_num)
-      00269E F8 04                 8800 	ldhl	sp,	#4
-      0026A0 22                    8801 	ld	(hl+), a
-      0026A1 36 00                 8802 	ld	(hl), #0x00
-                                   8803 ;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      0026A3 21r04r00              8804 	ld	hl, #_player_sprite_num
-      0026A6 46                    8805 	ld	b, (hl)
-                                   8806 ;geometry_boy.c:818: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      0026A7 F8 05                 8807 	ldhl	sp,	#5
-      0026A9 2A                    8808 	ld	a, (hl+)
-      0026AA 07                    8809 	rlca
-      0026AB E6 01                 8810 	and	a,#0x01
-      0026AD 32                    8811 	ld	(hl-), a
-      0026AE 2B                    8812 	dec	hl
-      0026AF 2A                    8813 	ld	a, (hl+)
-      0026B0 5F                    8814 	ld	e, a
-                                   8815 ;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-      0026B1 3A                    8816 	ld	a, (hl-)
-      0026B2 57                    8817 	ld	d, a
-      0026B3 13                    8818 	inc	de
-      0026B4 13                    8819 	inc	de
-      0026B5 13                    8820 	inc	de
-      0026B6 7E                    8821 	ld	a, (hl)
-      0026B7 E6 03                 8822 	and	a, #0x03
-      0026B9 4F                    8823 	ld	c, a
-      0026BA 2E 00                 8824 	ld	l, #0x00
-                                   8825 ;	spillPairReg hl
-                                   8826 ;	spillPairReg hl
-                                   8827 ;geometry_boy.c:816: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      0026BC 78                    8828 	ld	a, b
-      0026BD C6 0B                 8829 	add	a, #0x0b
-      0026BF E5                    8830 	push	hl
-      0026C0 F8 09                 8831 	ldhl	sp,	#9
-      0026C2 77                    8832 	ld	(hl), a
-      0026C3 E1                    8833 	pop	hl
-                                   8834 ;geometry_boy.c:817: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-      0026C4 79                    8835 	ld	a, c
-      0026C5 CB 37                 8836 	swap	a
-      0026C7 07                    8837 	rlca
-      0026C8 E6 E0                 8838 	and	a, #0xe0
-      0026CA C6 24                 8839 	add	a, #0x24
-      0026CC F8 08                 8840 	ldhl	sp,	#8
-      0026CE 77                    8841 	ld	(hl), a
-                                   8842 ;geometry_boy.c:882: if (is_up)
-      0026CF F8 00                 8843 	ldhl	sp,	#0
-      0026D1 7E                    8844 	ld	a, (hl)
-      0026D2 B7                    8845 	or	a, a
-      0026D3 28 3A                 8846 	jr	Z, 00120$
-                                   8847 ;geometry_boy.c:886: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
-      0026D5 F8 04                 8848 	ldhl	sp,	#4
-      0026D7 2A                    8849 	ld	a, (hl+)
-      0026D8 4F                    8850 	ld	c, a
-      0026D9 2A                    8851 	ld	a, (hl+)
-      0026DA 47                    8852 	ld	b, a
-      0026DB 7E                    8853 	ld	a, (hl)
-      0026DC B7                    8854 	or	a, a
-      0026DD 28 02                 8855 	jr	Z, 00188$
-      0026DF 4B                    8856 	ld	c, e
-      0026E0 42                    8857 	ld	b, d
-      0026E1                       8858 00188$:
-      0026E1 CB 28                 8859 	sra	b
-      0026E3 CB 19                 8860 	rr	c
-      0026E5 CB 28                 8861 	sra	b
-      0026E7 CB 19                 8862 	rr	c
-      0026E9 79                    8863 	ld	a, c
-      0026EA CB 37                 8864 	swap	a
-      0026EC 07                    8865 	rlca
-      0026ED E6 E0                 8866 	and	a, #0xe0
-      0026EF C6 22                 8867 	add	a, #0x22
-      0026F1 F8 06                 8868 	ldhl	sp,	#6
-                                   8869 ;geometry_boy.c:885: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-      0026F3 22                    8870 	ld	(hl+), a
-      0026F4 23                    8871 	inc	hl
-                                   8872 ;geometry_boy.c:884: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      0026F5 3A                    8873 	ld	a, (hl-)
-      0026F6 4F                    8874 	ld	c, a
-                                   8875 ;geometry_boy.c:886: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
-                                   8876 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      0026F7 6E                    8877 	ld	l, (hl)
-                                   8878 ;	spillPairReg hl
-                                   8879 ;	spillPairReg hl
-      0026F8 26 00                 8880 	ld	h, #0x00
+      002638 60                    8719 	ld	h, b
+                                   8720 ;	spillPairReg hl
+                                   8721 ;	spillPairReg hl
+      002639 23                    8722 	inc	hl
+      00263A 23                    8723 	inc	hl
+      00263B 23                    8724 	inc	hl
+      00263C                       8725 00184$:
+      00263C CB 2C                 8726 	sra	h
+      00263E CB 1D                 8727 	rr	l
+      002640 CB 2C                 8728 	sra	h
+      002642 CB 1D                 8729 	rr	l
+      002644 7D                    8730 	ld	a, l
+      002645 CB 37                 8731 	swap	a
+      002647 07                    8732 	rlca
+      002648 E6 E0                 8733 	and	a, #0xe0
+      00264A C6 24                 8734 	add	a, #0x24
+      00264C 5F                    8735 	ld	e, a
+                                   8736 ;geometry_boy.c:867: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
+      00264D 79                    8737 	ld	a, c
+      00264E E6 03                 8738 	and	a, #0x03
+      002650 CB 37                 8739 	swap	a
+      002652 07                    8740 	rlca
+      002653 E6 E0                 8741 	and	a, #0xe0
+      002655 C6 14                 8742 	add	a, #0x14
+      002657 4F                    8743 	ld	c, a
+                                   8744 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      002658 21r28r00              8745 	ld	hl, #(_shadow_OAM + 40)
+                                   8746 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      00265B 7B                    8747 	ld	a, e
+      00265C 22                    8748 	ld	(hl+), a
+      00265D 71                    8749 	ld	(hl), c
+                                   8750 ;geometry_boy.c:868: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00265E 18 36                 8751 	jr	00118$
+      002660                       8752 00108$:
+                                   8753 ;geometry_boy.c:307: return (button == target) && !(prev_button == target);
+      002660 F8 01                 8754 	ldhl	sp,	#1
+      002662 7E                    8755 	ld	a, (hl)
+      002663 D6 40                 8756 	sub	a, #0x40
+      002665 20 07                 8757 	jr	NZ, 00185$
+      002667 F8 02                 8758 	ldhl	sp,	#2
+      002669 7E                    8759 	ld	a, (hl)
+      00266A D6 40                 8760 	sub	a, #0x40
+      00266C 20 03                 8761 	jr	NZ, 00186$
+      00266E                       8762 00185$:
+      00266E AF                    8763 	xor	a, a
+      00266F 18 02                 8764 	jr	00187$
+      002671                       8765 00186$:
+      002671 3E 01                 8766 	ld	a, #0x01
+      002673                       8767 00187$:
+                                   8768 ;geometry_boy.c:871: else if (debounce_input(J_SELECT, jpad, prev_jpad))// || debounce_input(J_START, jpad, prev_jpad))
+      002673 B7                    8769 	or	a, a
+      002674 28 20                 8770 	jr	Z, 00118$
+                                   8771 ;geometry_boy.c:874: for (uint8_t i = 0; i < 40; i++)
+      002676 F8 08                 8772 	ldhl	sp,	#8
+      002678 36 00                 8773 	ld	(hl), #0x00
+      00267A                       8774 00159$:
+      00267A F8 08                 8775 	ldhl	sp,	#8
+      00267C 7E                    8776 	ld	a, (hl)
+      00267D D6 28                 8777 	sub	a, #0x28
+      00267F 30 10                 8778 	jr	NC, 00104$
+                                   8779 ;../gbdk/include/gb/gb.h:1425: shadow_OAM[nb].y = 0;
+      002681 01r00r00              8780 	ld	bc, #_shadow_OAM+0
+      002684 6E                    8781 	ld	l, (hl)
+      002685 26 00                 8782 	ld	h, #0x00
+      002687 29                    8783 	add	hl, hl
+      002688 29                    8784 	add	hl, hl
+      002689 09                    8785 	add	hl, bc
+      00268A 36 00                 8786 	ld	(hl), #0x00
+                                   8787 ;geometry_boy.c:874: for (uint8_t i = 0; i < 40; i++)
+      00268C F8 08                 8788 	ldhl	sp,	#8
+      00268E 34                    8789 	inc	(hl)
+      00268F 18 E9                 8790 	jr	00159$
+      002691                       8791 00104$:
+                                   8792 ;geometry_boy.c:878: return TITLE;
+      002691 1E 00                 8793 	ld	e, #0x00
+      002693 C3r52r27              8794 	jp	00161$
+      002696                       8795 00118$:
+                                   8796 ;geometry_boy.c:881: if (tick % 4 == 0)
+      002696 FAr0Ar00              8797 	ld	a, (#_tick)
+      002699 E6 03                 8798 	and	a, #0x03
+      00269B C2r43r27              8799 	jp	NZ,00123$
+                                   8800 ;geometry_boy.c:784: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      00269E FAr04r00              8801 	ld	a, (#_player_sprite_num)
+      0026A1 F8 04                 8802 	ldhl	sp,	#4
+      0026A3 22                    8803 	ld	(hl+), a
+      0026A4 36 00                 8804 	ld	(hl), #0x00
+                                   8805 ;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      0026A6 21r04r00              8806 	ld	hl, #_player_sprite_num
+      0026A9 46                    8807 	ld	b, (hl)
+                                   8808 ;geometry_boy.c:819: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      0026AA F8 05                 8809 	ldhl	sp,	#5
+      0026AC 2A                    8810 	ld	a, (hl+)
+      0026AD 07                    8811 	rlca
+      0026AE E6 01                 8812 	and	a,#0x01
+      0026B0 32                    8813 	ld	(hl-), a
+      0026B1 2B                    8814 	dec	hl
+      0026B2 2A                    8815 	ld	a, (hl+)
+      0026B3 5F                    8816 	ld	e, a
+                                   8817 ;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+      0026B4 3A                    8818 	ld	a, (hl-)
+      0026B5 57                    8819 	ld	d, a
+      0026B6 13                    8820 	inc	de
+      0026B7 13                    8821 	inc	de
+      0026B8 13                    8822 	inc	de
+      0026B9 7E                    8823 	ld	a, (hl)
+      0026BA E6 03                 8824 	and	a, #0x03
+      0026BC 4F                    8825 	ld	c, a
+      0026BD 2E 00                 8826 	ld	l, #0x00
+                                   8827 ;	spillPairReg hl
+                                   8828 ;	spillPairReg hl
+                                   8829 ;geometry_boy.c:817: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      0026BF 78                    8830 	ld	a, b
+      0026C0 C6 0B                 8831 	add	a, #0x0b
+      0026C2 E5                    8832 	push	hl
+      0026C3 F8 09                 8833 	ldhl	sp,	#9
+      0026C5 77                    8834 	ld	(hl), a
+      0026C6 E1                    8835 	pop	hl
+                                   8836 ;geometry_boy.c:818: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+      0026C7 79                    8837 	ld	a, c
+      0026C8 CB 37                 8838 	swap	a
+      0026CA 07                    8839 	rlca
+      0026CB E6 E0                 8840 	and	a, #0xe0
+      0026CD C6 24                 8841 	add	a, #0x24
+      0026CF F8 08                 8842 	ldhl	sp,	#8
+      0026D1 77                    8843 	ld	(hl), a
+                                   8844 ;geometry_boy.c:883: if (is_up)
+      0026D2 F8 00                 8845 	ldhl	sp,	#0
+      0026D4 7E                    8846 	ld	a, (hl)
+      0026D5 B7                    8847 	or	a, a
+      0026D6 28 3A                 8848 	jr	Z, 00120$
+                                   8849 ;geometry_boy.c:887: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
+      0026D8 F8 04                 8850 	ldhl	sp,	#4
+      0026DA 2A                    8851 	ld	a, (hl+)
+      0026DB 4F                    8852 	ld	c, a
+      0026DC 2A                    8853 	ld	a, (hl+)
+      0026DD 47                    8854 	ld	b, a
+      0026DE 7E                    8855 	ld	a, (hl)
+      0026DF B7                    8856 	or	a, a
+      0026E0 28 02                 8857 	jr	Z, 00188$
+      0026E2 4B                    8858 	ld	c, e
+      0026E3 42                    8859 	ld	b, d
+      0026E4                       8860 00188$:
+      0026E4 CB 28                 8861 	sra	b
+      0026E6 CB 19                 8862 	rr	c
+      0026E8 CB 28                 8863 	sra	b
+      0026EA CB 19                 8864 	rr	c
+      0026EC 79                    8865 	ld	a, c
+      0026ED CB 37                 8866 	swap	a
+      0026EF 07                    8867 	rlca
+      0026F0 E6 E0                 8868 	and	a, #0xe0
+      0026F2 C6 22                 8869 	add	a, #0x22
+      0026F4 F8 06                 8870 	ldhl	sp,	#6
+                                   8871 ;geometry_boy.c:886: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+      0026F6 22                    8872 	ld	(hl+), a
+      0026F7 23                    8873 	inc	hl
+                                   8874 ;geometry_boy.c:885: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      0026F8 3A                    8875 	ld	a, (hl-)
+      0026F9 4F                    8876 	ld	c, a
+                                   8877 ;geometry_boy.c:887: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
+                                   8878 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      0026FA 6E                    8879 	ld	l, (hl)
+                                   8880 ;	spillPairReg hl
                                    8881 ;	spillPairReg hl
-                                   8882 ;	spillPairReg hl
-      0026FA 29                    8883 	add	hl, hl
-      0026FB 29                    8884 	add	hl, hl
-      0026FC 11r00r00              8885 	ld	de, #_shadow_OAM
-      0026FF 19                    8886 	add	hl, de
-      002700 5D                    8887 	ld	e, l
-      002701 54                    8888 	ld	d, h
-                                   8889 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      002702 F8 06                 8890 	ldhl	sp,	#6
-      002704 7E                    8891 	ld	a, (hl)
-      002705 12                    8892 	ld	(de), a
-      002706 13                    8893 	inc	de
-      002707 79                    8894 	ld	a, c
-      002708 12                    8895 	ld	(de), a
-                                   8896 ;geometry_boy.c:887: is_up = 0;
-      002709 F8 00                 8897 	ldhl	sp,	#0
-      00270B 36 00                 8898 	ld	(hl), #0x00
-      00270D 18 31                 8899 	jr	00123$
-      00270F                       8900 00120$:
-                                   8901 ;geometry_boy.c:893: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-      00270F F8 04                 8902 	ldhl	sp,	#4
-      002711 2A                    8903 	ld	a, (hl+)
-      002712 4F                    8904 	ld	c, a
-      002713 2A                    8905 	ld	a, (hl+)
-      002714 47                    8906 	ld	b, a
-      002715 7E                    8907 	ld	a, (hl)
-      002716 B7                    8908 	or	a, a
-      002717 28 02                 8909 	jr	Z, 00189$
-      002719 4B                    8910 	ld	c, e
-      00271A 42                    8911 	ld	b, d
-      00271B                       8912 00189$:
-      00271B CB 28                 8913 	sra	b
-      00271D CB 19                 8914 	rr	c
-      00271F CB 28                 8915 	sra	b
-      002721 CB 19                 8916 	rr	c
-      002723 79                    8917 	ld	a, c
-      002724 CB 37                 8918 	swap	a
-      002726 07                    8919 	rlca
-      002727 E6 E0                 8920 	and	a, #0xe0
-      002729 C6 24                 8921 	add	a, #0x24
-      00272B 47                    8922 	ld	b, a
-                                   8923 ;geometry_boy.c:892: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-      00272C F8 08                 8924 	ldhl	sp,	#8
-                                   8925 ;geometry_boy.c:891: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-      00272E 3A                    8926 	ld	a, (hl-)
-      00272F 4F                    8927 	ld	c, a
-                                   8928 ;geometry_boy.c:893: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-                                   8929 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
-      002730 6E                    8930 	ld	l, (hl)
-                                   8931 ;	spillPairReg hl
-                                   8932 ;	spillPairReg hl
-      002731 26 00                 8933 	ld	h, #0x00
+      0026FB 26 00                 8882 	ld	h, #0x00
+                                   8883 ;	spillPairReg hl
+                                   8884 ;	spillPairReg hl
+      0026FD 29                    8885 	add	hl, hl
+      0026FE 29                    8886 	add	hl, hl
+      0026FF 11r00r00              8887 	ld	de, #_shadow_OAM
+      002702 19                    8888 	add	hl, de
+      002703 5D                    8889 	ld	e, l
+      002704 54                    8890 	ld	d, h
+                                   8891 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      002705 F8 06                 8892 	ldhl	sp,	#6
+      002707 7E                    8893 	ld	a, (hl)
+      002708 12                    8894 	ld	(de), a
+      002709 13                    8895 	inc	de
+      00270A 79                    8896 	ld	a, c
+      00270B 12                    8897 	ld	(de), a
+                                   8898 ;geometry_boy.c:888: is_up = 0;
+      00270C F8 00                 8899 	ldhl	sp,	#0
+      00270E 36 00                 8900 	ld	(hl), #0x00
+      002710 18 31                 8901 	jr	00123$
+      002712                       8902 00120$:
+                                   8903 ;geometry_boy.c:894: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+      002712 F8 04                 8904 	ldhl	sp,	#4
+      002714 2A                    8905 	ld	a, (hl+)
+      002715 4F                    8906 	ld	c, a
+      002716 2A                    8907 	ld	a, (hl+)
+      002717 47                    8908 	ld	b, a
+      002718 7E                    8909 	ld	a, (hl)
+      002719 B7                    8910 	or	a, a
+      00271A 28 02                 8911 	jr	Z, 00189$
+      00271C 4B                    8912 	ld	c, e
+      00271D 42                    8913 	ld	b, d
+      00271E                       8914 00189$:
+      00271E CB 28                 8915 	sra	b
+      002720 CB 19                 8916 	rr	c
+      002722 CB 28                 8917 	sra	b
+      002724 CB 19                 8918 	rr	c
+      002726 79                    8919 	ld	a, c
+      002727 CB 37                 8920 	swap	a
+      002729 07                    8921 	rlca
+      00272A E6 E0                 8922 	and	a, #0xe0
+      00272C C6 24                 8923 	add	a, #0x24
+      00272E 47                    8924 	ld	b, a
+                                   8925 ;geometry_boy.c:893: ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
+      00272F F8 08                 8926 	ldhl	sp,	#8
+                                   8927 ;geometry_boy.c:892: move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
+      002731 3A                    8928 	ld	a, (hl-)
+      002732 4F                    8929 	ld	c, a
+                                   8930 ;geometry_boy.c:894: ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+                                   8931 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
+      002733 6E                    8932 	ld	l, (hl)
+                                   8933 ;	spillPairReg hl
                                    8934 ;	spillPairReg hl
-                                   8935 ;	spillPairReg hl
-      002733 29                    8936 	add	hl, hl
-      002734 29                    8937 	add	hl, hl
-      002735 11r00r00              8938 	ld	de, #_shadow_OAM
-      002738 19                    8939 	add	hl, de
-                                   8940 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
-      002739 78                    8941 	ld	a, b
-      00273A 22                    8942 	ld	(hl+), a
-      00273B 71                    8943 	ld	(hl), c
-                                   8944 ;geometry_boy.c:894: is_up = 1;
-      00273C F8 00                 8945 	ldhl	sp,	#0
-      00273E 36 01                 8946 	ld	(hl), #0x01
-      002740                       8947 00123$:
-                                   8948 ;geometry_boy.c:897: tick++;
-      002740 21r0Ar00              8949 	ld	hl, #_tick
-      002743 34                    8950 	inc	(hl)
-                                   8951 ;geometry_boy.c:899: delay(LOOP_DELAY);
-      002744 11 14 00              8952 	ld	de, #0x0014
-      002747 D5                    8953 	push	de
-      002748 CDr00r00              8954 	call	_delay
-      00274B E1                    8955 	pop	hl
-      00274C C3rF2r23              8956 	jp	00125$
-      00274F                       8957 00161$:
-                                   8958 ;geometry_boy.c:901: }
-      00274F E8 09                 8959 	add	sp, #9
-      002751 C9                    8960 	ret
-                                   8961 ;geometry_boy.c:904: void main()
-                                   8962 ;	---------------------------------
-                                   8963 ; Function main
-                                   8964 ; ---------------------------------
-      002752                       8965 _main::
-      002752 3B                    8966 	dec	sp
-      002753 3B                    8967 	dec	sp
-                                   8968 ;geometry_boy.c:158: vbl_count = 0;
-      002754 21r06r00              8969 	ld	hl, #_vbl_count
-      002757 36 00                 8970 	ld	(hl), #0x00
-                                   8971 ;geometry_boy.c:159: background_x_shift = 0;
-      002759 AF                    8972 	xor	a, a
-      00275A 21r0Br00              8973 	ld	hl, #_background_x_shift
-      00275D 22                    8974 	ld	(hl+), a
-      00275E 77                    8975 	ld	(hl), a
-                                   8976 ;geometry_boy.c:160: old_scroll_x = 0;
-      00275F AF                    8977 	xor	a, a
-      002760 21r0Fr00              8978 	ld	hl, #_old_scroll_x
-      002763 22                    8979 	ld	(hl+), a
-      002764 77                    8980 	ld	(hl), a
-                                   8981 ;geometry_boy.c:161: old_background_x_shift = 8 + 3;
-      002765 21r0Dr00              8982 	ld	hl, #_old_background_x_shift
-      002768 3E 0B                 8983 	ld	a, #0x0b
-      00276A 22                    8984 	ld	(hl+), a
-      00276B AF                    8985 	xor	a, a
-      00276C 77                    8986 	ld	(hl), a
-                                   8987 ;geometry_boy.c:162: player_y = PLAYER_START_Y;
-      00276D 21r02r00              8988 	ld	hl, #_player_y
-      002770 36 90                 8989 	ld	(hl), #0x90
-                                   8990 ;geometry_boy.c:163: player_x = PLAYER_START_X;
-      002772 21r03r00              8991 	ld	hl, #_player_x
-      002775 36 20                 8992 	ld	(hl), #0x20
-                                   8993 ;geometry_boy.c:164: player_dx = 3;
-      002777 21r01r00              8994 	ld	hl, #_player_dx
-      00277A 36 03                 8995 	ld	(hl), #0x03
-                                   8996 ;geometry_boy.c:165: on_ground = 1;
-      00277C 21r05r00              8997 	ld	hl, #_on_ground
-      00277F 36 01                 8998 	ld	(hl), #0x01
-                                   8999 ;geometry_boy.c:166: lose = 0;
-      002781 21r07r00              9000 	ld	hl, #_lose
-      002784 36 00                 9001 	ld	(hl), #0x00
-                                   9002 ;geometry_boy.c:167: win = 0;
-      002786 21r06r00              9003 	ld	hl, #_win
-      002789 36 00                 9004 	ld	(hl), #0x00
-                                   9005 ;geometry_boy.c:168: tick = 0;
-      00278B 21r0Ar00              9006 	ld	hl, #_tick
-      00278E 36 00                 9007 	ld	(hl), #0x00
-                                   9008 ;geometry_boy.c:169: parallax_tile_ind = 0;
-      002790 21r11r00              9009 	ld	hl, #_parallax_tile_ind
-      002793 36 00                 9010 	ld	(hl), #0x00
-                                   9011 ;geometry_boy.c:172: prev_jpad = 0;
-      002795 21r08r00              9012 	ld	hl, #_prev_jpad
-      002798 36 00                 9013 	ld	(hl), #0x00
-                                   9014 ;geometry_boy.c:173: jpad = 0;
-      00279A 21r09r00              9015 	ld	hl, #_jpad
-      00279D 36 00                 9016 	ld	(hl), #0x00
-                                   9017 ;geometry_boy.c:174: SCX_REG = 0;
-      00279F 3E 00                 9018 	ld	a, #0x00
-      0027A1 E0r00                 9019 	ldh	(_SCX_REG + 0), a
-                                   9020 ;../gbdk/include/gb/gb.h:660: __asm__("di");
-      0027A3 F3                    9021 	di
-                                   9022 ;geometry_boy.c:909: gbt_play(song_Data, 2, 1);
-      0027A4 21 02 01              9023 	ld	hl, #0x102
-      0027A7 E5                    9024 	push	hl
-      0027A8 11r00r00              9025 	ld	de, #_song_Data
-      0027AB D5                    9026 	push	de
-      0027AC CDr00r00              9027 	call	_gbt_play
-      0027AF E8 04                 9028 	add	sp, #4
-                                   9029 ;geometry_boy.c:910: gbt_loop(1);
-      0027B1 3E 01                 9030 	ld	a, #0x01
-      0027B3 F5                    9031 	push	af
-      0027B4 33                    9032 	inc	sp
-      0027B5 CDr00r00              9033 	call	_gbt_loop
-      0027B8 33                    9034 	inc	sp
-                                   9035 ;geometry_boy.c:912: set_interrupts(VBL_IFLAG); //interrupt set after finished drawing the screen
-      0027B9 3E 01                 9036 	ld	a, #0x01
-      0027BB F5                    9037 	push	af
-      0027BC 33                    9038 	inc	sp
-      0027BD CDr00r00              9039 	call	_set_interrupts
-      0027C0 33                    9040 	inc	sp
-                                   9041 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
-      0027C1 FB                    9042 	ei
-                                   9043 ;geometry_boy.c:917: SPRITES_8x8;
-      0027C2 F0r00                 9044 	ldh	a, (_LCDC_REG + 0)
-      0027C4 E6 FB                 9045 	and	a, #0xfb
-      0027C6 E0r00                 9046 	ldh	(_LCDC_REG + 0), a
-                                   9047 ;geometry_boy.c:918: saved_bank = _current_bank;
-      0027C8 F0r00                 9048 	ldh	a, (__current_bank + 0)
-      0027CA EAr05r00              9049 	ld	(#_saved_bank),a
-                                   9050 ;geometry_boy.c:919: screen_t current_screen = TITLE;
-      0027CD F8 00                 9051 	ldhl	sp,	#0
-      0027CF 36 00                 9052 	ld	(hl), #0x00
-                                   9053 ;geometry_boy.c:921: ENABLE_RAM_MBC1;
-      0027D1 21 00 00              9054 	ld	hl, #0x0000
-      0027D4 36 0A                 9055 	ld	(hl), #0x0a
-                                   9056 ;geometry_boy.c:922: if (*saved != 's'){
-      0027D6 21r1Fr00              9057 	ld	hl, #_saved
-      0027D9 6E                    9058 	ld	l, (hl)
-                                   9059 ;	spillPairReg hl
-                                   9060 ;	spillPairReg hl
-      0027DA FAr20r00              9061 	ld	a, (_saved + 1)
-      0027DD 67                    9062 	ld	h, a
-                                   9063 ;	spillPairReg hl
-                                   9064 ;	spillPairReg hl
-      0027DE 7E                    9065 	ld	a, (hl)
-      0027DF D6 73                 9066 	sub	a, #0x73
-      0027E1 28 32                 9067 	jr	Z, 00103$
-                                   9068 ;geometry_boy.c:923: *saved = 's';
-      0027E3 36 73                 9069 	ld	(hl), #0x73
-                                   9070 ;geometry_boy.c:924: for (uint8_t i = 0; i < num_levels; i++){
-      0027E5 F8 01                 9071 	ldhl	sp,	#1
-      0027E7 36 00                 9072 	ld	(hl), #0x00
-      0027E9                       9073 00122$:
-      0027E9 F8 01                 9074 	ldhl	sp,	#1
-      0027EB 7E                    9075 	ld	a, (hl)
-      0027EC 21r13r00              9076 	ld	hl, #_num_levels
-      0027EF 96                    9077 	sub	a, (hl)
-      0027F0 30 23                 9078 	jr	NC, 00103$
-                                   9079 ;geometry_boy.c:925: *(attempts[i]) = 0;
-      0027F2 F8 01                 9080 	ldhl	sp,	#1
-      0027F4 4E                    9081 	ld	c, (hl)
-      0027F5 06 00                 9082 	ld	b, #0x00
-      0027F7 CB 21                 9083 	sla	c
-      0027F9 CB 10                 9084 	rl	b
-      0027FB 21r21r00              9085 	ld	hl, #_attempts
-      0027FE 09                    9086 	add	hl, bc
-      0027FF 2A                    9087 	ld	a,	(hl+)
-      002800 66                    9088 	ld	h, (hl)
-                                   9089 ;	spillPairReg hl
-      002801 6F                    9090 	ld	l, a
+      002734 26 00                 8935 	ld	h, #0x00
+                                   8936 ;	spillPairReg hl
+                                   8937 ;	spillPairReg hl
+      002736 29                    8938 	add	hl, hl
+      002737 29                    8939 	add	hl, hl
+      002738 11r00r00              8940 	ld	de, #_shadow_OAM
+      00273B 19                    8941 	add	hl, de
+                                   8942 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
+      00273C 78                    8943 	ld	a, b
+      00273D 22                    8944 	ld	(hl+), a
+      00273E 71                    8945 	ld	(hl), c
+                                   8946 ;geometry_boy.c:895: is_up = 1;
+      00273F F8 00                 8947 	ldhl	sp,	#0
+      002741 36 01                 8948 	ld	(hl), #0x01
+      002743                       8949 00123$:
+                                   8950 ;geometry_boy.c:898: tick++;
+      002743 21r0Ar00              8951 	ld	hl, #_tick
+      002746 34                    8952 	inc	(hl)
+                                   8953 ;geometry_boy.c:900: delay(LOOP_DELAY);
+      002747 11 14 00              8954 	ld	de, #0x0014
+      00274A D5                    8955 	push	de
+      00274B CDr00r00              8956 	call	_delay
+      00274E E1                    8957 	pop	hl
+      00274F C3rF5r23              8958 	jp	00125$
+      002752                       8959 00161$:
+                                   8960 ;geometry_boy.c:902: }
+      002752 E8 09                 8961 	add	sp, #9
+      002754 C9                    8962 	ret
+                                   8963 ;geometry_boy.c:905: void main()
+                                   8964 ;	---------------------------------
+                                   8965 ; Function main
+                                   8966 ; ---------------------------------
+      002755                       8967 _main::
+      002755 3B                    8968 	dec	sp
+      002756 3B                    8969 	dec	sp
+                                   8970 ;geometry_boy.c:158: vbl_count = 0;
+      002757 21r06r00              8971 	ld	hl, #_vbl_count
+      00275A 36 00                 8972 	ld	(hl), #0x00
+                                   8973 ;geometry_boy.c:159: background_x_shift = 0;
+      00275C AF                    8974 	xor	a, a
+      00275D 21r0Br00              8975 	ld	hl, #_background_x_shift
+      002760 22                    8976 	ld	(hl+), a
+      002761 77                    8977 	ld	(hl), a
+                                   8978 ;geometry_boy.c:160: old_scroll_x = 0;
+      002762 AF                    8979 	xor	a, a
+      002763 21r0Fr00              8980 	ld	hl, #_old_scroll_x
+      002766 22                    8981 	ld	(hl+), a
+      002767 77                    8982 	ld	(hl), a
+                                   8983 ;geometry_boy.c:161: old_background_x_shift = 8 + 3;
+      002768 21r0Dr00              8984 	ld	hl, #_old_background_x_shift
+      00276B 3E 0B                 8985 	ld	a, #0x0b
+      00276D 22                    8986 	ld	(hl+), a
+      00276E AF                    8987 	xor	a, a
+      00276F 77                    8988 	ld	(hl), a
+                                   8989 ;geometry_boy.c:162: player_y = PLAYER_START_Y;
+      002770 21r02r00              8990 	ld	hl, #_player_y
+      002773 36 90                 8991 	ld	(hl), #0x90
+                                   8992 ;geometry_boy.c:163: player_x = PLAYER_START_X;
+      002775 21r03r00              8993 	ld	hl, #_player_x
+      002778 36 20                 8994 	ld	(hl), #0x20
+                                   8995 ;geometry_boy.c:164: player_dx = 3;
+      00277A 21r01r00              8996 	ld	hl, #_player_dx
+      00277D 36 03                 8997 	ld	(hl), #0x03
+                                   8998 ;geometry_boy.c:165: on_ground = 1;
+      00277F 21r05r00              8999 	ld	hl, #_on_ground
+      002782 36 01                 9000 	ld	(hl), #0x01
+                                   9001 ;geometry_boy.c:166: lose = 0;
+      002784 21r07r00              9002 	ld	hl, #_lose
+      002787 36 00                 9003 	ld	(hl), #0x00
+                                   9004 ;geometry_boy.c:167: win = 0;
+      002789 21r06r00              9005 	ld	hl, #_win
+      00278C 36 00                 9006 	ld	(hl), #0x00
+                                   9007 ;geometry_boy.c:168: tick = 0;
+      00278E 21r0Ar00              9008 	ld	hl, #_tick
+      002791 36 00                 9009 	ld	(hl), #0x00
+                                   9010 ;geometry_boy.c:169: parallax_tile_ind = 0;
+      002793 21r11r00              9011 	ld	hl, #_parallax_tile_ind
+      002796 36 00                 9012 	ld	(hl), #0x00
+                                   9013 ;geometry_boy.c:172: prev_jpad = 0;
+      002798 21r08r00              9014 	ld	hl, #_prev_jpad
+      00279B 36 00                 9015 	ld	(hl), #0x00
+                                   9016 ;geometry_boy.c:173: jpad = 0;
+      00279D 21r09r00              9017 	ld	hl, #_jpad
+      0027A0 36 00                 9018 	ld	(hl), #0x00
+                                   9019 ;geometry_boy.c:174: SCX_REG = 0;
+      0027A2 3E 00                 9020 	ld	a, #0x00
+      0027A4 E0r00                 9021 	ldh	(_SCX_REG + 0), a
+                                   9022 ;../gbdk/include/gb/gb.h:660: __asm__("di");
+      0027A6 F3                    9023 	di
+                                   9024 ;geometry_boy.c:910: gbt_play(song_Data, 2, 1);
+      0027A7 21 02 01              9025 	ld	hl, #0x102
+      0027AA E5                    9026 	push	hl
+      0027AB 11r00r00              9027 	ld	de, #_song_Data
+      0027AE D5                    9028 	push	de
+      0027AF CDr00r00              9029 	call	_gbt_play
+      0027B2 E8 04                 9030 	add	sp, #4
+                                   9031 ;geometry_boy.c:911: gbt_loop(1);
+      0027B4 3E 01                 9032 	ld	a, #0x01
+      0027B6 F5                    9033 	push	af
+      0027B7 33                    9034 	inc	sp
+      0027B8 CDr00r00              9035 	call	_gbt_loop
+      0027BB 33                    9036 	inc	sp
+                                   9037 ;geometry_boy.c:913: set_interrupts(VBL_IFLAG); //interrupt set after finished drawing the screen
+      0027BC 3E 01                 9038 	ld	a, #0x01
+      0027BE F5                    9039 	push	af
+      0027BF 33                    9040 	inc	sp
+      0027C0 CDr00r00              9041 	call	_set_interrupts
+      0027C3 33                    9042 	inc	sp
+                                   9043 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
+      0027C4 FB                    9044 	ei
+                                   9045 ;geometry_boy.c:918: SPRITES_8x8;
+      0027C5 F0r00                 9046 	ldh	a, (_LCDC_REG + 0)
+      0027C7 E6 FB                 9047 	and	a, #0xfb
+      0027C9 E0r00                 9048 	ldh	(_LCDC_REG + 0), a
+                                   9049 ;geometry_boy.c:919: saved_bank = _current_bank;
+      0027CB F0r00                 9050 	ldh	a, (__current_bank + 0)
+      0027CD EAr05r00              9051 	ld	(#_saved_bank),a
+                                   9052 ;geometry_boy.c:920: screen_t current_screen = TITLE;
+      0027D0 F8 00                 9053 	ldhl	sp,	#0
+      0027D2 36 00                 9054 	ld	(hl), #0x00
+                                   9055 ;geometry_boy.c:922: ENABLE_RAM_MBC1;
+      0027D4 21 00 00              9056 	ld	hl, #0x0000
+      0027D7 36 0A                 9057 	ld	(hl), #0x0a
+                                   9058 ;geometry_boy.c:923: if (*saved != 's'){
+      0027D9 21r1Fr00              9059 	ld	hl, #_saved
+      0027DC 6E                    9060 	ld	l, (hl)
+                                   9061 ;	spillPairReg hl
+                                   9062 ;	spillPairReg hl
+      0027DD FAr20r00              9063 	ld	a, (_saved + 1)
+      0027E0 67                    9064 	ld	h, a
+                                   9065 ;	spillPairReg hl
+                                   9066 ;	spillPairReg hl
+      0027E1 7E                    9067 	ld	a, (hl)
+      0027E2 D6 73                 9068 	sub	a, #0x73
+      0027E4 28 32                 9069 	jr	Z, 00103$
+                                   9070 ;geometry_boy.c:924: *saved = 's';
+      0027E6 36 73                 9071 	ld	(hl), #0x73
+                                   9072 ;geometry_boy.c:925: for (uint8_t i = 0; i < num_levels; i++){
+      0027E8 F8 01                 9073 	ldhl	sp,	#1
+      0027EA 36 00                 9074 	ld	(hl), #0x00
+      0027EC                       9075 00122$:
+      0027EC F8 01                 9076 	ldhl	sp,	#1
+      0027EE 7E                    9077 	ld	a, (hl)
+      0027EF 21r13r00              9078 	ld	hl, #_num_levels
+      0027F2 96                    9079 	sub	a, (hl)
+      0027F3 30 23                 9080 	jr	NC, 00103$
+                                   9081 ;geometry_boy.c:926: *(attempts[i]) = 0;
+      0027F5 F8 01                 9082 	ldhl	sp,	#1
+      0027F7 4E                    9083 	ld	c, (hl)
+      0027F8 06 00                 9084 	ld	b, #0x00
+      0027FA CB 21                 9085 	sla	c
+      0027FC CB 10                 9086 	rl	b
+      0027FE 21r21r00              9087 	ld	hl, #_attempts
+      002801 09                    9088 	add	hl, bc
+      002802 2A                    9089 	ld	a,	(hl+)
+      002803 66                    9090 	ld	h, (hl)
                                    9091 ;	spillPairReg hl
-                                   9092 ;	spillPairReg hl
-      002802 AF                    9093 	xor	a, a
-      002803 22                    9094 	ld	(hl+), a
-      002804 77                    9095 	ld	(hl), a
-                                   9096 ;geometry_boy.c:926: *(px_progress[i]) = 0;
-      002805 21r23r00              9097 	ld	hl, #_px_progress
-      002808 09                    9098 	add	hl, bc
-      002809 2A                    9099 	ld	a, (hl+)
-      00280A 4F                    9100 	ld	c, a
-      00280B 46                    9101 	ld	b, (hl)
-      00280C AF                    9102 	xor	a, a
-      00280D 02                    9103 	ld	(bc), a
-      00280E 03                    9104 	inc	bc
-      00280F 02                    9105 	ld	(bc), a
-                                   9106 ;geometry_boy.c:924: for (uint8_t i = 0; i < num_levels; i++){
-      002810 F8 01                 9107 	ldhl	sp,	#1
-      002812 34                    9108 	inc	(hl)
-      002813 18 D4                 9109 	jr	00122$
-      002815                       9110 00103$:
-                                   9111 ;geometry_boy.c:929: DISABLE_RAM_MBC1;
-      002815 21 00 00              9112 	ld	hl, #0x0000
-      002818 36 00                 9113 	ld	(hl), #0x00
-                                   9114 ;geometry_boy.c:931: while (1)
-      00281A                       9115 00116$:
-                                   9116 ;geometry_boy.c:933: wait_vbl_done(); //wait until finished drawing the screen
-      00281A CDr00r00              9117 	call	_wait_vbl_done
-                                   9118 ;geometry_boy.c:936: if (current_screen == TITLE)
-      00281D F8 00                 9119 	ldhl	sp,	#0
-      00281F 7E                    9120 	ld	a, (hl)
-      002820 B7                    9121 	or	a, a
-      002821 20 08                 9122 	jr	NZ, 00113$
-                                   9123 ;geometry_boy.c:938: current_screen = title(); 
-      002823 CDrD2r1B              9124 	call	_title
-      002826 F8 00                 9125 	ldhl	sp,	#0
-      002828 73                    9126 	ld	(hl), e
-      002829 18 EF                 9127 	jr	00116$
-      00282B                       9128 00113$:
-                                   9129 ;geometry_boy.c:940: else if (current_screen == LEVEL_SELECT)
-      00282B F8 00                 9130 	ldhl	sp,	#0
-      00282D 7E                    9131 	ld	a, (hl)
-      00282E D6 02                 9132 	sub	a, #0x02
-      002830 20 0B                 9133 	jr	NZ, 00110$
-                                   9134 ;geometry_boy.c:942: level_ind = 0;
-      002832 21r12r00              9135 	ld	hl, #_level_ind
-      002835 36 00                 9136 	ld	(hl), #0x00
-                                   9137 ;geometry_boy.c:943: current_screen = GAME;
-      002837 F8 00                 9138 	ldhl	sp,	#0
-      002839 36 01                 9139 	ld	(hl), #0x01
-      00283B 18 DD                 9140 	jr	00116$
-      00283D                       9141 00110$:
-                                   9142 ;geometry_boy.c:945: else if (current_screen == PLAYER_SELECT)
-      00283D F8 00                 9143 	ldhl	sp,	#0
-      00283F 7E                    9144 	ld	a, (hl)
-      002840 D6 03                 9145 	sub	a, #0x03
-      002842 20 08                 9146 	jr	NZ, 00107$
-                                   9147 ;geometry_boy.c:947: current_screen = player_select();
-      002844 CDrA9r22              9148 	call	_player_select
-      002847 F8 00                 9149 	ldhl	sp,	#0
-      002849 73                    9150 	ld	(hl), e
-      00284A 18 CE                 9151 	jr	00116$
-      00284C                       9152 00107$:
-                                   9153 ;geometry_boy.c:949: else if (current_screen == GAME)
-      00284C F8 00                 9154 	ldhl	sp,	#0
-      00284E 7E                    9155 	ld	a, (hl)
-      00284F 3D                    9156 	dec	a
-      002850 20 C8                 9157 	jr	NZ, 00116$
-                                   9158 ;geometry_boy.c:951: current_screen = game();
-      002852 CDrB1r17              9159 	call	_game
-      002855 F8 00                 9160 	ldhl	sp,	#0
-      002857 73                    9161 	ld	(hl), e
-      002858 18 C0                 9162 	jr	00116$
-                                   9163 ;geometry_boy.c:955: }
-      00285A 33                    9164 	inc	sp
-      00285B 33                    9165 	inc	sp
-      00285C C9                    9166 	ret
-                                   9167 	.area _CODE
-                                   9168 	.area _INITIALIZER
-      000000                       9169 __xinit__player_dy:
-      000000 00                    9170 	.db #0x00	;  0
-      000001                       9171 __xinit__player_dx:
-      000001 03                    9172 	.db #0x03	;  3
-      000002                       9173 __xinit__player_y:
-      000002 90                    9174 	.db #0x90	; 144
-      000003                       9175 __xinit__player_x:
-      000003 20                    9176 	.db #0x20	; 32
-      000004                       9177 __xinit__player_sprite_num:
-      000004 00                    9178 	.db #0x00	; 0
-      000005                       9179 __xinit__on_ground:
-      000005 01                    9180 	.db #0x01	; 1
-      000006                       9181 __xinit__win:
-      000006 00                    9182 	.db #0x00	; 0
-      000007                       9183 __xinit__lose:
-      000007 00                    9184 	.db #0x00	; 0
-      000008                       9185 __xinit__prev_jpad:
-      000008 00                    9186 	.db #0x00	; 0
-      000009                       9187 __xinit__jpad:
-      000009 00                    9188 	.db #0x00	; 0
-      00000A                       9189 __xinit__tick:
-      00000A 00                    9190 	.db #0x00	; 0
-      00000B                       9191 __xinit__background_x_shift:
-      00000B 00 00                 9192 	.dw #0x0000
-      00000D                       9193 __xinit__old_background_x_shift:
-      00000D 0B 00                 9194 	.dw #0x000b
-      00000F                       9195 __xinit__old_scroll_x:
-      00000F 00 00                 9196 	.dw #0x0000
-      000011                       9197 __xinit__parallax_tile_ind:
-      000011 00                    9198 	.db #0x00	; 0
-      000012                       9199 __xinit__level_ind:
-      000012 00                    9200 	.db #0x00	; 0
-      000013                       9201 __xinit__num_levels:
-      000013 01                    9202 	.db #0x01	; 1
-      000014                       9203 __xinit__level_maps:
-      000014r00r00                 9204 	.dw _level1_v2
-      000016                       9205 __xinit__level_widths:
-      000016 00 02                 9206 	.dw #0x0200
-      000018                       9207 __xinit__level_banks:
-      000018 03                    9208 	.db #0x03	; 3
-      000019                       9209 __xinit__current_attempts:
-      000019 00 00                 9210 	.dw #0x0000
-      00001B                       9211 __xinit__px_progress_bar:
-      00001B 00 00                 9212 	.dw #0x0000
-      00001D                       9213 __xinit__old_px_progress_bar:
-      00001D 00 00                 9214 	.dw #0x0000
-      00001F                       9215 __xinit__saved:
-      00001F 00 A0                 9216 	.dw #0xa000
-      000021                       9217 __xinit__attempts:
-      000021 01 A0                 9218 	.dw #0xa001
-      000023                       9219 __xinit__px_progress:
-      000023 00 A1                 9220 	.dw #0xa100
-      000025                       9221 __xinit__title_loaded:
-      000025 00                    9222 	.db #0x00	; 0
-      000026                       9223 __xinit__cursor_title_position:
-      000026 00                    9224 	.db #0x00	; 0
-      000027                       9225 __xinit__cursor_title_position_old:
-      000027 00                    9226 	.db #0x00	; 0
-                                   9227 	.area _CABS (ABS)
+      002804 6F                    9092 	ld	l, a
+                                   9093 ;	spillPairReg hl
+                                   9094 ;	spillPairReg hl
+      002805 AF                    9095 	xor	a, a
+      002806 22                    9096 	ld	(hl+), a
+      002807 77                    9097 	ld	(hl), a
+                                   9098 ;geometry_boy.c:927: *(px_progress[i]) = 0;
+      002808 21r23r00              9099 	ld	hl, #_px_progress
+      00280B 09                    9100 	add	hl, bc
+      00280C 2A                    9101 	ld	a, (hl+)
+      00280D 4F                    9102 	ld	c, a
+      00280E 46                    9103 	ld	b, (hl)
+      00280F AF                    9104 	xor	a, a
+      002810 02                    9105 	ld	(bc), a
+      002811 03                    9106 	inc	bc
+      002812 02                    9107 	ld	(bc), a
+                                   9108 ;geometry_boy.c:925: for (uint8_t i = 0; i < num_levels; i++){
+      002813 F8 01                 9109 	ldhl	sp,	#1
+      002815 34                    9110 	inc	(hl)
+      002816 18 D4                 9111 	jr	00122$
+      002818                       9112 00103$:
+                                   9113 ;geometry_boy.c:930: DISABLE_RAM_MBC1;
+      002818 21 00 00              9114 	ld	hl, #0x0000
+      00281B 36 00                 9115 	ld	(hl), #0x00
+                                   9116 ;geometry_boy.c:932: while (1)
+      00281D                       9117 00116$:
+                                   9118 ;geometry_boy.c:934: wait_vbl_done(); //wait until finished drawing the screen
+      00281D CDr00r00              9119 	call	_wait_vbl_done
+                                   9120 ;geometry_boy.c:937: if (current_screen == TITLE)
+      002820 F8 00                 9121 	ldhl	sp,	#0
+      002822 7E                    9122 	ld	a, (hl)
+      002823 B7                    9123 	or	a, a
+      002824 20 08                 9124 	jr	NZ, 00113$
+                                   9125 ;geometry_boy.c:939: current_screen = title(); 
+      002826 CDrD2r1B              9126 	call	_title
+      002829 F8 00                 9127 	ldhl	sp,	#0
+      00282B 73                    9128 	ld	(hl), e
+      00282C 18 EF                 9129 	jr	00116$
+      00282E                       9130 00113$:
+                                   9131 ;geometry_boy.c:941: else if (current_screen == LEVEL_SELECT)
+      00282E F8 00                 9132 	ldhl	sp,	#0
+      002830 7E                    9133 	ld	a, (hl)
+      002831 D6 02                 9134 	sub	a, #0x02
+      002833 20 0B                 9135 	jr	NZ, 00110$
+                                   9136 ;geometry_boy.c:943: level_ind = 0;
+      002835 21r12r00              9137 	ld	hl, #_level_ind
+      002838 36 00                 9138 	ld	(hl), #0x00
+                                   9139 ;geometry_boy.c:944: current_screen = GAME;
+      00283A F8 00                 9140 	ldhl	sp,	#0
+      00283C 36 01                 9141 	ld	(hl), #0x01
+      00283E 18 DD                 9142 	jr	00116$
+      002840                       9143 00110$:
+                                   9144 ;geometry_boy.c:946: else if (current_screen == PLAYER_SELECT)
+      002840 F8 00                 9145 	ldhl	sp,	#0
+      002842 7E                    9146 	ld	a, (hl)
+      002843 D6 03                 9147 	sub	a, #0x03
+      002845 20 08                 9148 	jr	NZ, 00107$
+                                   9149 ;geometry_boy.c:948: current_screen = player_select();
+      002847 CDrACr22              9150 	call	_player_select
+      00284A F8 00                 9151 	ldhl	sp,	#0
+      00284C 73                    9152 	ld	(hl), e
+      00284D 18 CE                 9153 	jr	00116$
+      00284F                       9154 00107$:
+                                   9155 ;geometry_boy.c:950: else if (current_screen == GAME)
+      00284F F8 00                 9156 	ldhl	sp,	#0
+      002851 7E                    9157 	ld	a, (hl)
+      002852 3D                    9158 	dec	a
+      002853 20 C8                 9159 	jr	NZ, 00116$
+                                   9160 ;geometry_boy.c:952: current_screen = game();
+      002855 CDrB1r17              9161 	call	_game
+      002858 F8 00                 9162 	ldhl	sp,	#0
+      00285A 73                    9163 	ld	(hl), e
+      00285B 18 C0                 9164 	jr	00116$
+                                   9165 ;geometry_boy.c:956: }
+      00285D 33                    9166 	inc	sp
+      00285E 33                    9167 	inc	sp
+      00285F C9                    9168 	ret
+                                   9169 	.area _CODE
+                                   9170 	.area _INITIALIZER
+      000000                       9171 __xinit__player_dy:
+      000000 00                    9172 	.db #0x00	;  0
+      000001                       9173 __xinit__player_dx:
+      000001 03                    9174 	.db #0x03	;  3
+      000002                       9175 __xinit__player_y:
+      000002 90                    9176 	.db #0x90	; 144
+      000003                       9177 __xinit__player_x:
+      000003 20                    9178 	.db #0x20	; 32
+      000004                       9179 __xinit__player_sprite_num:
+      000004 00                    9180 	.db #0x00	; 0
+      000005                       9181 __xinit__on_ground:
+      000005 01                    9182 	.db #0x01	; 1
+      000006                       9183 __xinit__win:
+      000006 00                    9184 	.db #0x00	; 0
+      000007                       9185 __xinit__lose:
+      000007 00                    9186 	.db #0x00	; 0
+      000008                       9187 __xinit__prev_jpad:
+      000008 00                    9188 	.db #0x00	; 0
+      000009                       9189 __xinit__jpad:
+      000009 00                    9190 	.db #0x00	; 0
+      00000A                       9191 __xinit__tick:
+      00000A 00                    9192 	.db #0x00	; 0
+      00000B                       9193 __xinit__background_x_shift:
+      00000B 00 00                 9194 	.dw #0x0000
+      00000D                       9195 __xinit__old_background_x_shift:
+      00000D 0B 00                 9196 	.dw #0x000b
+      00000F                       9197 __xinit__old_scroll_x:
+      00000F 00 00                 9198 	.dw #0x0000
+      000011                       9199 __xinit__parallax_tile_ind:
+      000011 00                    9200 	.db #0x00	; 0
+      000012                       9201 __xinit__level_ind:
+      000012 00                    9202 	.db #0x00	; 0
+      000013                       9203 __xinit__num_levels:
+      000013 01                    9204 	.db #0x01	; 1
+      000014                       9205 __xinit__level_maps:
+      000014r00r00                 9206 	.dw _level1_v2
+      000016                       9207 __xinit__level_widths:
+      000016 00 02                 9208 	.dw #0x0200
+      000018                       9209 __xinit__level_banks:
+      000018 03                    9210 	.db #0x03	; 3
+      000019                       9211 __xinit__current_attempts:
+      000019 00 00                 9212 	.dw #0x0000
+      00001B                       9213 __xinit__px_progress_bar:
+      00001B 00 00                 9214 	.dw #0x0000
+      00001D                       9215 __xinit__old_px_progress_bar:
+      00001D 00 00                 9216 	.dw #0x0000
+      00001F                       9217 __xinit__saved:
+      00001F 00 A0                 9218 	.dw #0xa000
+      000021                       9219 __xinit__attempts:
+      000021 01 A0                 9220 	.dw #0xa001
+      000023                       9221 __xinit__px_progress:
+      000023 00 A1                 9222 	.dw #0xa100
+      000025                       9223 __xinit__title_loaded:
+      000025 00                    9224 	.db #0x00	; 0
+      000026                       9225 __xinit__cursor_title_position:
+      000026 00                    9226 	.db #0x00	; 0
+      000027                       9227 __xinit__cursor_title_position_old:
+      000027 00                    9228 	.db #0x00	; 0
+                                   9229 	.area _CABS (ABS)

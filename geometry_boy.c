@@ -497,7 +497,6 @@ screen_t game()
 
     while (1)
     {
-        gbt_update(); // This will change to ROM bank 1. Basically play the music
         if (vbl_count == 0){
             wait_vbl_done();
         }
@@ -551,7 +550,10 @@ screen_t game()
 
 
         tick++;
-        delay(LOOP_DELAY);
+        gbt_update(); // This will change to ROM bank 1. Basically play the music
+        delay(8); // LOOP_DELAY
+        gbt_update(); // This will change to ROM bank 1. Basically play the music
+        delay(8); // LOOP_DELAY
     }
 }
 
@@ -756,7 +758,8 @@ screen_t title()
         }
 
         tick++;
-        delay(LOOP_DELAY);
+        gbt_update(); // This will change to ROM bank 1. Basically play the music
+        delay(18); // LOOP_DELAY
     }
 }
 
