@@ -3,8 +3,12 @@
 #include <gbdk/console.h>
 #include <gbdk/font.h>
 
+
 #include <stdio.h>
 #include <stdlib.h>
+
+//music
+#include "music/gbt_player.h"
 
 // sprites and tiles
 #include "sprites/players.c"
@@ -67,6 +71,9 @@ typedef enum
     LEVEL_SELECT,
     PLAYER_SELECT,
 } screen_t;
+
+//For music
+extern const unsigned char * song_Data[];
 
 // parallax tileset
 
@@ -490,6 +497,7 @@ screen_t game()
 
     while (1)
     {
+        gbt_update(); // This will change to ROM bank 1. Basically play the music
         if (vbl_count == 0){
             wait_vbl_done();
         }
@@ -894,7 +902,15 @@ screen_t player_select()
 void main()
 {
     reset_tracking();
+    //load music begins
+    disable_interrupts();
+    gbt_play(song_Data, 2, 7);
+    gbt_loop(1);
+
+    set_interrupts(VBL_IFLAG); //interrupt set after finished drawing the screen
     enable_interrupts();
+    // end of music setup
+
     // BGP_REG = OBP0_REG = OBP1_REG = 0xE4;
     SPRITES_8x8;
     saved_bank = _current_bank;
@@ -912,9 +928,12 @@ void main()
 
     while (1)
     {
+        wait_vbl_done(); //wait until finished drawing the screen
+        gbt_update(); // This will change to ROM bank 1. Basically play the music
+        
         if (current_screen == TITLE)
         {
-            current_screen = title();
+            current_screen = title(); 
         }
         else if (current_screen == LEVEL_SELECT)
         {
@@ -929,5 +948,6 @@ void main()
         {
             current_screen = game();
         }
+
     }
 }

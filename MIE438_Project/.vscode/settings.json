@@ -1,3 +1,7 @@
 {
-    "git.ignoreLimitWarning": true
+    "git.ignoreLimitWarning": true,
+    "files.associations": {
+        "gb.h": "c",
+        "gbt_player.h": "c"
+    }
 }

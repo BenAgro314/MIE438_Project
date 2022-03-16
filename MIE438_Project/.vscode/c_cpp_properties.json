@@ -3,10 +3,12 @@
         {
             "name": "Linux",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:\\gbdk-win\\gbdk\\include\\**",
+                "C:/gbdk-win/gbdk/include"
             ],
             "defines": [],
-            "compilerPath": "~/gbdk/bin/lcc/ ",
+            "compilerPath": "~\\gbdk\\in\\lcc\\ ",
             "cStandard": "gnu17",
             "cppStandard": "gnu++14",
             "intelliSenseMode": "linux-gcc-x64"
