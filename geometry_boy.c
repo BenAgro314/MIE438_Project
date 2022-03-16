@@ -904,7 +904,7 @@ void main()
     reset_tracking();
     //load music begins
     disable_interrupts();
-    gbt_play(song_Data, 2, 7);
+    gbt_play(song_Data, 2, 1);
     gbt_loop(1);
 
     set_interrupts(VBL_IFLAG); //interrupt set after finished drawing the screen
