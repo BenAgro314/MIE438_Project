@@ -30,9 +30,9 @@ Area                       Addr        Size        Decimal Bytes (Attributes)
      0000004E  l__HEADER |    00000078  l__DATA   |    00000082  l__HEADER
      00000200  s__CODE   |    00000324  l__HOME   |    0000066F  l__CODE_1
      000009ED  l__CODE_2 |    00002000  _rROMB0   |    00003000  _rROMB1  
-     000034F1  l__CODE   |    000036F1  s__HOME   |    00003A15  s__BASE  
-     00003A15  s__CODE_0 |    00003A15  s__INITIA |    00003A15  s__LIT   
-     00003A3D  s__GSINIT |    00003A49  s__GSFINA |    00003FFC  l__CODE_3
+     00003529  l__CODE   |    00003729  s__HOME   |    00003A4D  s__BASE  
+     00003A4D  s__CODE_0 |    00003A4D  s__INITIA |    00003A4D  s__LIT   
+     00003A75  s__GSINIT |    00003A81  s__GSFINA |    00003FFC  l__CODE_3
      00004000  _rRAMB    |    00008000  __VRAM    |    00008000  __VRAM800
      00008800  __VRAM880 |    00009000  __VRAM900 |    00009800  __SCRN0  
      00009C00  __SCRN1   |    0000A000  __SRAM    |    0000C000  __RAM    
@@ -75,7 +75,7 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_CODE                  00000200    000034F1 =       13553. bytes (REL,CON)
+_CODE                  00000200    00003529 =       13609. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
@@ -87,15 +87,15 @@ _CODE                  00000200    000034F1 =       13553. bytes (REL,CON)
      0000157D  _lcd_inte |    00001584  _vbl_inte |    000015B6  _vbl_inte
      000015E6  _scroll_b |    000016AF  _init_bac |    000016F5  _collide 
      00001DAD  _tick_pla |    00001E05  _render_p |    00001E14  _initiali
-     00001E31  _game     |    0000225D  _title    |    0000292B  _game_tit
-     00002936  _start_te |    0000293B  _player_t |    00002941  _player_s
-     00002DEA  _level_se |    000032BC  _level_te |    000032C1  _progress
-     000032C9  _attempts |    000032D1  _back_tex |    000032D5  _main    
-     0000344E  gbt_get_p |    0000346B  gbt_get_p |    0000348A  _gbt_play
-     00003545  _gbt_paus |    00003556  _gbt_loop |    0000355D  _gbt_stop
-     00003568  _gbt_enab |    0000356F  _gbt_upda |    00003674  _get_vram
-     00003681  _get_win_ |    00003689  _get_bkg_ |    000036B0  _set_vram
-     000036BF  _set_win_ |    000036C7  _set_bkg_
+     00001E31  _game     |    00002289  _title    |    00002957  _game_tit
+     00002962  _start_te |    00002967  _player_t |    0000296D  _player_s
+     00002E16  _level_se |    000032F4  _level_te |    000032F9  _progress
+     00003301  _attempts |    00003309  _back_tex |    0000330D  _main    
+     00003486  gbt_get_p |    000034A3  gbt_get_p |    000034C2  _gbt_play
+     0000357D  _gbt_paus |    0000358E  _gbt_loop |    00003595  _gbt_stop
+     000035A0  _gbt_enab |    000035A7  _gbt_upda |    000036AC  _get_vram
+     000036B9  _get_win_ |    000036C1  _get_bkg_ |    000036E8  _set_vram
+     000036F7  _set_win_ |    000036FF  _set_bkg_
 ASxxxx Linker V03.00 + NoICE + sdld,  page 4.
 Hexadecimal  [32-Bits]
 
@@ -270,34 +270,34 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_HOME                  000036F1    00000324 =         804. bytes (REL,CON)
+_HOME                  00003729    00000324 =         804. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     000036F1  .memset_s |    000036FA  .memcpy_s |    00003717  .remove_V
-     0000371A  .remove_i |    00003737  .add_VBL  |    0000373A  .add_int 
-     00003745  .wait_vbl |    00003745  _wait_vbl |    00003755  .display_
-     00003755  _display_ |    0000376D  _remove_V |    00003778  _add_VBL 
-     00003783  __divsuch |    00003790  __modsuch |    0000379A  __divusch
-     000037AC  __modusch |    000037BC  __divscha |    000037C8  __modscha
-     000037D2  __divsint |    000037E3  __modsint |    000037F2  __divucha
-     000037FE  __moducha |    00003808  __divuint |    00003819  __moduint
-     00003828  .div8     |    00003828  .mod8     |    00003830  .div16   
-     00003830  .mod16    |    00003866  .divu8    |    00003866  .modu8   
-     00003869  .divu16   |    00003869  .modu16   |    000038AA  _set_tile
-     000038AF  _set_bkg_ |    000038AF  _set_win_ |    000038B7  _set_spri
-     000038E7  .padup    |    000038E7  _waitpadu |    000038F7  .jpad    
-     000038F7  _joypad   |    0000391F  _waitpad  |    00003922  .wait_pad
-     00003929  _delay    |    0000392E  .delay    |    00003989  _add_LCD 
-     00003994  .add_LCD  |    0000399A  _remove_L |    000039A5  .remove_L
-     000039AB  _set_bkg_ |    000039BF  .set_xy_w |    000039C8  .set_xy_b
-     000039D7  .set_xy_t
+     00003729  .memset_s |    00003732  .memcpy_s |    0000374F  .remove_V
+     00003752  .remove_i |    0000376F  .add_VBL  |    00003772  .add_int 
+     0000377D  .wait_vbl |    0000377D  _wait_vbl |    0000378D  .display_
+     0000378D  _display_ |    000037A5  _remove_V |    000037B0  _add_VBL 
+     000037BB  __divsuch |    000037C8  __modsuch |    000037D2  __divusch
+     000037E4  __modusch |    000037F4  __divscha |    00003800  __modscha
+     0000380A  __divsint |    0000381B  __modsint |    0000382A  __divucha
+     00003836  __moducha |    00003840  __divuint |    00003851  __moduint
+     00003860  .div8     |    00003860  .mod8     |    00003868  .div16   
+     00003868  .mod16    |    0000389E  .divu8    |    0000389E  .modu8   
+     000038A1  .divu16   |    000038A1  .modu16   |    000038E2  _set_tile
+     000038E7  _set_bkg_ |    000038E7  _set_win_ |    000038EF  _set_spri
+     0000394E  _add_LCD  |    00003959  .add_LCD  |    0000395F  _remove_L
+     0000396A  .remove_L |    00003970  .padup    |    00003970  _waitpadu
+     00003980  .jpad     |    00003980  _joypad   |    000039A8  _waitpad 
+     000039AB  .wait_pad |    000039B2  _delay    |    000039B7  .delay   
+     000039E3  _set_bkg_ |    000039F7  .set_xy_w |    00003A00  .set_xy_b
+     00003A0F  .set_xy_t
 ASxxxx Linker V03.00 + NoICE + sdld,  page 23.
 Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_INITIALIZER           00003A15    00000028 =          40. bytes (REL,CON)
+_INITIALIZER           00003A4D    00000028 =          40. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
@@ -306,17 +306,17 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_GSINIT                00003A3D    0000000C =          12. bytes (REL,CON)
+_GSINIT                00003A75    0000000C =          12. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     00003A3D  gsinit   
+     00003A75  gsinit   
 ASxxxx Linker V03.00 + NoICE + sdld,  page 25.
 Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_GSFINAL               00003A49    00000001 =           1. bytes (REL,CON)
+_GSFINAL               00003A81    00000001 =           1. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
@@ -432,9 +432,9 @@ Libraries Linked                          [ object file ]
 ../gbdk/lib/small/asxxxx/gb/gb.lib        [ get_tile.o ]
 ../gbdk/lib/small/asxxxx/gb/gb.lib        [ set_data.o ]
 ../gbdk/lib/small/asxxxx/gb/gb.lib        [ set_tile.o ]
+../gbdk/lib/small/asxxxx/gb/gb.lib        [ lcd.o ]
 ../gbdk/lib/small/asxxxx/gb/gb.lib        [ pad.o ]
 ../gbdk/lib/small/asxxxx/gb/gb.lib        [ delay.o ]
-../gbdk/lib/small/asxxxx/gb/gb.lib        [ lcd.o ]
 ../gbdk/lib/small/asxxxx/gb/gb.lib        [ set_bk_t.o ]
 ../gbdk/lib/small/asxxxx/gb/gb.lib        [ set_xy_t.o ]
 

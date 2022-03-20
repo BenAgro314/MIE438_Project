@@ -562,9 +562,18 @@ screen_t game()
         prev_jpad = jpad;
         jpad = joypad();
 
-        if (debounce_input(J_A, jpad, prev_jpad))
-        { // press A to exit
-            return TITLE;
+        if (debounce_input(J_B, jpad, prev_jpad))
+        { // press B to go back
+            disable_interrupts();
+            remove_LCD(lcd_interrupt_game);
+            remove_VBL(vbl_interrupt_game);
+            enable_interrupts();
+            player_x = 0;
+            player_y = 0;
+            render_player();
+            HIDE_WIN;
+            HIDE_SPRITES;
+            return LEVEL_SELECT;
         }
 
         tick_player();
@@ -656,6 +665,7 @@ screen_t title()
     SWITCH_ROM_MBC1(title_map_v2Bank);
     init_background(title_map_v2, title_map_v2Width);
     SWITCH_ROM_MBC1(saved_bank);
+
 
     if (title_loaded)
     {
@@ -996,7 +1006,9 @@ const char back_text[] = {'B', 'A', 'C', 'K'};
 screen_t level_select()
 {
     
+    HIDE_WIN;
     SHOW_BKG;
+    SHOW_SPRITES;
 
     wait_vbl_done();
     black_background();
