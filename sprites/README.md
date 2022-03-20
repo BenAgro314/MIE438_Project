@@ -12,22 +12,6 @@
 
 - 8x8 player sprite
 
-`gb_tileset.c`
-
-0. white
-1. light grey
-2. dark grey
-3. black
-4. big black spike
-5. small black spike
-6. white for parallax
-7. light grey for parallax
-8. dark grey for parallax
-9. black for parallax
-10. jump circle
-11. jump tile
-12. black half platform
-
 `gb_tileset_v2.c`
 
 0. white

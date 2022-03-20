@@ -16,14 +16,15 @@ endif
 make:
 	$(WINE) music/mod2gbt music/song_gdash.mod song 2
 	$(CC) -Wa-l -Wf-bo2 -c -o bank2.o sprites/title_map_v2.c
-	$(CC) -Wa-l -Wf-bo3 -c -o bank3.o sprites/level1_v2.c
+	$(CC) -Wa-l -Wf-bo3 -c -o level1.o sprites/level1_v2.c
+	$(CC) -Wa-l -Wf-bo3 -c -o level2.o sprites/level2.c
 	$(CC) -Wa-l -c -o geometry_boy.o geometry_boy.c
 	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o output.o output.c
 	$(CC) -c -o gbt_player.o music/gbt_player.s
 	$(CC) -c -o gbt_player_bank1.o music/gbt_player_bank1.s
 
 	
-	$(CC) -Wl-m -Wl-yt3 -Wl-yo4 -Wl-ya4 -o geometry_boy.gb bank2.o bank3.o geometry_boy.o output.o gbt_player.o gbt_player_bank1.o
+	$(CC) -Wl-m -Wl-yt3 -Wl-yo4 -Wl-ya4 -o geometry_boy.gb bank2.o level1.o level2.o geometry_boy.o output.o gbt_player.o gbt_player_bank1.o
 	rm -f *.sym
 
 clean:
