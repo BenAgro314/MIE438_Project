@@ -3,11 +3,10 @@
 #include <gbdk/console.h>
 #include <gbdk/font.h>
 
-
 #include <stdio.h>
 #include <stdlib.h>
 
-//music
+// music
 #include "music/gbt_player.h"
 
 // sprites and tiles
@@ -23,6 +22,7 @@
 
 #include "sprites/nima.c"
 #include "sprites/aero.c"
+#include "sprites/aero_light.c"
 #include "sprites/aero_cursors.c"
 #include "sprites/progress_bar_tiles.c"
 
@@ -72,8 +72,8 @@ typedef enum
     PLAYER_SELECT,
 } screen_t;
 
-//For music
-extern const unsigned char * song_Data[];
+// For music
+extern const unsigned char *song_Data[];
 
 // parallax tileset
 
@@ -107,13 +107,13 @@ uint8_t saved_bank;
 uint8_t vbl_count;
 // for parallax
 uint8_t parallax_tile_ind = 0;
-//uint8_t white_tile_ind = 0;
-//uint8_t green_tile_ind = 128; // 8*16;
+// uint8_t white_tile_ind = 0;
+// uint8_t green_tile_ind = 128; // 8*16;
 
 // level stuff
 uint8_t level_ind = 0;
-uint8_t num_levels = 1;
-unsigned char * level_maps[1] = {level1_v2};
+uint8_t num_levels = 4; // Theres only 1
+unsigned char *level_maps[1] = {level1_v2};
 uint16_t level_widths[1] = {level1_v2Width};
 uint8_t level_banks[1] = {level1_v2Bank};
 uint16_t current_attempts = 0;
@@ -124,12 +124,12 @@ uint16_t old_px_progress_bar = 0;
 #define START_RAM 0xa000
 #define START_ATTEMPTS 0xa001
 #define START_PROGRESS 0xa100
-char * saved = (uint8_t *) START_RAM;
-uint16_t* attempts[1] = {
-    (int *) START_ATTEMPTS, 
+char *saved = (uint8_t *)START_RAM;
+uint16_t *attempts[1] = {
+    (int *)START_ATTEMPTS,
 }; // *(attempts[i]) is the number of attempts at level i
-uint16_t* px_progress[1] = {
-    (int *) START_PROGRESS,
+uint16_t *px_progress[1] = {
+    (int *)START_PROGRESS,
 }; // *(px_progress[i]) is the maximum pixel progress at level i
 
 #define NUMBER_TILES 9
@@ -148,13 +148,14 @@ uint16_t* px_progress[1] = {
 
 inline void init_tiles()
 {
-    set_bkg_data(0, 9, gb_tileset_v2);        // load tiles into VRAM
-    set_bkg_data(9, 36, aero + 3*16);
-    set_bkg_data(45, 1, aero + 47*16);
+    set_bkg_data(0, 9, gb_tileset_v2); // load tiles into VRAM
+    set_bkg_data(9, 36, aero + 3 * 16);
+    set_bkg_data(45, 1, aero + 47 * 16);
     set_bkg_data(46, 9, progress_bar_tiles);
 }
 
-inline void reset_tracking(){
+inline void reset_tracking()
+{
     vbl_count = 0;
     background_x_shift = 0;
     old_scroll_x = 0;
@@ -167,37 +168,50 @@ inline void reset_tracking(){
     win = 0;
     tick = 0;
     parallax_tile_ind = 0;
-    //white_tile_ind = 0;
-    //green_tile_ind = 128; // 8*16;
+    // white_tile_ind = 0;
+    // green_tile_ind = 128; // 8*16;
     prev_jpad = 0;
     jpad = 0;
     SCX_REG = 0;
 }
 
 const char attempts_title[] = {
-    'A', 'T', 'T', 'E', 'M', 'P', 'T', 
+    'A',
+    'T',
+    'T',
+    'E',
+    'M',
+    'P',
+    'T',
 };
 
-inline void init_HUD(){
-    for (render_row = 0; render_row < 3; render_row++){
-        for (render_col = 0; render_col < 20; render_col ++){
+inline void init_HUD()
+{
+    for (render_row = 0; render_row < 3; render_row++)
+    {
+        for (render_col = 0; render_col < 20; render_col++)
+        {
             set_win_tile_xy(render_col, render_row, BLACK_TILE);
         }
     }
-    for (render_col = 0; render_col < 7; render_col ++){ // attempts
+    for (render_col = 0; render_col < 7; render_col++)
+    { // attempts
         set_win_tile_xy(render_col, 0, LETTER_TILES + (attempts_title[render_col] - 65));
     }
     set_win_tile_xy(7, 0, COLON_TILE); // colon
-    for (render_col = 8; render_col < 11; render_col ++){ //initialize attempts to 000
-        set_win_tile_xy(render_col, 0, NUMBER_TILES); 
+    for (render_col = 8; render_col < 11; render_col++)
+    { // initialize attempts to 000
+        set_win_tile_xy(render_col, 0, NUMBER_TILES);
     }
     old_px_progress_bar = 0;
     px_progress_bar = 0;
 }
 
-inline void update_HUD_attempts(){
+inline void update_HUD_attempts()
+{
     uint16_t temp = current_attempts;
-    for (render_col = 10; render_col >=8; render_col --){
+    for (render_col = 10; render_col >= 8; render_col--)
+    {
         set_win_tile_xy(render_col, 0, temp % 10 + NUMBER_TILES);
         temp = temp / 10;
     }
@@ -206,38 +220,47 @@ inline void update_HUD_attempts(){
 
 #define NUM_PROGRESS_BAR_TILES 18
 
-void update_HUD_bar(){
-    px_progress_bar = NUM_PROGRESS_BAR_TILES*(background_x_shift + player_x)/(level_widths[level_ind]); // 20 *8 * (px_progress)/(level_width*8)
+void update_HUD_bar()
+{
+    px_progress_bar = NUM_PROGRESS_BAR_TILES * (background_x_shift + player_x) / (level_widths[level_ind]); // 20 *8 * (px_progress)/(level_width*8)
     render_col = 0;
-    if (px_progress_bar >= old_px_progress_bar){
+    if (px_progress_bar >= old_px_progress_bar)
+    {
         old_px_progress_bar = px_progress_bar;
-        while (px_progress_bar > 8){
+        while (px_progress_bar > 8)
+        {
             render_col++;
             px_progress_bar -= 8;
         }
-        set_win_tile_xy(render_col, 1, PROGRESS_BAR_TILES + px_progress_bar); 
-    } else {
+        set_win_tile_xy(render_col, 1, PROGRESS_BAR_TILES + px_progress_bar);
+    }
+    else
+    {
         old_px_progress_bar = px_progress_bar;
-        while (render_col < NUM_PROGRESS_BAR_TILES){
-            set_win_tile_xy(render_col, 1, PROGRESS_BAR_TILES); 
+        while (render_col < NUM_PROGRESS_BAR_TILES)
+        {
+            set_win_tile_xy(render_col, 1, PROGRESS_BAR_TILES);
             render_col++;
         }
     }
 }
 
-void lcd_interrupt_game(){
+void lcd_interrupt_game()
+{
     HIDE_WIN;
-}//hide the window, triggers at the scanline LYC
+} // hide the window, triggers at the scanline LYC
 
 // see this for info: http://zalods.blogspot.com/2016/07/game-boy-development-tips-and-tricks-ii.html
-void vbl_interrupt_game(){
+void vbl_interrupt_game()
+{
     SHOW_WIN;
-    vbl_count ++;
+    vbl_count++;
     old_scroll_x += (background_x_shift - old_scroll_x + 1) >> 1;
-    SCX_REG = old_scroll_x;// + player_dx;
+    SCX_REG = old_scroll_x; // + player_dx;
 }
 
-void vbl_interrupt_title(){
+void vbl_interrupt_title()
+{
     vbl_count++;
     old_scroll_x += (background_x_shift - old_scroll_x + 1) >> 1;
     SCX_REG = old_scroll_x + player_dx;
@@ -249,7 +272,7 @@ void scroll_bkg_x(uint8_t x_shift, char *map, uint16_t map_width)
     if (background_x_shift >= old_background_x_shift)
     {
         // + x_shift ensures we don't ever see the newly written data
-        old_background_x_shift = ((background_x_shift >> 3) << 3) + 8 + x_shift; //old_background_x_shift = (background_x_shift / 8) * 8 + 8 + x_shift;
+        old_background_x_shift = ((background_x_shift >> 3) << 3) + 8 + x_shift; // old_background_x_shift = (background_x_shift / 8) * 8 + 8 + x_shift;
         count = (background_x_shift >> 3) - 1;
         count = (count + 32) % map_width;
         for (render_row = 0; render_row < 18; render_row++)
@@ -272,13 +295,15 @@ void init_background(char *map, uint16_t map_width)
     }
 }
 
-inline void clear_background(){
+inline void clear_background()
+{
     // write 0 to all background tiles
 
-    set_bkg_data(0, 1, gb_tileset_v2);        // load tiles into VRAM
+    set_bkg_data(0, 1, gb_tileset_v2); // load tiles into VRAM
     for (render_row = 0; render_row < 18; render_row++)
     {
-        for (render_col = 0; render_col < 20; render_col ++){
+        for (render_col = 0; render_col < 20; render_col++)
+        {
             set_bkg_tile_xy(render_col, render_row, 0);
         }
     }
@@ -298,8 +323,7 @@ inline uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px)
 {
     return get_bkg_tile_xy(
         x_px_to_tile_ind(x_px + background_x_shift),
-        y_px_to_tile_ind(y_px)
-    );
+        y_px_to_tile_ind(y_px));
 }
 
 inline uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button)
@@ -307,21 +331,23 @@ inline uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t butto
     return (button == target) && !(prev_button == target);
 }
 
-inline uint8_t inside_player(uint8_t x, uint8_t y){
+inline uint8_t inside_player(uint8_t x, uint8_t y)
+{
     // returns 1 if (x,y) is inside the player, otherwise returns 0
-    if (x >= player_x && x < (player_x + PLAYER_WIDTH) && y >= player_y && y < (player_y + PLAYER_WIDTH)){
+    if (x >= player_x && x < (player_x + PLAYER_WIDTH) && y >= player_y && y < (player_y + PLAYER_WIDTH))
+    {
         return 1;
     }
     return 0;
 }
 
-inline uint8_t rect_collision_with_player(uint8_t x_left, uint8_t x_right, uint8_t y_top, uint8_t y_bot){
+inline uint8_t rect_collision_with_player(uint8_t x_left, uint8_t x_right, uint8_t y_top, uint8_t y_bot)
+{
     return (
         player_x <= x_right &&
-        player_x + PLAYER_WIDTH - 1 >= x_left  &&
+        player_x + PLAYER_WIDTH - 1 >= x_left &&
         player_y <= y_bot &&
-        player_y + PLAYER_WIDTH - 1 >= y_top
-    );
+        player_y + PLAYER_WIDTH - 1 >= y_top);
 }
 
 void collide(int8_t vel_y)
@@ -334,9 +360,10 @@ void collide(int8_t vel_y)
         tile_x = (player_x + (PLAYER_WIDTH - 1) * (i % 2));
         tile_y = (player_y + (PLAYER_WIDTH - 1) * (i < 2));
         tile = get_tile_by_px(tile_x, tile_y);
-        tile_x = tile_x & 0xF8;  // divide by 8 then multiply by 8
+        tile_x = tile_x & 0xF8; // divide by 8 then multiply by 8
         tile_y = tile_y & 0xF8;
-        if (tile == SMALL_SPIKE_TILE || tile == BIG_SPIKE_TILE) {
+        if (tile == SMALL_SPIKE_TILE || tile == BIG_SPIKE_TILE)
+        {
 #ifndef INVINCIBLE
             player_dx = 0;
             player_dy = 0;
@@ -347,13 +374,13 @@ void collide(int8_t vel_y)
         else if (tile == BLACK_TILE)
         {
             if (vel_y > 0)
-            { // falling down
+            {                               // falling down
                 player_y = player_y & 0xF8; //(player_y / 8) * 8;
                 player_dy = 0;
                 on_ground = 1;
             }
             else if (vel_y < 0)
-            { // jumping up
+            {                                     // jumping up
                 player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
             }
             else
@@ -361,13 +388,15 @@ void collide(int8_t vel_y)
 #ifndef INVINCIBLE
                 player_dx = 0;
                 player_dy = 0;
-                player_x = player_x & 0xF8 ; //(player_x / 8) * 8;
+                player_x = player_x & 0xF8; //(player_x / 8) * 8;
                 lose = 1;
 #endif
             }
-        } 
-        else if (tile == HALF_BLOCK_TILE){ 
-            if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 4, tile_y + 7)){
+        }
+        else if (tile == HALF_BLOCK_TILE)
+        {
+            if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 4, tile_y + 7))
+            {
                 if (vel_y > 0)
                 { // falling down
                     player_y = tile_y - 4;
@@ -375,30 +404,33 @@ void collide(int8_t vel_y)
                     on_ground = 1;
                 }
                 else if (vel_y < 0)
-                { // jumping up
+                {                                     // jumping up
                     player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
                 }
                 else
                 { // player cannot go through walls
-    #ifndef INVINCIBLE
+#ifndef INVINCIBLE
                     player_dx = 0;
                     player_dy = 0;
-                    player_x = player_x & 0xF8 ; //(player_x / 8) * 8;
+                    player_x = player_x & 0xF8; //(player_x / 8) * 8;
                     lose = 1;
-    #endif
+#endif
                 }
             }
-
         }
-        else if (tile == JUMP_TILE_TILE) { // hitbox is 2x8 rectangle at bottom, and no lookahead
-            if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) && vel_y == 0){
+        else if (tile == JUMP_TILE_TILE)
+        { // hitbox is 2x8 rectangle at bottom, and no lookahead
+            if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) && vel_y == 0)
+            {
                 player_dy = -PLAYER_SUPER_JUMP_VEL;
             }
         }
         else if (tile == JUMP_CIRCLE_TILE) // jump circle , hitbox is 4x4 square in center
         {
-            if (jpad == J_UP && vel_y == 0){ // pressing up and no lookadhead
-                if (rect_collision_with_player(tile_x + 2, tile_x + 5, tile_y + 2, tile_y + 5)){
+            if (jpad == J_UP && vel_y == 0)
+            { // pressing up and no lookadhead
+                if (rect_collision_with_player(tile_x + 2, tile_x + 5, tile_y + 2, tile_y + 5))
+                {
                     player_dy = -PLAYER_JUMP_VEL;
                 }
             }
@@ -407,20 +439,26 @@ void collide(int8_t vel_y)
     // ground checks
     if (vel_y == 0)
     {
-        if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
+        if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
         {
             on_ground = 1;
-        } else {
-            //TODO: clean this up
-            if (get_tile_by_px(player_x + PLAYER_WIDTH-1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
+        }
+        else
+        {
+            // TODO: clean this up
+            if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
             {
-                tile_x = (player_x) & 0xF8;
+                tile_x = (player_x)&0xF8;
                 tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
-                if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
+                if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                {
                     on_ground = 1;
-                } else {
+                }
+                else
+                {
                     tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
-                    if (rect_collision_with_player(tile_x, tile_x + 7 , tile_y + 3, tile_y + 7)){
+                    if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                    {
                         on_ground = 1;
                     }
                 }
@@ -432,7 +470,7 @@ void collide(int8_t vel_y)
 void tick_player()
 {
     if (jpad == J_UP)
-    { 
+    {
         if (on_ground)
         {
             player_dy = -PLAYER_JUMP_VEL;
@@ -441,7 +479,8 @@ void tick_player()
     if (!on_ground)
     {
         player_dy += GRAVITY;
-        if (player_dy > MAX_FALL_SPEED) player_dy = MAX_FALL_SPEED;
+        if (player_dy > MAX_FALL_SPEED)
+            player_dy = MAX_FALL_SPEED;
     }
     // x axis collisions
     collide(0);
@@ -461,21 +500,19 @@ void render_player()
 
 void initialize_player()
 {
-    set_sprite_data(0, 1, players+(player_sprite_num << 4)); // << 4 is the same as *16
+    set_sprite_data(0, 1, players + (player_sprite_num << 4)); // << 4 is the same as *16
     set_sprite_tile(0, 0);
 }
 
-
-
 screen_t game()
 {
-    STAT_REG|=0x40;//enable LYC=LY interrupt
-    LYC_REG=16;//the scanline on which to trigger
+    STAT_REG |= 0x40; // enable LYC=LY interrupt
+    LYC_REG = 16;     // the scanline on which to trigger
     disable_interrupts();
     add_LCD(lcd_interrupt_game);
     add_VBL(vbl_interrupt_game);
     enable_interrupts();
-    set_interrupts(LCD_IFLAG|VBL_IFLAG);
+    set_interrupts(LCD_IFLAG | VBL_IFLAG);
 
     wait_vbl_done();
 
@@ -497,7 +534,8 @@ screen_t game()
 
     while (1)
     {
-        if (vbl_count == 0){
+        if (vbl_count == 0)
+        {
             wait_vbl_done();
         }
         vbl_count = 0;
@@ -520,14 +558,15 @@ screen_t game()
         update_HUD_bar();
 
         if (lose)
-        { 
+        {
             SWITCH_ROM_MBC1(level_banks[level_ind]);
             init_background(level_maps[level_ind], level_widths[level_ind]);
             SWITCH_ROM_MBC1(saved_bank);
             reset_tracking();
             ENABLE_RAM_MBC1;
             *(attempts[level_ind])++;
-            if (background_x_shift + player_x > *(px_progress[level_ind])){
+            if (background_x_shift + player_x > *(px_progress[level_ind]))
+            {
                 *(px_progress[level_ind]) = background_x_shift + player_x;
             }
             DISABLE_RAM_MBC1;
@@ -537,23 +576,23 @@ screen_t game()
             wait_vbl_done();
         }
 
-        parallax_tile_ind += 16; 
-        if (parallax_tile_ind > 112){
+        parallax_tile_ind += 16;
+        if (parallax_tile_ind > 112)
+        {
             parallax_tile_ind = 0;
         }
-        set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
-        set_bkg_data(0x5, 1, small_spike_parallax + parallax_tile_ind); // load tiles into VRAM
-        set_bkg_data(0x4, 1, big_spike_parallax + parallax_tile_ind); // load tiles into VRAM
-        set_bkg_data(0x08, 1, half_block_parallax + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
+        set_bkg_data(0x5, 1, small_spike_parallax + parallax_tile_ind);  // load tiles into VRAM
+        set_bkg_data(0x4, 1, big_spike_parallax + parallax_tile_ind);    // load tiles into VRAM
+        set_bkg_data(0x08, 1, half_block_parallax + parallax_tile_ind);  // load tiles into VRAM
         set_bkg_data(0x06, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
-        set_bkg_data(0x07, 1, jump_tile_parallax + parallax_tile_ind); // load tiles into VRAM
-
+        set_bkg_data(0x07, 1, jump_tile_parallax + parallax_tile_ind);   // load tiles into VRAM
 
         tick++;
         gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(8); // LOOP_DELAY
+        delay(8);     // LOOP_DELAY
         gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(8); // LOOP_DELAY
+        delay(8);     // LOOP_DELAY
     }
 }
 
@@ -598,9 +637,11 @@ screen_t title()
     SWITCH_ROM_MBC1(title_map_v2Bank);
     init_background(title_map_v2, title_map_v2Width);
     SWITCH_ROM_MBC1(saved_bank);
-    
-    if (title_loaded) {
-        for (int i = 0; i < 11; i++){
+
+    if (title_loaded)
+    {
+        for (int i = 0; i < 11; i++)
+        {
             set_sprite_data(TITLE_OAM + i, 1, nima + 16 * (13 + game_title[i] - 65)); // load tiles into VRAM
             set_sprite_tile(TITLE_OAM + i, TITLE_OAM + i);
             if (i > 7)
@@ -615,7 +656,8 @@ screen_t title()
         for (uint8_t i = 0; i < 6; i++)
         {
             // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
-            if (i < 5) {
+            if (i < 5)
+            {
                 set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
                 set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
                 move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
@@ -625,7 +667,7 @@ screen_t title()
             move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
         }
         // Load cursor
-        set_sprite_data(CURSOR_TEXT_OAM, 1, (char *) LIGHT_CURSOR); // Load into VRAM
+        set_sprite_data(CURSOR_TEXT_OAM, 1, (char *)LIGHT_CURSOR); // Load into VRAM
         // Starting at OAM 10 want to use 0-9 for something else. Title at 11
         set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
         move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
@@ -641,7 +683,8 @@ screen_t title()
 
     while (1)
     {
-        if (vbl_count == 0){
+        if (vbl_count == 0)
+        {
             wait_vbl_done();
         }
         vbl_count = 0;
@@ -650,15 +693,19 @@ screen_t title()
         scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
         SWITCH_ROM_MBC1(saved_bank);
 
-        parallax_tile_ind += 16; 
-        if (parallax_tile_ind > 112){
+        parallax_tile_ind += 16;
+        if (parallax_tile_ind > 112)
+        {
             parallax_tile_ind = 0;
         }
         set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
 
-        if (!title_loaded) {
-            if (tick % 4 == 0){ // change from 6 to 4 because power of 2 modulu is optimized
-                if (title_index < 11){
+        if (!title_loaded)
+        {
+            if (tick % 4 == 0)
+            { // change from 6 to 4 because power of 2 modulu is optimized
+                if (title_index < 11)
+                {
                     set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
                     set_sprite_tile(TITLE_OAM + title_index, TITLE_OAM + title_index);
                     if (title_index > 7)
@@ -670,11 +717,14 @@ screen_t title()
                         move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * title_index, TITLE_START_Y + YOFF);
                     }
                     title_index = title_index + 1;
-                } else {
+                }
+                else
+                {
                     for (uint8_t i = 0; i < 6; i++)
                     {
                         // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
-                        if (i < 5) {
+                        if (i < 5)
+                        {
                             set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
                             set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
                             move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
@@ -684,7 +734,7 @@ screen_t title()
                         move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
                     }
                     // Load cursor
-                    set_sprite_data(CURSOR_TEXT_OAM, 1, (char *) LIGHT_CURSOR); // Load into VRAM
+                    set_sprite_data(CURSOR_TEXT_OAM, 1, (char *)LIGHT_CURSOR); // Load into VRAM
                     // Starting at OAM 10 want to use 0-9 for something else. Title at 11
                     set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
                     move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
@@ -694,7 +744,9 @@ screen_t title()
                     scroll_sprite(TITLE_OAM + 10, 0, -2);
                 }
             }
-        } else {
+        }
+        else
+        {
             // Making the letters bounce
             if (tick % 4 == 0)
             {
@@ -708,20 +760,23 @@ screen_t title()
                     scroll_sprite(TITLE_OAM + title_index, 0, -2);
                     scroll_sprite(TITLE_OAM + title_index - 1, 0, +2);
                 }
-                title_index  = (title_index + 1)% 11;
+                title_index = (title_index + 1) % 11;
             }
             //-----Dealing with IO Now-------
             prev_jpad = jpad;
             jpad = joypad();
 
-            
-            if (debounce_input(J_DOWN, jpad, prev_jpad)){
+            if (debounce_input(J_DOWN, jpad, prev_jpad))
+            {
                 cursor_title_position = 1;
-            } else if (debounce_input(J_UP, jpad, prev_jpad)){
+            }
+            else if (debounce_input(J_UP, jpad, prev_jpad))
+            {
                 cursor_title_position = 0;
             }
 
-            if (cursor_title_position != cursor_title_position_old){
+            if (cursor_title_position != cursor_title_position_old)
+            {
                 if (cursor_title_position == 0)
                 {
                     move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
@@ -732,7 +787,6 @@ screen_t title()
                 }
                 cursor_title_position_old = cursor_title_position;
             }
-
 
             else if (debounce_input(J_SELECT, jpad, prev_jpad))
             {
@@ -751,7 +805,7 @@ screen_t title()
                 }
                 else if (cursor_title_position == 1)
                 {
-                    cursor_title_position_old = 0; 
+                    cursor_title_position_old = 0;
                     return PLAYER_SELECT;
                 }
             }
@@ -759,7 +813,7 @@ screen_t title()
 
         tick++;
         gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(18); // LOOP_DELAY
+        delay(18);    // LOOP_DELAY
     }
 }
 
@@ -776,7 +830,7 @@ screen_t player_select()
 
     // Load cursor
     uint8_t cursor_position = 0;
-    set_sprite_data(CURSOR_TEXT_OAM, 1, (char* ) DARK_CURSOR); // Load into VRAM
+    set_sprite_data(CURSOR_TEXT_OAM, 1, (char *)DARK_CURSOR); // Load into VRAM
     // Starting at OAM 10 want to use 0-9 for something else. PLAYER_SPRITES start at 11
     set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
     move_sprite(CURSOR_TEXT_OAM,
@@ -804,7 +858,8 @@ screen_t player_select()
 
     while (1)
     {
-        if (vbl_count == 0){
+        if (vbl_count == 0)
+        {
             wait_vbl_done();
         }
         vbl_count = 0;
@@ -868,7 +923,7 @@ screen_t player_select()
                         ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
         }
 
-        else if (debounce_input(J_SELECT, jpad, prev_jpad))// || debounce_input(J_START, jpad, prev_jpad))
+        else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
         {
 
             for (uint8_t i = 0; i < 40; i++)
@@ -901,16 +956,253 @@ screen_t player_select()
     }
 }
 
+const char level_text[] = {'L', 'E', 'V', 'E', 'L'};
+#define LEVEL_TEXT_OAM 11
+#define LEVEL_TEXT_START_X 52
+#define LEVEL_TEXT_START_Y 16
+
+const char progress_text[] = {'P', 'R', 'O', 'G', 'R', 'E', 'S', 'S'};
+#define PROGRESS_TEXT_OAM 16 // Goes to 23
+#define PROGRESS_TEXT_START_X 48
+#define PROGRESS_TEXT_START_Y 48
+
+#define LEVEL_START_TEXT_OAM 24
+#define LEVEL_START_TEXT_START_X 60
+#define LEVEL_START_TEXT_START_Y 88
+
+const char back_text[] = {'B', 'A', 'C', 'K'};
+#define BACK_TEXT_OAM 29
+#define BACK_TEXT_START_X 64
+#define BACK_TEXT_START_Y 104
+
+screen_t level_select()
+{
+
+    wait_vbl_done();
+    clear_background();
+    reset_tracking();
+
+    // Load numbers 0-9 into spots 0-9 in VRAM
+    for (uint8_t i1 = 0; i1 < 10; i1++)
+    {
+        set_sprite_data(i1, 1, aero_light + 16 * (3 + i1));
+    }
+
+    // Load in cursor
+    set_sprite_data(CURSOR_TEXT_OAM, 1, (char *)DARK_CURSOR); // Load into VRAM
+    set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
+    move_sprite(CURSOR_TEXT_OAM, LEVEL_START_TEXT_START_X + XOFF - 16, LEVEL_START_TEXT_START_Y + YOFF);
+
+    // Level Text
+    for (uint8_t i2 = 0; i2 < 5; i2++)
+    {
+        set_sprite_data(LEVEL_TEXT_OAM + i2, 1, aero_light + 16 * (13 + level_text[i2] - 65)); // load tiles into VRAM
+        set_sprite_tile(LEVEL_TEXT_OAM + i2, LEVEL_TEXT_OAM + i2);
+
+        move_sprite(LEVEL_TEXT_OAM + i2, LEVEL_TEXT_START_X + XOFF + 8 * i2, LEVEL_TEXT_START_Y + YOFF);
+    }
+    // Adding on Level Number
+    set_sprite_tile(0, level_ind + 1);
+    move_sprite(0, LEVEL_TEXT_START_X + XOFF + 48, LEVEL_TEXT_START_Y + YOFF);
+
+    // Progress Text
+    for (uint8_t i3 = 0; i3 < 8; i3++)
+    {
+        // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
+        set_sprite_data(PROGRESS_TEXT_OAM + i3, 1, aero_light + 16 * (13 + progress_text[i3] - 65)); // load tiles into VRAM
+        set_sprite_tile(PROGRESS_TEXT_OAM + i3, PROGRESS_TEXT_OAM + i3);
+        move_sprite(PROGRESS_TEXT_OAM + i3, 8 * i3 + PROGRESS_TEXT_START_X + XOFF, PROGRESS_TEXT_START_Y + YOFF);
+    }
+    // Adding on Progress Text
+
+    // Start Text
+    for (uint8_t i4 = 0; i4 < 5; i4++)
+    {
+        // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
+        set_sprite_data(LEVEL_START_TEXT_OAM + i4, 1, aero_light + 16 * (13 + start_text[i4] - 65)); // load tiles into VRAM
+        set_sprite_tile(LEVEL_START_TEXT_OAM + i4, LEVEL_START_TEXT_OAM + i4);
+        move_sprite(LEVEL_START_TEXT_OAM + i4, 8 * i4 + LEVEL_START_TEXT_START_X + XOFF, LEVEL_START_TEXT_START_Y + YOFF);
+    }
+
+    // Back Text
+    for (uint8_t i5 = 0; i5 < 4; i5++)
+    {
+        // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
+        set_sprite_data(BACK_TEXT_OAM + i5, 1, aero_light + 16 * (13 + back_text[i5] - 65)); // load tiles into VRAM
+        set_sprite_tile(BACK_TEXT_OAM + i5, BACK_TEXT_OAM + i5);
+        move_sprite(BACK_TEXT_OAM + i5, 8 * i5 + BACK_TEXT_START_X + XOFF, BACK_TEXT_START_Y + YOFF);
+    }
+
+    //-----Here, I put the level's progress on level select screen-----
+    uint8_t progress;
+    progress = 10;
+    // -------------------------------------FOR BEN PLEASE SEE HERE-------------------------------------
+    // If you're reading this then note that I set num_levels to 4 so i could test moving through levels
+    // progress = 100 * (*(px_progress[level_ind])) / (level_widths[level_ind]);
+
+    // Load % char in spot 33 in vram and OAM
+    set_sprite_data(33, 1, aero_light + 16 * 67);
+    set_sprite_tile(4, 33);
+
+    // Loading in tile of numbers
+    /*
+        OAM 4 Is the % sign
+        OAM 1 is hundreds digit of progress
+        OAM 2 is tens digit of progress
+        OAM 3 is ones digit of progress
+    */
+
+    set_sprite_tile(1, 1);
+    set_sprite_tile(2, progress % 100 / 10);
+    set_sprite_tile(3, progress % 10);
+
+    if (progress == 100)
+    {
+        move_sprite(1, 64 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+        move_sprite(2, 64 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+        move_sprite(3, 64 + XOFF + 16, PROGRESS_TEXT_START_Y + YOFF + 8);
+        move_sprite(4, 64 + XOFF + 24, PROGRESS_TEXT_START_Y + YOFF + 8);
+    }
+    else if (progress >= 10)
+    {
+
+        move_sprite(2, 68 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+        move_sprite(3, 68 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+        move_sprite(4, 68 + XOFF + 16, PROGRESS_TEXT_START_Y + YOFF + 8);
+    }
+    else
+    {
+        move_sprite(3, 72 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+        move_sprite(4, 72 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+    }
+
+    SHOW_SPRITES;
+
+    while (1)
+    {
+
+        prev_jpad = jpad;
+        jpad = joypad();
+
+        if (debounce_input(J_DOWN, jpad, prev_jpad))
+        {
+            cursor_title_position = 1;
+            move_sprite(CURSOR_TEXT_OAM, LEVEL_START_TEXT_START_X + XOFF - 16, BACK_TEXT_START_Y + YOFF);
+        }
+        else if (debounce_input(J_UP, jpad, prev_jpad))
+        {
+            cursor_title_position = 0;
+            move_sprite(CURSOR_TEXT_OAM, LEVEL_START_TEXT_START_X + XOFF - 16, LEVEL_START_TEXT_START_Y + YOFF);
+        }
+
+        else if (debounce_input(J_LEFT, jpad, prev_jpad))
+        {
+            level_ind = (level_ind + num_levels - 1) % num_levels;
+            set_sprite_tile(0, level_ind + 1);
+            move_sprite(0, LEVEL_TEXT_START_X + XOFF + 48, LEVEL_TEXT_START_Y + YOFF);
+
+            // Progress should best set to the progress of current level_ind
+            // But did -1 to test the number iteration and formating
+            progress--;
+            set_sprite_tile(2, progress % 100 / 10);
+            set_sprite_tile(3, progress % 10);
+
+            if (progress == 100)
+            {
+                move_sprite(1, 64 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(2, 64 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(3, 64 + XOFF + 16, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(4, 64 + XOFF + 24, PROGRESS_TEXT_START_Y + YOFF + 8);
+            }
+            else if (progress >= 10)
+            {
+
+                hide_sprite(1);
+                move_sprite(2, 68 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(3, 68 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(4, 68 + XOFF + 16, PROGRESS_TEXT_START_Y + YOFF + 8);
+            }
+            else
+            {
+                hide_sprite(1);
+                hide_sprite(2);
+                move_sprite(3, 72 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(4, 72 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+            }
+            // progress = 100 * (*(px_progress[level_ind])) / (level_widths[level_ind]);
+        }
+
+        else if (debounce_input(J_RIGHT, jpad, prev_jpad))
+        {
+            level_ind = (level_ind + num_levels + 1) % num_levels;
+            set_sprite_tile(0, level_ind + 1);
+            move_sprite(0, LEVEL_TEXT_START_X + XOFF + 48, LEVEL_TEXT_START_Y + YOFF);
+
+            // Progress should best set to the progress of current level_ind
+            // But did +1 to test the number iteration and formating
+            progress++;
+            set_sprite_tile(2, progress % 100 / 10);
+            set_sprite_tile(3, progress % 10);
+
+            if (progress == 100)
+            {
+                move_sprite(1, 64 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(2, 64 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(3, 64 + XOFF + 16, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(4, 64 + XOFF + 24, PROGRESS_TEXT_START_Y + YOFF + 8);
+            }
+            else if (progress >= 10)
+            {
+
+                hide_sprite(1);
+                move_sprite(2, 68 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(3, 68 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(4, 68 + XOFF + 16, PROGRESS_TEXT_START_Y + YOFF + 8);
+            }
+            else
+            {
+                hide_sprite(1);
+                hide_sprite(2);
+                move_sprite(3, 72 + XOFF, PROGRESS_TEXT_START_Y + YOFF + 8);
+                move_sprite(4, 72 + XOFF + 8, PROGRESS_TEXT_START_Y + YOFF + 8);
+            }
+            // progress = 100 * (*(px_progress[level_ind])) / (level_widths[level_ind]);
+        }
+
+        else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
+        {
+            cursor_title_position_old = 0;
+
+            for (uint8_t i = 0; i < 40; i++)
+            {
+                hide_sprite(i);
+            }
+
+            if (cursor_title_position == 0)
+            {
+                cursor_title_position = 0;
+                return GAME;
+            }
+
+            else if (cursor_title_position == 1)
+            {
+                cursor_title_position = 0;
+                return TITLE;
+            }
+        }
+        delay(LOOP_DELAY);
+    }
+}
 
 void main()
 {
     reset_tracking();
-    //load music begins
+    // load music begins
     disable_interrupts();
     gbt_play(song_Data, 2, 1);
     gbt_loop(1);
 
-    set_interrupts(VBL_IFLAG); //interrupt set after finished drawing the screen
+    set_interrupts(VBL_IFLAG); // interrupt set after finished drawing the screen
     enable_interrupts();
     // end of music setup
 
@@ -920,9 +1212,11 @@ void main()
     screen_t current_screen = TITLE;
 
     ENABLE_RAM_MBC1;
-    if (*saved != 's'){
+    if (*saved != 's')
+    {
         *saved = 's';
-        for (uint8_t i = 0; i < num_levels; i++){
+        for (uint8_t i = 0; i < num_levels; i++)
+        {
             *(attempts[i]) = 0;
             *(px_progress[i]) = 0;
         }
@@ -931,17 +1225,17 @@ void main()
 
     while (1)
     {
-        wait_vbl_done(); //wait until finished drawing the screen
-        //play the music within while(1) of each function below. (currently only done in game()). done via gbt_update()
-        
+        wait_vbl_done(); // wait until finished drawing the screen
+        // play the music within while(1) of each function below. (currently only done in game()). done via gbt_update()
+
         if (current_screen == TITLE)
         {
-            current_screen = title(); 
+            current_screen = title();
         }
         else if (current_screen == LEVEL_SELECT)
         {
             level_ind = 0;
-            current_screen = GAME;
+            current_screen = level_select();
         }
         else if (current_screen == PLAYER_SELECT)
         {
@@ -951,6 +1245,5 @@ void main()
         {
             current_screen = game();
         }
-
     }
 }
