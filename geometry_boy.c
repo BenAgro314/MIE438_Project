@@ -22,8 +22,8 @@
 
 #include "sprites/nima.c"
 #include "sprites/aero.c"
-#include "sprites/aero_light.c"
-#include "sprites/aero_cursors.c"
+//#include "sprites/aero_light.c"
+#include "sprites/aero_cursors.c" // i dont like this, fix it
 #include "sprites/progress_bar_tiles.c"
 
 // maps
@@ -114,6 +114,7 @@ uint8_t parallax_tile_ind = 0;
 // level stuff
 uint8_t level_ind = 0;
 #define NUM_LEVELS 2
+#define LEVEL_END_OFFSET 20 // tiles that are black at the level end
 unsigned char *level_maps[NUM_LEVELS] = {level1_v2, level2};
 uint16_t level_widths[NUM_LEVELS] = {level1_v2Width, level2Width};
 uint8_t level_banks[NUM_LEVELS] = {level1_v2Bank, level2Bank};
@@ -135,13 +136,13 @@ uint16_t *px_progress[NUM_LEVELS]; //= {
     //(int *)START_PROGRESS + 2,
 //}; // *(px_progress[i]) is the maximum pixel progress at level i
 
-#define NUMBER_TILES 9
-#define LETTER_TILES 19
-#define COLON_TILE 45
-#define PERCENT_TILE 46
-#define PROGRESS_BAR_TILES 47
+#define NUMBER_TILES 10
+#define LETTER_TILES 20
+#define COLON_TILE 46
+#define PERCENT_TILE 47 // percent
+#define PROGRESS_BAR_TILES 48
 #define WHITE_TILE 0
-#define LGREY_TILE 1
+#define LGREY_TILE 1 
 #define DGREY_TILE 2
 #define BLACK_TILE 3
 #define BIG_SPIKE_TILE 4
@@ -149,14 +150,15 @@ uint16_t *px_progress[NUM_LEVELS]; //= {
 #define JUMP_CIRCLE_TILE 6
 #define JUMP_TILE_TILE 7
 #define HALF_BLOCK_TILE 8
+#define WIN_TILE 9
 
 inline void init_tiles()
 {
-    set_bkg_data(0, 9, gb_tileset_v2); // load tiles into VRAM
-    set_bkg_data(9, 36, aero + 3 * 16);
-    set_bkg_data(45, 1, aero + 47 * 16);
-    set_bkg_data(46, 1, aero + 67 * 16);
-    set_bkg_data(47, 9, progress_bar_tiles);
+    set_bkg_data(0, 10, gb_tileset_v2); // load tiles into VRAM
+    set_bkg_data(10, 36, aero + 3 * 16);
+    set_bkg_data(46, 1, aero + 47 * 16); // colon
+    set_bkg_data(47, 1, aero + 67 * 16); // percent
+    set_bkg_data(48, 9, progress_bar_tiles);
 }
 
 inline void reset_tracking()
@@ -227,7 +229,7 @@ inline void update_HUD_attempts()
 
 void update_HUD_bar()
 {
-    px_progress_bar = NUM_PROGRESS_BAR_TILES * (background_x_shift + player_x) / (level_widths[level_ind]); // 20 *8 * (px_progress)/(level_width*8)
+    px_progress_bar = NUM_PROGRESS_BAR_TILES * (background_x_shift + player_x) / (level_widths[level_ind] - LEVEL_END_OFFSET); 
     render_col = 0;
     if (px_progress_bar >= old_px_progress_bar)
     {
@@ -381,13 +383,36 @@ void collide(int8_t vel_y)
         tile = get_tile_by_px(tile_x, tile_y);
         tile_x = tile_x & 0xF8; // divide by 8 then multiply by 8
         tile_y = tile_y & 0xF8;
-        if (tile == SMALL_SPIKE_TILE || tile == BIG_SPIKE_TILE)
+
+        if (tile == SMALL_SPIKE_TILE)
         {
 #ifndef INVINCIBLE
-            player_dx = 0;
-            player_dy = 0;
-            player_x = (player_x / 8) * 8;
-            lose = 1;
+            if (
+                rect_collision_with_player(tile_x, tile_x + 7, tile_y + 7, tile_y + 7) ||
+                rect_collision_with_player(tile_x + 1, tile_x + 6, tile_y + 6, tile_y + 6) ||
+                rect_collision_with_player(tile_x +2, tile_x + 5, tile_y + 5, tile_y + 5) ||
+                rect_collision_with_player(tile_x + 3, tile_x + 4, tile_y +4, tile_y + 4)
+            ){
+                player_dx = 0;
+                player_dy = 0;
+                player_x = (player_x / 8) * 8;
+                lose = 1;
+            }
+#endif
+        }
+        if (tile == BIG_SPIKE_TILE){
+#ifndef INVINCIBLE
+            if (
+                rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) ||
+                rect_collision_with_player(tile_x + 1, tile_x + 6, tile_y + 4, tile_y + 5) ||
+                rect_collision_with_player(tile_x +2, tile_x + 5, tile_y + 2, tile_y + 3) ||
+                rect_collision_with_player(tile_x + 3, tile_x + 4, tile_y, tile_y + 1)
+            ){
+                player_dx = 0;
+                player_dy = 0;
+                player_x = (player_x / 8) * 8;
+                lose = 1;
+            }
 #endif
         }
         else if (tile == BLACK_TILE)
@@ -453,6 +478,12 @@ void collide(int8_t vel_y)
                     player_dy = -PLAYER_JUMP_VEL;
                 }
             }
+        }
+        else if (tile == WIN_TILE){
+            player_dx = 0;
+            player_dy = 0;
+            player_x = (player_x / 8) * 8;
+            win = 1;
         }
     }
     // ground checks
@@ -564,6 +595,13 @@ screen_t game()
 
         if (debounce_input(J_B, jpad, prev_jpad))
         { // press B to go back
+            ENABLE_RAM_MBC1;
+            *(attempts[level_ind]) = *(attempts[level_ind])+1;
+            if (background_x_shift + player_x > *(px_progress[level_ind]))
+            {
+                *(px_progress[level_ind]) = background_x_shift + player_x;
+            }
+            DISABLE_RAM_MBC1;
             disable_interrupts();
             remove_LCD(lcd_interrupt_game);
             remove_VBL(vbl_interrupt_game);
@@ -590,7 +628,6 @@ screen_t game()
             SWITCH_ROM_MBC1(level_banks[level_ind]);
             init_background(level_maps[level_ind], level_widths[level_ind]);
             SWITCH_ROM_MBC1(saved_bank);
-            reset_tracking();
             ENABLE_RAM_MBC1;
             *(attempts[level_ind]) = *(attempts[level_ind])+1;
             if (background_x_shift + player_x > *(px_progress[level_ind]))
@@ -598,10 +635,29 @@ screen_t game()
                 *(px_progress[level_ind]) = background_x_shift + player_x;
             }
             DISABLE_RAM_MBC1;
+            reset_tracking();
             current_attempts++;
             update_HUD_attempts();
             update_HUD_bar();
             wait_vbl_done();
+        } else if (win){
+            disable_interrupts();
+            remove_LCD(lcd_interrupt_game);
+            remove_VBL(vbl_interrupt_game);
+            enable_interrupts();
+            player_dx = 0;
+            player_dy = 0;
+            render_player();
+            ENABLE_RAM_MBC1;
+            *(attempts[level_ind]) = *(attempts[level_ind])+1;
+            if (background_x_shift + player_x > *(px_progress[level_ind]))
+            {
+                *(px_progress[level_ind]) = (level_widths[level_ind] - LEVEL_END_OFFSET) << 3;
+            }
+            DISABLE_RAM_MBC1;
+            HIDE_WIN;
+            HIDE_SPRITES;
+            return LEVEL_SELECT;
         }
 
         parallax_tile_ind += 16;
@@ -1048,12 +1104,15 @@ screen_t level_select()
     }
 
     // progress %
-    uint8_t progress;
+    uint32_t progress;
     uint16_t saved_attempts;
     ENABLE_RAM_MBC1;
-    progress = 100 * (*(px_progress[level_ind])) / (level_widths[level_ind]);
+    progress = *(px_progress[level_ind]);
     saved_attempts = *(attempts[level_ind]);
     DISABLE_RAM_MBC1;
+    progress = progress * 100;
+    progress = progress / (level_widths[level_ind] -LEVEL_END_OFFSET);
+    progress = progress >> 3;
 
     // percent progress
     for (render_col = 2; render_col != 0xFF; render_col--){
@@ -1133,9 +1192,12 @@ screen_t level_select()
             }
 
             ENABLE_RAM_MBC1;
-            progress = 100 * (*(px_progress[level_ind])) / (level_widths[level_ind]);
+            progress = *(px_progress[level_ind]);
             saved_attempts = *(attempts[level_ind]);
             DISABLE_RAM_MBC1;
+            progress = progress * 100;
+            progress = progress / (level_widths[level_ind] -LEVEL_END_OFFSET);
+            progress = progress >> 3;
 
             // percent progress
             for (render_col = 2; render_col != 0xFF; render_col--){

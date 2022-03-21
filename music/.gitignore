@@ -1,3 +1,15 @@
 output.c
 test.gb
 test.lst
+*.o
+*.lst
+*.map
+*.rel
+*.cdb
+*.ihx
+*.lnk
+*.sym
+*.asm
+*.noi
+*.sav
+
