@@ -645,15 +645,16 @@ screen_t game()
             remove_LCD(lcd_interrupt_game);
             remove_VBL(vbl_interrupt_game);
             enable_interrupts();
-            player_dx = 0;
-            player_dy = 0;
-            render_player();
             ENABLE_RAM_MBC1;
             *(attempts[level_ind]) = *(attempts[level_ind])+1;
             if (background_x_shift + player_x > *(px_progress[level_ind]))
             {
                 *(px_progress[level_ind]) = (level_widths[level_ind] - LEVEL_END_OFFSET) << 3;
             }
+            player_x = 0;
+            player_y = 0;
+            render_player();
+            reset_tracking();
             DISABLE_RAM_MBC1;
             HIDE_WIN;
             HIDE_SPRITES;
