@@ -1,3 +1,4 @@
+#pragma bank 2
 /*
 
  AERO_CURSORS.C

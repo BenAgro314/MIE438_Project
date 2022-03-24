@@ -26,8 +26,9 @@
 #define __gb_tileset_v2_h_INCLUDE
 
 /* Bank of tiles. */
-#define gb_tileset_v2Bank 0
+#define gb_tileset_v2Bank 2
 /* Start of tile array. */
+extern const void __bank_gb_tileset_v2;
 extern const unsigned char gb_tileset_v2[];
 
 #endif

@@ -1,6 +1,6 @@
 /*
 
- PROGRESS_BAR_TILES.H
+ DOWN_SPIKE_PARALLAX.H
 
  Include File.
 
@@ -10,7 +10,7 @@
   Compression          : None.
   Counter              : None.
   Tile size            : 8 x 8
-  Tiles                : 0 to 8
+  Tiles                : 0 to 7
 
   Palette colors       : None.
   SGB Palette          : None.
@@ -22,15 +22,15 @@
 
 */
 
-#ifndef __progress_bar_tiles_h_INCLUDE
-#define __progress_bar_tiles_h_INCLUDE
+#ifndef __down_spike_parallax_h_INCLUDE
+#define __down_spike_parallax_h_INCLUDE
 
 /* Bank of tiles. */
-#define progress_bar_tilesBank 2
+#define down_spike_parallaxBank 2
 /* Start of tile array. */
-extern const void __bank_progress_bar_tiles;
-extern const unsigned char progress_bar_tiles[];
+extern const void __bank_down_spike_parallax;
+extern const unsigned char down_spike_parallax[];
 
 #endif
 
-/* End of PROGRESS_BAR_TILES.H */
+/* End of DOWN_SPIKE_PARALLAX.H */

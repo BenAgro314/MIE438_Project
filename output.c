@@ -1,7 +1,7 @@
 
 // File created by mod2gbt
 
-#pragma bank 2
+#pragma bank 3
 
 const unsigned char song0[] = {
   0x00, 0x87,0x17, 0x93,0x10, 0x4A,0x06,
@@ -271,7 +271,7 @@ const unsigned char song3[] = {
   0x00, 0x00, 0x00, 0x00
 };
 
-const void __at(2) __bank_song_Data;
+const void __at(3) __bank_song_Data;
 const unsigned char * const song_Data[] = {
     song0,
     song1,

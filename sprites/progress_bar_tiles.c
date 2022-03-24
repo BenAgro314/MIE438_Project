@@ -1,3 +1,5 @@
+#pragma bank 2
+
 /*
 
  PROGRESS_BAR_TILES.C
@@ -23,6 +25,7 @@
 */
 
 /* Start of tile array. */
+const void __at(2) __bank_progress_bar_tiles;
 const unsigned char progress_bar_tiles[] =
 {
   0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,0xFF,

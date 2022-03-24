@@ -26,7 +26,7 @@
 #define __aero_cursors_h_INCLUDE
 
 /* Bank of tiles. */
-#define aero_cursorsBank 0
+#define aero_cursorsBank 2
 /* Start of tile array. */
 extern const unsigned char aero_cursors[];
 

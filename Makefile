@@ -13,30 +13,37 @@ else
 	WINE := wine
 endif
 make:
-	$(WINE) music/mod2gbt music/song_gdash.mod song 2
+	$(WINE) music/mod2gbt music/song_gdash.mod song 3
 	$(CC) -Wa-l -Wf-bo3 -c -o title_map.o sprites/title_map_v2.c
 	$(CC) -Wa-l -Wf-bo4 -c -o level1.o sprites/level1_v2.c
 	$(CC) -Wa-l -Wf-bo4 -c -o level2.o sprites/level2.c
-	$(CC) -Wa-l -Wf-bo2 -c -o parallax_tileset_v2.o sprites/parallax_tileset_v2.c
-	$(CC) -Wa-l -Wf-bo2 -c -o small_spike_parallax.o sprites/small_spike_parallax.c
-	$(CC) -Wa-l -Wf-bo2 -c -o big_spike_parallax.o sprites/big_spike_parallax.c
-	$(CC) -Wa-l -Wf-bo2 -c -o half_block_parallax.o sprites/half_block_parallax.c
-	$(CC) -Wa-l -Wf-bo2 -c -o jump_circle_parallax.o sprites/jump_circle_parallax.c
-	$(CC) -Wa-l -Wf-bo2 -c -o jump_tile_parallax.o sprites/jump_tile_parallax.c
-	$(CC) -Wa-l -Wf-bo2 -c -o nima.o sprites/nima.c
-	$(CC) -Wa-l -Wf-bo2 -c -o aero.o sprites/aero.c
-	$(CC) -Wa-l -Wf-bo2 -c -o players.o sprites/players.c
+	$(CC) -Wa-l -Wf-bo2 -c -o tiles.o tiles.c
 	$(CC) -Wa-l -c -o geometry_boy.o geometry_boy.c
-	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o output.o output.c
+	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo3 -c -o music_output.o output.c
 	$(CC) -c -o gbt_player.o music/gbt_player.s
 	$(CC) -c -o gbt_player_bank1.o music/gbt_player_bank1.s
 
 	
-	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb title_map.o level1.o level2.o geometry_boy.o output.o gbt_player.o gbt_player_bank1.o parallax_tileset_v2.o small_spike_parallax.o big_spike_parallax.o half_block_parallax.o jump_circle_parallax.o jump_tile_parallax.o nima.o aero.o players.o
+	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb title_map.o level1.o level2.o geometry_boy.o music_output.o gbt_player.o gbt_player_bank1.o tiles.o
 	rm -f *.sym
 
 clean:
 	rm -f *.o *.lst *.map *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi *.sav
+
+# parallax_tileset_v2.o small_spike_parallax.o big_spike_parallax.o half_block_parallax.o jump_circle_parallax.o jump_tile_parallax.o nima.o aero.o players.o gb_tileset_v2.o progress_bar_tiles.o aero_cursors.o
+
+#$(CC) -Wa-l -Wf-bo2 -c -o parallax_tileset_v2.o sprites/parallax_tileset_v2.c
+#$(CC) -Wa-l -Wf-bo2 -c -o small_spike_parallax.o sprites/small_spike_parallax.c
+#$(CC) -Wa-l -Wf-bo2 -c -o big_spike_parallax.o sprites/big_spike_parallax.c
+#$(CC) -Wa-l -Wf-bo2 -c -o half_block_parallax.o sprites/half_block_parallax.c
+#$(CC) -Wa-l -Wf-bo2 -c -o jump_circle_parallax.o sprites/jump_circle_parallax.c
+#$(CC) -Wa-l -Wf-bo2 -c -o jump_tile_parallax.o sprites/jump_tile_parallax.c
+#$(CC) -Wa-l -Wf-bo2 -c -o nima.o sprites/nima.c
+#$(CC) -Wa-l -Wf-bo2 -c -o aero.o sprites/aero.c
+#$(CC) -Wa-l -Wf-bo2 -c -o gb_tileset_v2.o sprites/gb_tileset_v2.c
+#$(CC) -Wa-l -Wf-bo2 -c -o progress_bar_tiles.o sprites/progress_bar_tiles.c
+#$(CC) -Wa-l -Wf-bo2 -c -o aero_cursors.o sprites/aero_cursors.c
+#$(CC) -Wa-l -Wf-bo2 -c -o players.o sprites/players.c
 
 # From Makebin source:
 #

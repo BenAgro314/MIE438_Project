@@ -1,0 +1,15 @@
+make --dry-run --keep-going --print-directory
+make: Entering directory '/home/agrobenj/MIE438_Project'
+wine music/mod2gbt music/song_gdash.mod song 3
+../gbdk/bin/lcc -Wa-l -Wf-bo3 -c -o title_map.o sprites/title_map_v2.c
+../gbdk/bin/lcc -Wa-l -Wf-bo4 -c -o level1.o sprites/level1_v2.c
+../gbdk/bin/lcc -Wa-l -Wf-bo4 -c -o level2.o sprites/level2.c
+../gbdk/bin/lcc -Wa-l -Wf-bo2 -c -o tiles.o tiles.c
+../gbdk/bin/lcc -Wa-l -c -o geometry_boy.o geometry_boy.c
+../gbdk/bin/lcc -Wa-l -Wl-m -Wl-j -Wf-bo3 -c -o music_output.o output.c
+../gbdk/bin/lcc -c -o gbt_player.o music/gbt_player.s
+../gbdk/bin/lcc -c -o gbt_player_bank1.o music/gbt_player_bank1.s
+../gbdk/bin/lcc -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb title_map.o level1.o level2.o geometry_boy.o music_output.o gbt_player.o gbt_player_bank1.o tiles.o
+rm -f *.sym
+make: Leaving directory '/home/agrobenj/MIE438_Project'
+ 

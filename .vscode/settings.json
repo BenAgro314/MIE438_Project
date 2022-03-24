@@ -10,6 +10,7 @@
         "parallax_tileset_v2.h": "c",
         "half_block_parallax.h": "c",
         "gbt_player.h": "c",
-        "nima.h": "c"
+        "nima.h": "c",
+        "players.h": "c"
     }
 }
