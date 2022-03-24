@@ -1,4 +1,4 @@
-#pragma bank 2
+#pragma bank 3
 
 /*
 
@@ -8,7 +8,7 @@
 
  Info:
    Section       : 
-   Bank          : 2
+   Bank          : 3
    Map size      : 60 x 18
    Tile set      : gb_tileset_v2.gbr
    Plane count   : 1 plane (8 bits)
@@ -22,7 +22,7 @@
 
 #define title_map_v2Width 60
 #define title_map_v2Height 18
-#define title_map_v2Bank 2
+#define title_map_v2Bank 3
 
 const unsigned char title_map_v2[] =
 {

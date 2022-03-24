@@ -1,3 +1,5 @@
+#pragma bank 2
+
 /*
 
  PARALLAX_TILESET_V2.C
@@ -23,6 +25,7 @@
 */
 
 /* Start of tile array. */
+const void __at(2) __bank_parallax_tileset_v2;
 const unsigned char parallax_tileset_v2[] =
 {
   0x81,0x00,0x81,0x00,0x81,0x00,0x81,0x00,

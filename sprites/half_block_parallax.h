@@ -26,8 +26,9 @@
 #define __half_block_parallax_h_INCLUDE
 
 /* Bank of tiles. */
-#define half_block_parallaxBank 0
+#define half_block_parallaxBank 2
 /* Start of tile array. */
+extern const void __bank_half_block_parallax;
 extern const unsigned char half_block_parallax[];
 
 #endif

@@ -13,23 +13,25 @@
 #include "sprites/players.c"
 #include "sprites/gb_tileset_v2.c"
 
-#include "sprites/parallax_tileset_v2.c"
-#include "sprites/small_spike_parallax.c"
-#include "sprites/big_spike_parallax.c"
-#include "sprites/half_block_parallax.c"
-#include "sprites/jump_circle_parallax.c"
-#include "sprites/jump_tile_parallax.c"
+// bank 2
+#include "sprites/parallax_tileset_v2.h"
+#include "sprites/small_spike_parallax.h"
+#include "sprites/big_spike_parallax.h"
+#include "sprites/half_block_parallax.h"
+#include "sprites/jump_circle_parallax.h"
+#include "sprites/jump_tile_parallax.h"
 
-#include "sprites/nima.c"
+#include "sprites/nima.h"
 #include "sprites/aero.c"
+
 //#include "sprites/aero_light.c"
 #include "sprites/aero_cursors.c" // i dont like this, fix it
 #include "sprites/progress_bar_tiles.c"
 
 // maps
-#include "sprites/title_map_v2.h"
-#include "sprites/level1_v2.h"
-#include "sprites/level2.h"
+#include "sprites/title_map_v2.h" // bank3 
+#include "sprites/level1_v2.h" //  bank 4 
+#include "sprites/level2.h" // bank 4
 
 // debug flags
 //#define INVINCIBLE
@@ -136,11 +138,14 @@ uint16_t *px_progress[NUM_LEVELS]; //= {
     //(int *)START_PROGRESS + 2,
 //}; // *(px_progress[i]) is the maximum pixel progress at level i
 
-#define NUMBER_TILES 10
-#define LETTER_TILES 20
-#define COLON_TILE 46
-#define PERCENT_TILE 47 // percent
-#define PROGRESS_BAR_TILES 48
+#define GB_TILESET_LEN 13
+#define AERO_TILESET_LEN 36
+
+#define NUMBER_TILES (GB_TILESET_LEN)
+#define LETTER_TILES (GB_TILESET_LEN + 10)
+#define COLON_TILE (GB_TILESET_LEN + AERO_TILESET_LEN)
+#define PERCENT_TILE (GB_TILESET_LEN + AERO_TILESET_LEN + 1) // percent
+#define PROGRESS_BAR_TILES (GB_TILESET_LEN + AERO_TILESET_LEN  + 2)
 #define WHITE_TILE 0
 #define LGREY_TILE 1 
 #define DGREY_TILE 2
@@ -151,14 +156,18 @@ uint16_t *px_progress[NUM_LEVELS]; //= {
 #define JUMP_TILE_TILE 7
 #define HALF_BLOCK_TILE 8
 #define WIN_TILE 9
+#define INVERTED_SPIKE_TILE 10
+#define FLIGHT_PORTAL_TILE 11
+#define BACK_SPIKE_TILE 12
+
 
 inline void init_tiles()
 {
-    set_bkg_data(0, 10, gb_tileset_v2); // load tiles into VRAM
-    set_bkg_data(10, 36, aero + 3 * 16);
-    set_bkg_data(46, 1, aero + 47 * 16); // colon
-    set_bkg_data(47, 1, aero + 67 * 16); // percent
-    set_bkg_data(48, 9, progress_bar_tiles);
+    set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
+    set_bkg_data(GB_TILESET_LEN, AERO_TILESET_LEN, aero + 3 * 16);
+    set_bkg_data(GB_TILESET_LEN + AERO_TILESET_LEN, 1, aero + 47 * 16); // colon
+    set_bkg_data(GB_TILESET_LEN + AERO_TILESET_LEN + 1, 1, aero + 67 * 16); // percent
+    set_bkg_data(GB_TILESET_LEN + AERO_TILESET_LEN + 2, 9, progress_bar_tiles);
 }
 
 inline void reset_tracking()
@@ -352,15 +361,15 @@ inline uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t butto
     return (button == target) && !(prev_button == target);
 }
 
-inline uint8_t inside_player(uint8_t x, uint8_t y)
-{
-    // returns 1 if (x,y) is inside the player, otherwise returns 0
-    if (x >= player_x && x < (player_x + PLAYER_WIDTH) && y >= player_y && y < (player_y + PLAYER_WIDTH))
-    {
-        return 1;
-    }
-    return 0;
-}
+//inline uint8_t inside_player(uint8_t x, uint8_t y)
+//{
+    //// returns 1 if (x,y) is inside the player, otherwise returns 0
+    //if (x >= player_x && x < (player_x + PLAYER_WIDTH) && y >= player_y && y < (player_y + PLAYER_WIDTH))
+    //{
+        //return 1;
+    //}
+    //return 0;
+//}
 
 inline uint8_t rect_collision_with_player(uint8_t x_left, uint8_t x_right, uint8_t y_top, uint8_t y_bot)
 {
@@ -400,13 +409,43 @@ void collide(int8_t vel_y)
             }
 #endif
         }
-        if (tile == BIG_SPIKE_TILE){
+        else if (tile == BIG_SPIKE_TILE){
 #ifndef INVINCIBLE
             if (
                 rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) ||
                 rect_collision_with_player(tile_x + 1, tile_x + 6, tile_y + 4, tile_y + 5) ||
                 rect_collision_with_player(tile_x +2, tile_x + 5, tile_y + 2, tile_y + 3) ||
                 rect_collision_with_player(tile_x + 3, tile_x + 4, tile_y, tile_y + 1)
+            ){
+                player_dx = 0;
+                player_dy = 0;
+                player_x = (player_x / 8) * 8;
+                lose = 1;
+            }
+#endif
+        }
+        else if (tile == INVERTED_SPIKE_TILE){
+#ifndef INVINCIBLE
+            if (
+                rect_collision_with_player(tile_x, tile_x + 7, tile_y, tile_y + 1) ||
+                rect_collision_with_player(tile_x + 1, tile_x + 6, tile_y + 2, tile_y + 3) ||
+                rect_collision_with_player(tile_x +2, tile_x + 5, tile_y + 4, tile_y + 5) ||
+                rect_collision_with_player(tile_x + 3, tile_x + 4, tile_y + 6, tile_y + 7)
+            ){
+                player_dx = 0;
+                player_dy = 0;
+                player_x = (player_x / 8) * 8;
+                lose = 1;
+            }
+#endif
+        }
+        else if (tile == BACK_SPIKE_TILE){
+#ifndef INVINCIBLE
+            if (
+                rect_collision_with_player(tile_x, tile_x + 1, tile_y + 3, tile_y + 4) ||
+                rect_collision_with_player(tile_x + 2, tile_x + 3, tile_y + 2, tile_y + 5) ||
+                rect_collision_with_player(tile_x +4, tile_x + 5, tile_y + 1, tile_y + 6) ||
+                rect_collision_with_player(tile_x + 6, tile_x + 7, tile_y, tile_y + 7)
             ){
                 player_dx = 0;
                 player_dy = 0;
@@ -666,12 +705,14 @@ screen_t game()
         {
             parallax_tile_ind = 0;
         }
+        SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
         set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
         set_bkg_data(0x5, 1, small_spike_parallax + parallax_tile_ind);  // load tiles into VRAM
         set_bkg_data(0x4, 1, big_spike_parallax + parallax_tile_ind);    // load tiles into VRAM
         set_bkg_data(0x08, 1, half_block_parallax + parallax_tile_ind);  // load tiles into VRAM
         set_bkg_data(0x06, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
         set_bkg_data(0x07, 1, jump_tile_parallax + parallax_tile_ind);   // load tiles into VRAM
+        SWITCH_ROM_MBC1(saved_bank);
 
         tick++;
         gbt_update(); // This will change to ROM bank 1. Basically play the music
@@ -728,7 +769,9 @@ screen_t title()
     {
         for (int i = 0; i < 11; i++)
         {
+            SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
             set_sprite_data(TITLE_OAM + i, 1, nima + 16 * (13 + game_title[i] - 65)); // load tiles into VRAM
+            SWITCH_ROM_MBC1(saved_bank);
             set_sprite_tile(TITLE_OAM + i, TITLE_OAM + i);
             if (i > 7)
             {
@@ -784,7 +827,9 @@ screen_t title()
         {
             parallax_tile_ind = 0;
         }
+        SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
         set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
+        SWITCH_ROM_MBC1(saved_bank);
 
         if (!title_loaded)
         {
@@ -792,7 +837,9 @@ screen_t title()
             { // change from 6 to 4 because power of 2 modulu is optimized
                 if (title_index < 11)
                 {
+                    SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
                     set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
+                    SWITCH_ROM_MBC1(saved_bank);
                     set_sprite_tile(TITLE_OAM + title_index, TITLE_OAM + title_index);
                     if (title_index > 7)
                     {

@@ -1,3 +1,5 @@
+#pragma bank 2
+
 /*
 
  BIG_SPIKE_PARALLAX.C
@@ -23,6 +25,7 @@
 */
 
 /* Start of tile array. */
+const void __at(2) __bank_big_spike_parallax;
 const unsigned char big_spike_parallax[] =
 {
   0x99,0x18,0x99,0x18,0xBD,0x3C,0xBD,0x3C,

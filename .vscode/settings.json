@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "title_map_v2.h": "c",
+        "level1_v2.h": "c",
+        "level2.h": "c",
+        "jump_circle_parallax.h": "c",
+        "jump_tile_parallax.h": "c",
+        "big_spike_parallax.h": "c",
+        "small_spike_parallax.h": "c",
+        "parallax_tileset_v2.h": "c",
+        "half_block_parallax.h": "c",
+        "gbt_player.h": "c",
+        "nima.h": "c"
+    }
+}

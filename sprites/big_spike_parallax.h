@@ -26,8 +26,9 @@
 #define __big_spike_parallax_h_INCLUDE
 
 /* Bank of tiles. */
-#define big_spike_parallaxBank 0
+#define big_spike_parallaxBank 2
 /* Start of tile array. */
+extern const void __bank_big_spike_parallax;
 extern const unsigned char big_spike_parallax[];
 
 #endif

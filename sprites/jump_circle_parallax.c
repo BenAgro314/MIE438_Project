@@ -1,3 +1,5 @@
+#pragma bank 2
+
 /*
 
  JUMP_CIRCLE_PARALLAX.C
@@ -23,6 +25,7 @@
 */
 
 /* Start of tile array. */
+const void __at(2) __bank_jump_circle_parallax;
 const unsigned char jump_circle_parallax[] =
 {
   0x81,0x00,0x81,0x00,0x99,0x00,0xA5,0x18,

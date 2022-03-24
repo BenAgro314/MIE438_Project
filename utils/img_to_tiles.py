@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 
+BANK = 2
+
 import argparse
 from matplotlib import pyplot as plt
 
@@ -88,6 +90,8 @@ num_tiles = image.shape[0]*image.shape[1]//64
 #print(image.shape)
 
 out_c = open(out_name + ".c", "w")
+#out_c.h.write(f"#pragma bank {BANK}\n")
+#out_c.h.write(f"#define {out_name}Bank {BANK}\n")
 out_c.write("/*\n")
 out_c.write(f"Input image: {in_path}\n")
 out_c.write(f"Num Tiles: {num_tiles}\n")

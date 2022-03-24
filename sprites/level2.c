@@ -1,4 +1,4 @@
-#pragma bank 3
+#pragma bank 4
 
 /*
 
@@ -8,7 +8,7 @@
 
  Info:
    Section       : 
-   Bank          : 3
+   Bank          : 4
    Map size      : 455 x 18
    Tile set      : gb_tileset_v2.gbr
    Plane count   : 1 plane (8 bits)
@@ -22,7 +22,7 @@
 
 #define level2Width 455
 #define level2Height 18
-#define level2Bank 3
+#define level2Bank 4
 
 const unsigned char level2[] =
 {

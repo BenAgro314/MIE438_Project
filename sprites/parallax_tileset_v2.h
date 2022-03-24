@@ -26,8 +26,9 @@
 #define __parallax_tileset_v2_h_INCLUDE
 
 /* Bank of tiles. */
-#define parallax_tileset_v2Bank 0
+#define parallax_tileset_v2Bank 2
 /* Start of tile array. */
+extern const void __bank_parallax_tileset_v2;
 extern const unsigned char parallax_tileset_v2[];
 
 #endif

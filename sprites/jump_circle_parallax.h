@@ -26,8 +26,9 @@
 #define __jump_circle_parallax_h_INCLUDE
 
 /* Bank of tiles. */
-#define jump_circle_parallaxBank 0
+#define jump_circle_parallaxBank 2
 /* Start of tile array. */
+extern const void __bank_jump_circle_parallax;
 extern const unsigned char jump_circle_parallax[];
 
 #endif

@@ -1,0 +1,39 @@
+XL3
+H A areas 3 global symbols
+M big_spike_parallax
+O -mgbz80
+S .__.ABS. Def000000
+S ___bank_big_spike_parallax Def000002
+A _CODE size 0 flags 0 addr 0
+A _DATA size 0 flags 0 addr 0
+A _INITIALIZED size 0 flags 0 addr 0
+A _DABS size 0 flags 8 addr 0
+A _HOME size 0 flags 0 addr 0
+A _GSINIT size 0 flags 0 addr 0
+A _GSFINAL size 0 flags 0 addr 0
+A _CODE_2 size 80 flags 0 addr 0
+S _big_spike_parallax Def000000
+A _INITIALIZER size 0 flags 0 addr 0
+A _CABS size 0 flags 8 addr 0
+T 00 00 00
+R 00 00 07 00
+T 00 00 00 99 18 99 18 BD 3C BD 3C FF 7E FF 7E FF
+R 00 00 07 00
+T 0D 00 00 FF FF FF D8 18 D8 18 FC 3C FC 3C FE 7E
+R 00 00 07 00
+T 1A 00 00 FE 7E FF FF FF FF 78 18 78 18 7C 3C 7C
+R 00 00 07 00
+T 27 00 00 3C 7E 7E 7E 7E FF FF FF FF 38 18 38 18
+R 00 00 07 00
+T 34 00 00 3C 3C 3C 3C 7E 7E 7E 7E FF FF FF FF 18
+R 00 00 07 00
+T 41 00 00 18 18 18 3C 3C 3C 3C 7E 7E 7E 7E FF FF
+R 00 00 07 00
+T 4E 00 00 FF FF 1C 18 1C 18 3C 3C 3C 3C 7E 7E 7E
+R 00 00 07 00
+T 5B 00 00 7E FF FF FF FF 1E 18 1E 18 3E 3C 3E 3C
+R 00 00 07 00
+T 68 00 00 7E 7E 7E 7E FF FF FF FF 1B 18 1B 18 3F
+R 00 00 07 00
+T 75 00 00 3C 3F 3C 7F 7E 7F 7E FF FF FF FF
+R 00 00 07 00
