@@ -31,8 +31,10 @@
 #define LOOP_DELAY 20
 
 #define GRAVITY 1
-#define MAX_FALL_SPEED 7
+#define CUBE_MAX_FALL_SPEED 7
+#define SHIP_MAX_FALL_SPEED 4
 #define PLAYER_JUMP_VEL 6
+#define SHIP_JUMP_VEL 3
 #define PLAYER_SUPER_JUMP_VEL 9
 #define ACCELERATION 1
 #define ROTATION_SPEED 15
@@ -61,10 +63,16 @@ typedef enum
 // For music
 extern const unsigned char *song_Data[];
 
+typedef enum
+{
+    CUBE,
+    SHIP
+} vehicle_t;
 
 // we use globals because they are faster (not on the stack)
 int8_t player_dy = 0;
 int8_t player_dx = 3; // note we don't move the player, just the background
+vehicle_t current_vehicle = CUBE;
 // player velocities
 uint8_t player_y = PLAYER_START_Y;
 uint8_t player_x = PLAYER_START_X;
@@ -78,6 +86,7 @@ uint8_t prev_jpad = 0;
 uint8_t jpad = 0;
 // game/level state
 uint8_t tick = 0;
+uint8_t saved_tick = 0;
 uint16_t background_x_shift = 0;
 uint16_t old_background_x_shift = 8 + 3;
 uint16_t old_scroll_x = 0;
@@ -139,7 +148,7 @@ uint16_t *px_progress[NUM_LEVELS]; //= {
 #define HALF_BLOCK_TILE 8
 #define WIN_TILE 9
 #define INVERTED_SPIKE_TILE 10
-#define FLIGHT_PORTAL_TILE 11
+#define SHIP_PORTAL_TILE 11
 #define BACK_SPIKE_TILE 12
 
 
@@ -167,9 +176,9 @@ inline void reset_tracking()
     lose = 0;
     win = 0;
     tick = 0;
+    saved_tick =0;
     parallax_tile_ind = 0;
-    // white_tile_ind = 0;
-    // green_tile_ind = 128; // 8*16;
+    current_vehicle = CUBE;
     prev_jpad = 0;
     jpad = 0;
     SCX_REG = 0;
@@ -220,7 +229,7 @@ inline void update_HUD_attempts()
 
 #define NUM_PROGRESS_BAR_TILES 18
 
-void update_HUD_bar()
+inline void update_HUD_bar()
 {
     px_progress_bar = NUM_PROGRESS_BAR_TILES * (background_x_shift + player_x) / (level_widths[level_ind] - LEVEL_END_OFFSET); 
     render_col = 0;
@@ -266,7 +275,7 @@ void vbl_interrupt_title()
     SCX_REG = old_scroll_x + player_dx;
 }
 
-void scroll_bkg_x(uint8_t x_shift, char *map, uint16_t map_width)
+inline void scroll_bkg_x(uint8_t x_shift, char *map, uint16_t map_width)
 {
     background_x_shift = (background_x_shift + x_shift);
     if (background_x_shift >= old_background_x_shift)
@@ -505,13 +514,20 @@ void collide(int8_t vel_y)
                     player_dy = -PLAYER_JUMP_VEL;
                 }
             }
+        } else if (tile == SHIP_PORTAL_TILE && ((tick - saved_tick) > 10)){
+            saved_tick = tick;
+            if (current_vehicle == SHIP){
+                current_vehicle = CUBE;
+            } else if (current_vehicle == CUBE){
+                current_vehicle = SHIP;
+            }
         }
         else if (tile == WIN_TILE){
             player_dx = 0;
             player_dy = 0;
             player_x = (player_x / 8) * 8;
             win = 1;
-        }
+        } 
     }
     // ground checks
     if (vel_y == 0)
@@ -548,16 +564,28 @@ void tick_player()
 {
     if (jpad == J_UP)
     {
-        if (on_ground)
-        {
-            player_dy = -PLAYER_JUMP_VEL;
+        if (current_vehicle == CUBE){
+            if (on_ground)
+            {
+                player_dy = -PLAYER_JUMP_VEL;
+            }
+        } else if (current_vehicle == SHIP) {
+            player_dy = -SHIP_JUMP_VEL;
         }
     }
     if (!on_ground)
     {
-        player_dy += GRAVITY;
-        if (player_dy > MAX_FALL_SPEED)
-            player_dy = MAX_FALL_SPEED;
+        if (current_vehicle == CUBE){
+            player_dy += GRAVITY;
+            if (player_dy > CUBE_MAX_FALL_SPEED)
+                player_dy = CUBE_MAX_FALL_SPEED;
+        } else if (current_vehicle == SHIP){
+            if (tick % 2 == 0){
+                player_dy += GRAVITY;
+            }
+            if (player_dy > SHIP_MAX_FALL_SPEED)
+                player_dy = SHIP_MAX_FALL_SPEED;
+        }
     }
     // x axis collisions
     collide(0);
@@ -570,17 +598,25 @@ void tick_player()
     collide(player_dy);
 }
 
-void render_player()
+inline void render_player()
 { // i want a better name for this function
-    move_sprite(0, player_x, player_y);
+    if (current_vehicle == CUBE){
+        move_sprite(0, player_x, player_y);
+        move_sprite(1, 0, 0);
+    } else if (current_vehicle == SHIP){
+        move_sprite(1, player_x, player_y);
+        move_sprite(0, 0, 0);
+    }
 }
 
 void initialize_player()
 {
     SWITCH_ROM_MBC1(tilesBank);
-    set_sprite_data(0, 1, players + (player_sprite_num << 4)); // << 4 is the same as *16
+    set_sprite_data(0, 1, players + (player_sprite_num << 4)); // cube
+    set_sprite_data(1, 1, gb_tileset_v2 + (11<<4));  // ship
     SWITCH_ROM_MBC1(saved_bank);
     set_sprite_tile(0, 0);
+    set_sprite_tile(1, 1);
 }
 
 screen_t game()

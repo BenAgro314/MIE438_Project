@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Mar 24 16:52:13 2022
+# Make data base, printed on Thu Mar 24 18:18:37 2022
 
 # Variables
 
@@ -255,9 +255,9 @@ _CE_CONDA =
 
 # Directories
 
-# . (device 66307, inode 12587739): 83 files, no impossibilities.
+# . (device 66307, inode 12587739): 20 files, no impossibilities.
 
-# 83 files, no impossibilities in 1 directories.
+# 20 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -266,7 +266,6 @@ _CE_CONDA =
 # Files
 
 # Not a target:
- 
 all:
 #  Command line target.
 #  Implicit rule search has been done.
@@ -276,7 +275,7 @@ all:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-03-24 16:52:09.516352487
+#  Last modified 2022-03-24 18:17:01.474507877
 #  File has been updated.
 #  Successfully updated.
 
@@ -292,16 +291,17 @@ make:
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 16):
 	$(WINE) music/mod2gbt music/song_gdash.mod song 3
-	$(CC) -Wa-l -Wf-bo3 -c -o title_map.o sprites/title_map_v2.c
-	$(CC) -Wa-l -Wf-bo4 -c -o level1.o sprites/level1_v2.c
-	$(CC) -Wa-l -Wf-bo4 -c -o level2.o sprites/level2.c
-	$(CC) -Wa-l -Wf-bo2 -c -o tiles.o tiles.c
-	$(CC) -Wa-l -c -o geometry_boy.o geometry_boy.c
-	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo3 -c -o music_output.o output.c
-	$(CC) -c -o gbt_player.o music/gbt_player.s
-	$(CC) -c -o gbt_player_bank1.o music/gbt_player_bank1.s
+	$(CC) -Wa-l -Wf-bo3 -c -o build/title_map.o sprites/title_map_v2.c
+	$(CC) -Wa-l -Wf-bo4 -c -o build/level1.o sprites/level1_v2.c
+	$(CC) -Wa-l -Wf-bo4 -c -o build/level2.o sprites/level2.c
+	$(CC) -Wa-l -Wf-bo2 -c -o build/tiles.o tiles.c
+	$(CC) -Wa-l -c -o build/geometry_boy.o geometry_boy.c
+	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo3 -c -o build/music_output.o output.c
+	$(CC) -c -o build/gbt_player.o music/gbt_player.s
+	$(CC) -c -o build/gbt_player_bank1.o music/gbt_player_bank1.s
 	
-	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb title_map.o level1.o level2.o geometry_boy.o music_output.o gbt_player.o gbt_player_bank1.o tiles.o
+ 
+	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
 	rm -f *.sym
 
 clean:
@@ -310,6 +310,7 @@ clean:
 #  File has not been updated.
 #  recipe to execute (from 'Makefile', line 31):
 	rm -f *.o *.lst *.map *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi *.sav
+	rm -f build/*.o build/*.lst build/*.map build/*.gb build/*~ build/*.rel build/*.cdb build/*.ihx build/*.lnk build/*.sym build/*.asm build/*.noi build/*.sav
 
 # files hash-table stats:
 # Load=6/1024=1%, Rehash=0, Collisions=0/16=0%
@@ -319,12 +320,12 @@ clean:
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 90 / storage = 1257 B / avg = 13 B
-# current buf: size = 8162 B / used = 1257 B / count = 90 / avg = 13 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 258 B / avg = 9 B
+# current buf: size = 8162 B / used = 258 B / count = 27 / avg = 9 B
 
-# strcache performance: lookups = 96 / hit rate = 6%
+# strcache performance: lookups = 33 / hit rate = 18%
 # hash-table stats:
-# Load=90/8192=1%, Rehash=0, Collisions=1/96=1%
-# Finished Make data base on Thu Mar 24 16:52:13 2022
+# Load=27/8192=0%, Rehash=0, Collisions=1/33=3%
+# Finished Make data base on Thu Mar 24 18:18:37 2022
 
  
