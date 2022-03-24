@@ -10,10 +10,11 @@
 #include "music/gbt_player.h"
 
 // sprites and tiles
-#include "sprites/players.c"
 #include "sprites/gb_tileset_v2.c"
 
 // bank 2
+#include "sprites/players.h"
+
 #include "sprites/parallax_tileset_v2.h"
 #include "sprites/small_spike_parallax.h"
 #include "sprites/big_spike_parallax.h"
@@ -22,7 +23,7 @@
 #include "sprites/jump_tile_parallax.h"
 
 #include "sprites/nima.h"
-#include "sprites/aero.c"
+#include "sprites/aero.h"
 
 //#include "sprites/aero_light.c"
 #include "sprites/aero_cursors.c" // i dont like this, fix it
@@ -164,9 +165,11 @@ uint16_t *px_progress[NUM_LEVELS]; //= {
 inline void init_tiles()
 {
     set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
+    SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
     set_bkg_data(GB_TILESET_LEN, AERO_TILESET_LEN, aero + 3 * 16);
     set_bkg_data(GB_TILESET_LEN + AERO_TILESET_LEN, 1, aero + 47 * 16); // colon
     set_bkg_data(GB_TILESET_LEN + AERO_TILESET_LEN + 1, 1, aero + 67 * 16); // percent
+    SWITCH_ROM_MBC1(saved_bank);
     set_bkg_data(GB_TILESET_LEN + AERO_TILESET_LEN + 2, 9, progress_bar_tiles);
 }
 
@@ -589,7 +592,9 @@ void render_player()
 
 void initialize_player()
 {
+    SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
     set_sprite_data(0, 1, players + (player_sprite_num << 4)); // << 4 is the same as *16
+    SWITCH_ROM_MBC1(saved_bank);
     set_sprite_tile(0, 0);
 }
 
@@ -787,11 +792,15 @@ screen_t title()
             // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
             if (i < 5)
             {
+                SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
                 set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
+                SWITCH_ROM_MBC1(saved_bank);
                 set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
                 move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
             }
+            SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
             set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
+            SWITCH_ROM_MBC1(saved_bank);
             set_sprite_tile(PLAYER_TEXT_OAM + i, PLAYER_TEXT_OAM + i);
             move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
         }
@@ -858,11 +867,15 @@ screen_t title()
                         // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
                         if (i < 5)
                         {
+                            SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
                             set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
+                            SWITCH_ROM_MBC1(saved_bank);
                             set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
                             move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
                         }
+                        SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
                         set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
+                        SWITCH_ROM_MBC1(saved_bank);
                         set_sprite_tile(PLAYER_TEXT_OAM + i, PLAYER_TEXT_OAM + i);
                         move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
                     }
@@ -971,7 +984,9 @@ screen_t player_select()
                 ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
 
     // Load all character sprites
+    SWITCH_ROM_MBC1(parallax_tileset_v2Bank);
     set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
+    SWITCH_ROM_MBC1(saved_bank);
 
     // Loading in characters
 

@@ -24,13 +24,15 @@ make:
 	$(CC) -Wa-l -Wf-bo2 -c -o jump_circle_parallax.o sprites/jump_circle_parallax.c
 	$(CC) -Wa-l -Wf-bo2 -c -o jump_tile_parallax.o sprites/jump_tile_parallax.c
 	$(CC) -Wa-l -Wf-bo2 -c -o nima.o sprites/nima.c
+	$(CC) -Wa-l -Wf-bo2 -c -o aero.o sprites/aero.c
+	$(CC) -Wa-l -Wf-bo2 -c -o players.o sprites/players.c
 	$(CC) -Wa-l -c -o geometry_boy.o geometry_boy.c
 	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o output.o output.c
 	$(CC) -c -o gbt_player.o music/gbt_player.s
 	$(CC) -c -o gbt_player_bank1.o music/gbt_player_bank1.s
 
 	
-	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb title_map.o level1.o level2.o geometry_boy.o output.o gbt_player.o gbt_player_bank1.o parallax_tileset_v2.o small_spike_parallax.o big_spike_parallax.o half_block_parallax.o jump_circle_parallax.o jump_tile_parallax.o nima.o
+	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb title_map.o level1.o level2.o geometry_boy.o output.o gbt_player.o gbt_player_bank1.o parallax_tileset_v2.o small_spike_parallax.o big_spike_parallax.o half_block_parallax.o jump_circle_parallax.o jump_tile_parallax.o nima.o aero.o players.o
 	rm -f *.sym
 
 clean:
