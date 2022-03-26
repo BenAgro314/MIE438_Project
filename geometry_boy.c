@@ -123,16 +123,10 @@ uint16_t old_px_progress_bar = 0;
 #define START_ATTEMPTS 0xa001
 #define START_PROGRESS 0xa100
 char *saved = (uint8_t *)START_RAM;
-uint16_t *attempts[NUM_LEVELS]; //= {
-    //(int *)START_ATTEMPTS,
-    //(int *)START_ATTEMPTS + 2,
-//}; // *(attempts[i]) is the number of attempts at level i
-uint16_t *px_progress[NUM_LEVELS]; //= {
-    //(int *)START_PROGRESS,
-    //(int *)START_PROGRESS + 2,
-//}; // *(px_progress[i]) is the maximum pixel progress at level i
+uint16_t *attempts[NUM_LEVELS]; 
+uint16_t *px_progress[NUM_LEVELS]; 
 
-#define GB_TILESET_LEN 13
+#define GB_TILESET_LEN 14
 #define AERO_TILESET_LEN 36
 
 #define NUMBER_TILES (GB_TILESET_LEN)
@@ -153,6 +147,7 @@ uint16_t *px_progress[NUM_LEVELS]; //= {
 #define INVERTED_SPIKE_TILE 10
 #define SHIP_PORTAL_TILE 11
 #define BACK_SPIKE_TILE 12
+#define CUBE_PORTAL_TILE 13
 
 
 inline void init_tiles()
@@ -328,7 +323,7 @@ inline void black_background()
     // write 0 to all background tiles
 
     SWITCH_ROM_MBC1(tilesBank);
-    set_bkg_data(0, 9, gb_tileset_v2); // load tiles into VRAM
+    set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
     SWITCH_ROM_MBC1(saved_bank);
     for (render_row = 0; render_row < 18; render_row++)
     {
@@ -517,13 +512,10 @@ void collide(int8_t vel_y)
                     player_dy = -PLAYER_JUMP_VEL;
                 }
             }
-        } else if (tile == SHIP_PORTAL_TILE && ((tick - saved_tick) > 10)){
-            saved_tick = tick;
-            if (current_vehicle == SHIP){
-                current_vehicle = CUBE;
-            } else if (current_vehicle == CUBE){
-                current_vehicle = SHIP;
-            }
+        } else if (tile == SHIP_PORTAL_TILE){
+            current_vehicle = SHIP;
+        } else if (tile == CUBE_PORTAL_TILE){
+            current_vehicle = CUBE;
         }
         else if (tile == WIN_TILE){
             player_dx = 0;
@@ -622,26 +614,6 @@ void initialize_player()
     set_sprite_tile(1, 1);
 }
 
-//void skip_to(uint16_t start_x_tile, uint8_t start_y_px)
-//{
-    //// initialize the background to map
-    //count = 0;
-    //for (render_row = 0; render_row < 18; render_row++)
-    //{
-        //SWITCH_ROM_MBC1(level_banks[level_ind]);
-        //set_bkg_tiles(0, render_row, 32, 1, level_maps[level_ind] + start_x_tile + count);
-        //SWITCH_ROM_MBC1(saved_bank);
-        //count += level_widths[level_ind];
-    //}
-
-    //old_scroll_x = start_x_tile << 3;
-    //background_x_shift = (start_x_tile << 3) + 8 + 3;
-    //old_background_x_shift = start_x_tile << 3;
-
-    //player_y = start_y_px;
-    //render_player();
-//}
-
 void skip_to(uint16_t background_x, uint8_t char_y) {
 
     while (background_x_shift < background_x){
@@ -682,6 +654,9 @@ screen_t game()
 
     SWITCH_ROM_MBC1(level_banks[level_ind]);
     init_background(level_maps[level_ind], level_widths[level_ind]);
+    SWITCH_ROM_MBC1(saved_bank);
+    SWITCH_ROM_MBC1(tilesBank);
+    set_bkg_data(CUBE_PORTAL_TILE, 1, players + (player_sprite_num << 4));     // load tiles into VRAM
     SWITCH_ROM_MBC1(saved_bank);
 
 #ifdef SKIP
@@ -782,15 +757,15 @@ screen_t game()
             parallax_tile_ind = 0;
         }
         SWITCH_ROM_MBC1(tilesBank);
-        set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
-        set_bkg_data(0x5, 1, small_spike_parallax + parallax_tile_ind);  // load tiles into VRAM
-        set_bkg_data(0x4, 1, big_spike_parallax + parallax_tile_ind);    // load tiles into VRAM
-        set_bkg_data(0x08, 1, half_block_parallax + parallax_tile_ind);  // load tiles into VRAM
-        set_bkg_data(0x06, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
-        set_bkg_data(0x07, 1, jump_tile_parallax + parallax_tile_ind);   // load tiles into VRAM
-        set_bkg_data(0x0A, 1, down_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
-        set_bkg_data(0x0B, 1, ship_parallax + parallax_tile_ind);   // load tiles into VRAM
-        set_bkg_data(0x0C, 1, back_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
+        set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
+        set_bkg_data(SMALL_SPIKE_TILE, 1, small_spike_parallax + parallax_tile_ind);  // load tiles into VRAM
+        set_bkg_data(BIG_SPIKE_TILE, 1, big_spike_parallax + parallax_tile_ind);    // load tiles into VRAM
+        set_bkg_data(HALF_BLOCK_TILE, 1, half_block_parallax + parallax_tile_ind);  // load tiles into VRAM
+        set_bkg_data(JUMP_CIRCLE_TILE, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(JUMP_TILE_TILE, 1, jump_tile_parallax + parallax_tile_ind);   // load tiles into VRAM
+        set_bkg_data(INVERTED_SPIKE_TILE, 1, down_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
+        set_bkg_data(SHIP_PORTAL_TILE, 1, ship_parallax + parallax_tile_ind);   // load tiles into VRAM
+        set_bkg_data(BACK_SPIKE_TILE, 1, back_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
         SWITCH_ROM_MBC1(saved_bank);
 
         tick++;
@@ -911,7 +886,7 @@ screen_t title()
             parallax_tile_ind = 0;
         }
         SWITCH_ROM_MBC1(tilesBank);
-        set_bkg_data(0, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
+        set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
         SWITCH_ROM_MBC1(saved_bank);
 
         if (!title_loaded)
