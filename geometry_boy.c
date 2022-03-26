@@ -388,7 +388,7 @@ void collide(int8_t vel_y)
     for (uint8_t i = 0; i < 4; i++)
     {
         tile_x = (player_x + (PLAYER_WIDTH - 1) * (i % 2));
-        tile_y = (player_y + (PLAYER_WIDTH - 1) * (i < 2));
+        tile_y = (player_y + (PLAYER_WIDTH - 1) * (i > 1));
         tile = get_tile_by_px(tile_x, tile_y);
         tile_x = tile_x & 0xF8; // divide by 8 then multiply by 8
         tile_y = tile_y & 0xF8;
