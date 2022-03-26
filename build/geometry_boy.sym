@@ -19,116 +19,118 @@ Symbol Table
     __moduint                                                      ****** GX
     __modulong                                                     ****** GX
     __mullong                                                      ****** GX
-  7 __xinit__background_x_shift                                    00000D R
-  7 __xinit__current_attempts                                      00001F R
+  7 __xinit__background_x_shift                                    00000E R
+  7 __xinit__current_attempts                                      000020 R
   7 __xinit__current_vehicle                                       000002 R
-  7 __xinit__cursor_title_position                                 000028 R
-  7 __xinit__cursor_title_position_old                             000029 R
-  7 __xinit__jpad                                                  00000A R
-  7 __xinit__level_banks                                           00001D R
-  7 __xinit__level_ind                                             000014 R
-  7 __xinit__level_maps                                            000015 R
-  7 __xinit__level_widths                                          000019 R
-  7 __xinit__lose                                                  000008 R
-  7 __xinit__old_background_x_shift                                00000F R
-  7 __xinit__old_px_progress_bar                                   000023 R
-  7 __xinit__old_scroll_x                                          000011 R
-  7 __xinit__on_ground                                             000006 R
-  7 __xinit__parallax_tile_ind                                     000013 R
+  7 __xinit__cursor_title_position                                 000029 R
+  7 __xinit__cursor_title_position_old                             00002A R
+  7 __xinit__grav_invert                                           000003 R
+  7 __xinit__jpad                                                  00000B R
+  7 __xinit__level_banks                                           00001E R
+  7 __xinit__level_ind                                             000015 R
+  7 __xinit__level_maps                                            000016 R
+  7 __xinit__level_widths                                          00001A R
+  7 __xinit__lose                                                  000009 R
+  7 __xinit__old_background_x_shift                                000010 R
+  7 __xinit__old_px_progress_bar                                   000024 R
+  7 __xinit__old_scroll_x                                          000012 R
+  7 __xinit__on_ground                                             000007 R
+  7 __xinit__parallax_tile_ind                                     000014 R
   7 __xinit__player_dx                                             000001 R
   7 __xinit__player_dy                                             000000 R
-  7 __xinit__player_sprite_num                                     000005 R
-  7 __xinit__player_x                                              000004 R
-  7 __xinit__player_y                                              000003 R
-  7 __xinit__prev_jpad                                             000009 R
-  7 __xinit__px_progress_bar                                       000021 R
-  7 __xinit__saved                                                 000025 R
-  7 __xinit__saved_tick                                            00000C R
-  7 __xinit__tick                                                  00000B R
-  7 __xinit__title_loaded                                          000027 R
-  7 __xinit__win                                                   000007 R
+  7 __xinit__player_sprite_num                                     000006 R
+  7 __xinit__player_x                                              000005 R
+  7 __xinit__player_y                                              000004 R
+  7 __xinit__prev_jpad                                             00000A R
+  7 __xinit__px_progress_bar                                       000022 R
+  7 __xinit__saved                                                 000026 R
+  7 __xinit__saved_tick                                            00000D R
+  7 __xinit__tick                                                  00000C R
+  7 __xinit__title_loaded                                          000028 R
+  7 __xinit__win                                                   000008 R
     _add_LCD                                                       ****** GX
     _add_VBL                                                       ****** GX
     _aero                                                          ****** GX
     _aero_cursors                                                  ****** GX
   1 _attempts                                                      000007 GR
-  0 _attempts_text                                                 002F87 GR
+  0 _attempts_text                                                 00337E GR
   0 _attempts_title                                                000007 GR
     _back_spike_parallax                                           ****** GX
-  0 _back_text                                                     002F8F GR
-  2 _background_x_shift                                            00000D GR
-    _big_spike_parallax                                            ****** GX
+  0 _back_text                                                     003386 GR
+  2 _background_x_shift                                            00000E GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+    _big_spike_parallax                                            ****** GX
   0 _collide                                                       0000B6 GR
   1 _count                                                         000003 GR
-  2 _current_attempts                                              00001F GR
+  2 _current_attempts                                              000020 GR
   2 _current_vehicle                                               000002 GR
-  2 _cursor_title_position                                         000028 GR
-  2 _cursor_title_position_old                                     000029 GR
+  2 _cursor_title_position                                         000029 GR
+  2 _cursor_title_position_old                                     00002A GR
     _delay                                                         ****** GX
     _down_spike_parallax                                           ****** GX
-  0 _game                                                          0012E3 GR
-  0 _game_title                                                    002488 GR
+  0 _game                                                          0016DA GR
+  0 _game_title                                                    00287F GR
     _gb_tileset_v2                                                 ****** GX
     _gbt_loop                                                      ****** GX
     _gbt_play                                                      ****** GX
     _gbt_stop                                                      ****** GX
     _gbt_update                                                    ****** GX
     _get_bkg_tile_xy                                               ****** GX
+  2 _grav_invert                                                   000003 GR
     _half_block_parallax                                           ****** GX
   0 _init_background                                               000070 GR
-  0 _initialize_player                                             001025 GR
+  0 _initialize_player                                             00141C GR
     _joypad                                                        ****** GX
-  2 _jpad                                                          00000A GR
+  2 _jpad                                                          00000B GR
     _jump_circle_parallax                                          ****** GX
     _jump_tile_parallax                                            ****** GX
   0 _lcd_interrupt_game                                            000000 GR
     _level1_v2                                                     ****** GX
     _level2                                                        ****** GX
-  2 _level_banks                                                   00001D GR
-  2 _level_ind                                                     000014 GR
-  2 _level_maps                                                    000015 GR
-  0 _level_select                                                  002975 GR
-  0 _level_text                                                    002F7A GR
-  2 _level_widths                                                  000019 GR
-  2 _lose                                                          000008 GR
-  0 _main                                                          002F93 GR
+  2 _level_banks                                                   00001E GR
+  2 _level_ind                                                     000015 GR
+  2 _level_maps                                                    000016 GR
+  0 _level_select                                                  002D6C GR
+  0 _level_text                                                    003371 GR
+  2 _level_widths                                                  00001A GR
+  2 _lose                                                          000009 GR
+  0 _main                                                          00338A GR
     _nima                                                          ****** GX
-  2 _old_background_x_shift                                        00000F GR
-  2 _old_px_progress_bar                                           000023 GR
-  2 _old_scroll_x                                                  000011 GR
-  2 _on_ground                                                     000006 GR
-  2 _parallax_tile_ind                                             000013 GR
+  2 _old_background_x_shift                                        000010 GR
+  2 _old_px_progress_bar                                           000024 GR
+  2 _old_scroll_x                                                  000012 GR
+  2 _on_ground                                                     000007 GR
+  2 _parallax_tile_ind                                             000014 GR
     _parallax_tileset_v2                                           ****** GX
   2 _player_dx                                                     000001 GR
   2 _player_dy                                                     000000 GR
-  0 _player_select                                                 00249E GR
-  2 _player_sprite_num                                             000005 GR
-  0 _player_text                                                   002498 GR
-  2 _player_x                                                      000004 GR
-  2 _player_y                                                      000003 GR
+  0 _player_select                                                 002895 GR
+  2 _player_sprite_num                                             000006 GR
+  0 _player_text                                                   00288F GR
+  2 _player_x                                                      000005 GR
+  2 _player_y                                                      000004 GR
     _players                                                       ****** GX
-  2 _prev_jpad                                                     000009 GR
+  2 _prev_jpad                                                     00000A GR
     _progress_bar_tiles                                            ****** GX
-  0 _progress_text                                                 002F7F GR
+  0 _progress_text                                                 003376 GR
   1 _px_progress                                                   00000B GR
-  2 _px_progress_bar                                               000021 GR
-    _remove_LCD                                                    ****** GX
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 3.
 Hexadecimal [24-Bits]
 
 Symbol Table
 
+  2 _px_progress_bar                                               000022 GR
+    _remove_LCD                                                    ****** GX
     _remove_VBL                                                    ****** GX
   1 _render_col                                                    000002 GR
   1 _render_row                                                    000001 GR
-  2 _saved                                                         000025 GR
+  2 _saved                                                         000026 GR
   1 _saved_bank                                                    000005 GR
-  2 _saved_tick                                                    00000C GR
+  2 _saved_tick                                                    00000D GR
   1 _scx_cnt                                                       000000 GR
     _set_bkg_data                                                  ****** GX
     _set_bkg_tile_xy                                               ****** GX
@@ -138,34 +140,33 @@ Symbol Table
     _set_win_tile_xy                                               ****** GX
     _shadow_OAM                                                    ****** GX
     _ship_parallax                                                 ****** GX
-  0 _skip_to                                                       001068 GR
+  0 _skip_to                                                       00145F GR
     _small_spike_parallax                                          ****** GX
     _song_Data                                                     ****** GX
-  0 _start_text                                                    002493 GR
-  2 _tick                                                          00000B GR
-  0 _tick_player                                                   000F74 GR
-  0 _title                                                         001C48 GR
-  2 _title_loaded                                                  000027 GR
+  0 _start_text                                                    00288A GR
+  2 _tick                                                          00000C GR
+  0 _tick_player                                                   00131C GR
+  0 _title                                                         00203F GR
+  2 _title_loaded                                                  000028 GR
     _title_map_v2                                                  ****** GX
   1 _vbl_count                                                     000006 GR
   0 _vbl_interrupt_game                                            00000E GR
   0 _vbl_interrupt_title                                           000040 GR
     _wait_vbl_done                                                 ****** GX
-  2 _win                                                           000007 GR
-
+  2 _win                                                           000008 GR
 
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 4.
 Hexadecimal [24-Bits]
 
 Area Table
 
-   0 _CODE                                      size   3101   flags    0
+   0 _CODE                                      size   34F8   flags    0
    1 _DATA                                      size      F   flags    0
-   2 _INITIALIZED                               size     2A   flags    0
+   2 _INITIALIZED                               size     2B   flags    0
    3 _DABS                                      size      0   flags    8
    4 _HOME                                      size      0   flags    0
    5 _GSINIT                                    size      0   flags    0
    6 _GSFINAL                                   size      0   flags    0
-   7 _INITIALIZER                               size     2A   flags    0
+   7 _INITIALIZER                               size     2B   flags    0
    8 _CABS                                      size      0   flags    8
 

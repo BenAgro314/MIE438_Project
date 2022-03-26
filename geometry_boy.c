@@ -76,6 +76,7 @@ typedef enum
 int8_t player_dy = 0;
 int8_t player_dx = 3; // note we don't move the player, just the background
 vehicle_t current_vehicle = CUBE;
+uint8_t grav_invert = 1;
 // player velocities
 uint8_t player_y = PLAYER_START_Y;
 uint8_t player_x = PLAYER_START_X;
@@ -457,14 +458,24 @@ void collide(int8_t vel_y)
         else if (tile == BLACK_TILE)
         {
             if (vel_y > 0)
-            {                               // falling down
-                player_y = player_y & 0xF8; //(player_y / 8) * 8;
-                player_dy = 0;
-                on_ground = 1;
+            {                               // going down
+                if (grav_invert){
+                    player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                } else {
+                    player_y = player_y & 0xF8; //(player_y / 8) * 8;
+                    player_dy = 0;
+                    on_ground = 1;
+                }
             }
             else if (vel_y < 0)
-            {                                     // jumping up
-                player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+            {                                     // going up
+                if (grav_invert){
+                    player_y = player_y & 0xF8; //(player_y / 8) * 8;
+                    player_dy = 0;
+                    on_ground = 1;
+                } else {
+                    player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                }
             }
             else
             { // player cannot go through walls
@@ -482,13 +493,24 @@ void collide(int8_t vel_y)
             {
                 if (vel_y > 0)
                 { // falling down
-                    player_y = tile_y - 4;
-                    player_dy = 0;
-                    on_ground = 1;
+                    if (grav_invert){
+                        player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                    } else {
+                        player_y = tile_y - 4;
+                        player_dy = 0;
+                        on_ground = 1;
+                    }
                 }
                 else if (vel_y < 0)
                 {                                     // jumping up
-                    player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                    if (grav_invert){
+                        player_y = player_y & 0xF8; //(player_y / 8) * 8;
+                        player_dy = 0;
+                        on_ground = 1;
+                    }
+                    else {
+                        player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                    }
                 }
                 else
                 { // player cannot go through walls
@@ -535,27 +557,55 @@ void collide(int8_t vel_y)
     // ground checks
     if (vel_y == 0)
     {
-        if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
-        {
-            on_ground = 1;
-        }
-        else
-        {
-            // TODO: clean this up
-            if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
+        if (grav_invert){
+            if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
             {
-                tile_x = (player_x)&0xF8;
-                tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
-                if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                on_ground = 1;
+            }
+            else
+            {
+                // TODO: clean this up
+                if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y - 1) == HALF_BLOCK_TILE)
                 {
-                    on_ground = 1;
-                }
-                else
-                {
-                    tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
+                    tile_x = (player_x)&0xF8;
+                    tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
                     if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
                     {
                         on_ground = 1;
+                    }
+                    else
+                    {
+                        tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
+                        if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                        {
+                            on_ground = 1;
+                        }
+                    }
+                }
+            }
+        } else {
+            if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
+            {
+                on_ground = 1;
+            }
+            else
+            {
+                // TODO: clean this up
+                if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
+                {
+                    tile_x = (player_x)&0xF8;
+                    tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
+                    if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                    {
+                        on_ground = 1;
+                    }
+                    else
+                    {
+                        tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
+                        if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                        {
+                            on_ground = 1;
+                        }
                     }
                 }
             }
@@ -570,24 +620,46 @@ void tick_player()
         if (current_vehicle == CUBE){
             if (on_ground)
             {
-                player_dy = -PLAYER_JUMP_VEL;
+                if (grav_invert){
+                    player_dy = PLAYER_JUMP_VEL;
+                } else {
+                    player_dy = -PLAYER_JUMP_VEL;
+                }
             }
         } else if (current_vehicle == SHIP) {
-            player_dy = -SHIP_JUMP_VEL;
+            if (grav_invert){
+                player_dy = SHIP_JUMP_VEL;
+            } else {
+                player_dy = -SHIP_JUMP_VEL;
+            }
         }
     }
     if (!on_ground)
     {
         if (current_vehicle == CUBE){
-            player_dy += GRAVITY;
-            if (player_dy > CUBE_MAX_FALL_SPEED)
-                player_dy = CUBE_MAX_FALL_SPEED;
-        } else if (current_vehicle == SHIP){
-            if (tick % 2 == 0){
+            if (grav_invert){
+                player_dy -= GRAVITY;
+                if (player_dy < -CUBE_MAX_FALL_SPEED)
+                    player_dy = -CUBE_MAX_FALL_SPEED;
+            } else {
                 player_dy += GRAVITY;
+                if (player_dy > CUBE_MAX_FALL_SPEED)
+                    player_dy = CUBE_MAX_FALL_SPEED;
             }
-            if (player_dy > SHIP_MAX_FALL_SPEED)
-                player_dy = SHIP_MAX_FALL_SPEED;
+        } else if (current_vehicle == SHIP){
+            if (grav_invert){
+                if (tick % 2 == 0){
+                    player_dy -= GRAVITY;
+                }
+                if (player_dy < -SHIP_MAX_FALL_SPEED)
+                    player_dy = -SHIP_MAX_FALL_SPEED;
+            } else {
+                if (tick % 2 == 0){
+                    player_dy += GRAVITY;
+                }
+                if (player_dy > SHIP_MAX_FALL_SPEED)
+                    player_dy = SHIP_MAX_FALL_SPEED;
+            }
         }
     }
     // x axis collisions
@@ -621,26 +693,6 @@ void initialize_player()
     set_sprite_tile(0, 0);
     set_sprite_tile(1, 1);
 }
-
-//void skip_to(uint16_t start_x_tile, uint8_t start_y_px)
-//{
-    //// initialize the background to map
-    //count = 0;
-    //for (render_row = 0; render_row < 18; render_row++)
-    //{
-        //SWITCH_ROM_MBC1(level_banks[level_ind]);
-        //set_bkg_tiles(0, render_row, 32, 1, level_maps[level_ind] + start_x_tile + count);
-        //SWITCH_ROM_MBC1(saved_bank);
-        //count += level_widths[level_ind];
-    //}
-
-    //old_scroll_x = start_x_tile << 3;
-    //background_x_shift = (start_x_tile << 3) + 8 + 3;
-    //old_background_x_shift = start_x_tile << 3;
-
-    //player_y = start_y_px;
-    //render_player();
-//}
 
 void skip_to(uint16_t background_x, uint8_t char_y) {
 
