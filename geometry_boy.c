@@ -460,7 +460,7 @@ void collide(int8_t vel_y)
             if (vel_y > 0)
             {                               // going down
                 if (grav_invert){
-                    player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                    player_y = player_y & 0xF8; //(player_y / 8) * 8 + 8;
                 } else {
                     player_y = player_y & 0xF8; //(player_y / 8) * 8;
                     player_dy = 0;
@@ -470,7 +470,7 @@ void collide(int8_t vel_y)
             else if (vel_y < 0)
             {                                     // going up
                 if (grav_invert){
-                    player_y = player_y & 0xF8; //(player_y / 8) * 8;
+                    player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8;
                     player_dy = 0;
                     on_ground = 1;
                 } else {
@@ -494,7 +494,7 @@ void collide(int8_t vel_y)
                 if (vel_y > 0)
                 { // falling down
                     if (grav_invert){
-                        player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
+                        player_y = (player_y & 0xF8); //(player_y / 8) * 8 + 8;
                     } else {
                         player_y = tile_y - 4;
                         player_dy = 0;
@@ -504,7 +504,7 @@ void collide(int8_t vel_y)
                 else if (vel_y < 0)
                 {                                     // jumping up
                     if (grav_invert){
-                        player_y = player_y & 0xF8; //(player_y / 8) * 8;
+                        player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8;
                         player_dy = 0;
                         on_ground = 1;
                     }
@@ -558,31 +558,31 @@ void collide(int8_t vel_y)
     if (vel_y == 0)
     {
         if (grav_invert){
-            if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
-            {
-                on_ground = 1;
-            }
-            else
-            {
-                // TODO: clean this up
-                if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y - 1) == HALF_BLOCK_TILE)
-                {
-                    tile_x = (player_x)&0xF8;
-                    tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
-                    if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
-                    {
-                        on_ground = 1;
-                    }
-                    else
-                    {
-                        tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
-                        if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
-                        {
-                            on_ground = 1;
-                        }
-                    }
-                }
-            }
+            //if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
+            //{
+                //on_ground = 1;
+            //}
+            //else
+            //{
+                //// TODO: clean this up
+                //if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y - 1) == HALF_BLOCK_TILE)
+                //{
+                    //tile_x = (player_x)&0xF8;
+                    //tile_y = (player_y + PLAYER_WIDTH) & 0xF8;
+                    //if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                    //{
+                        //on_ground = 1;
+                    //}
+                    //else
+                    //{
+                        //tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
+                        //if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
+                        //{
+                            //on_ground = 1;
+                        //}
+                    //}
+                //}
+            //}
         } else {
             if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
             {
