@@ -364,16 +364,16 @@ _collide::
 	ld	d, a
 	sub	a, (hl)
 	bit	7, e
-	jr	Z, 01092$
+	jr	Z, 01107$
 	bit	7, d
-	jr	NZ, 01093$
+	jr	NZ, 01108$
 	cp	a, a
-	jr	01093$
-01092$:
+	jr	01108$
+01107$:
 	bit	7, d
-	jr	Z, 01093$
+	jr	Z, 01108$
 	scf
-01093$:
+01108$:
 	ld	a, #0x00
 	rla
 	ldhl	sp,	#0
@@ -392,12 +392,12 @@ _collide::
 	ld	(hl), a
 	ldhl	sp,	#30
 	ld	(hl), #0x00
-00245$:
+00254$:
 ;geometry_boy.c:391: tile_x = (player_x + (PLAYER_WIDTH - 1) * (i % 2));
 	ld	a, (#_player_x)
 	ldhl	sp,	#29
 	ld	(hl), a
-;geometry_boy.c:392: tile_y = (player_y + (PLAYER_WIDTH - 1) * (i < 2));
+;geometry_boy.c:392: tile_y = (player_y + (PLAYER_WIDTH - 1) * (i > 1));
 	ld	a, (#_player_y)
 	ldhl	sp,	#26
 	ld	(hl), a
@@ -422,10 +422,10 @@ _collide::
 	add	a, c
 	ldhl	sp,	#29
 	add	a, (hl)
-;geometry_boy.c:392: tile_y = (player_y + (PLAYER_WIDTH - 1) * (i < 2));
+;geometry_boy.c:392: tile_y = (player_y + (PLAYER_WIDTH - 1) * (i > 1));
 	ld	(hl+), a
-	ld	a, (hl)
-	sub	a, #0x02
+	ld	a, #0x01
+	sub	a, (hl)
 	ld	a, #0x00
 	rla
 	ld	c, a
@@ -671,16 +671,16 @@ _collide::
 	ld	a, (de)
 	ld	d, a
 	bit	7, (hl)
-	jr	Z, 01094$
+	jr	Z, 01109$
 	bit	7, d
-	jr	NZ, 01095$
+	jr	NZ, 01110$
 	cp	a, a
-	jr	01095$
-01094$:
+	jr	01110$
+01109$:
 	bit	7, d
-	jr	Z, 01095$
+	jr	Z, 01110$
 	scf
-01095$:
+01110$:
 	ld	a, #0x00
 	rla
 	ldhl	sp,	#25
@@ -705,17 +705,17 @@ _collide::
 	ld	a, c
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00249$
+	jr	C, 00258$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#25
 	bit	0, (hl)
-	jr	NZ, 00249$
+	jr	NZ, 00258$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00249$
+	jr	C, 00258$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#28
 	ld	c, (hl)
@@ -728,25 +728,25 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01098$
+	jr	Z, 01113$
 	bit	7, d
-	jr	NZ, 01099$
+	jr	NZ, 01114$
 	cp	a, a
-	jr	01099$
-01098$:
+	jr	01114$
+01113$:
 	bit	7, d
-	jr	Z, 01099$
+	jr	Z, 01114$
 	scf
-01099$:
-	jr	NC, 00250$
-00249$:
+01114$:
+	jr	NC, 00259$
+00258$:
 	ldhl	sp,	#29
 	ld	(hl), #0x00
-	jr	00251$
-00250$:
+	jr	00260$
+00259$:
 	ldhl	sp,	#29
 	ld	(hl), #0x01
-00251$:
+00260$:
 	ldhl	sp,	#29
 	ld	a, (hl)
 ;geometry_boy.c:401: rect_collision_with_player(tile_x, tile_x + 7, tile_y + 7, tile_y + 7) ||
@@ -774,7 +774,7 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00258$
+	jr	C, 00267$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#27
 	ld	a, (hl)
@@ -794,23 +794,23 @@ _collide::
 	ld	a, (de)
 	ld	d, a
 	bit	7, (hl)
-	jr	Z, 01100$
+	jr	Z, 01115$
 	bit	7, d
-	jr	NZ, 01101$
+	jr	NZ, 01116$
 	cp	a, a
-	jr	01101$
-01100$:
+	jr	01116$
+01115$:
 	bit	7, d
-	jr	Z, 01101$
+	jr	Z, 01116$
 	scf
-01101$:
-	jr	C, 00258$
+01116$:
+	jr	C, 00267$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#28
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00258$
+	jr	C, 00267$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#26
 	ld	c, (hl)
@@ -823,25 +823,25 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01102$
+	jr	Z, 01117$
 	bit	7, d
-	jr	NZ, 01103$
+	jr	NZ, 01118$
 	cp	a, a
-	jr	01103$
-01102$:
+	jr	01118$
+01117$:
 	bit	7, d
-	jr	Z, 01103$
+	jr	Z, 01118$
 	scf
-01103$:
-	jr	NC, 00259$
-00258$:
+01118$:
+	jr	NC, 00268$
+00267$:
 	ldhl	sp,	#29
 	ld	(hl), #0x00
-	jr	00260$
-00259$:
+	jr	00269$
+00268$:
 	ldhl	sp,	#29
 	ld	(hl), #0x01
-00260$:
+00269$:
 	ldhl	sp,	#29
 	ld	a, (hl)
 ;geometry_boy.c:402: rect_collision_with_player(tile_x + 1, tile_x + 6, tile_y + 6, tile_y + 6) ||
@@ -869,7 +869,7 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00267$
+	jr	C, 00276$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#27
 	ld	a, (hl)
@@ -889,23 +889,23 @@ _collide::
 	ld	a, (de)
 	ld	d, a
 	bit	7, (hl)
-	jr	Z, 01104$
+	jr	Z, 01119$
 	bit	7, d
-	jr	NZ, 01105$
+	jr	NZ, 01120$
 	cp	a, a
-	jr	01105$
-01104$:
+	jr	01120$
+01119$:
 	bit	7, d
-	jr	Z, 01105$
+	jr	Z, 01120$
 	scf
-01105$:
-	jr	C, 00267$
+01120$:
+	jr	C, 00276$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#28
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00267$
+	jr	C, 00276$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#26
 	ld	c, (hl)
@@ -918,25 +918,25 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01106$
+	jr	Z, 01121$
 	bit	7, d
-	jr	NZ, 01107$
+	jr	NZ, 01122$
 	cp	a, a
-	jr	01107$
-01106$:
+	jr	01122$
+01121$:
 	bit	7, d
-	jr	Z, 01107$
+	jr	Z, 01122$
 	scf
-01107$:
-	jr	NC, 00268$
-00267$:
+01122$:
+	jr	NC, 00277$
+00276$:
 	ldhl	sp,	#29
 	ld	(hl), #0x00
-	jr	00269$
-00268$:
+	jr	00278$
+00277$:
 	ldhl	sp,	#29
 	ld	(hl), #0x01
-00269$:
+00278$:
 	ldhl	sp,	#29
 	ld	a, (hl)
 ;geometry_boy.c:403: rect_collision_with_player(tile_x +2, tile_x + 5, tile_y + 5, tile_y + 5) ||
@@ -964,7 +964,7 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00276$
+	jr	C, 00285$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#27
 	ld	a, (hl)
@@ -984,23 +984,23 @@ _collide::
 	ld	a, (de)
 	ld	d, a
 	bit	7, (hl)
-	jr	Z, 01108$
+	jr	Z, 01123$
 	bit	7, d
-	jr	NZ, 01109$
+	jr	NZ, 01124$
 	cp	a, a
-	jr	01109$
-01108$:
+	jr	01124$
+01123$:
 	bit	7, d
-	jr	Z, 01109$
+	jr	Z, 01124$
 	scf
-01109$:
-	jr	C, 00276$
+01124$:
+	jr	C, 00285$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#28
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00276$
+	jr	C, 00285$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#26
 	ld	c, (hl)
@@ -1013,30 +1013,30 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01110$
+	jr	Z, 01125$
 	bit	7, d
-	jr	NZ, 01111$
+	jr	NZ, 01126$
 	cp	a, a
-	jr	01111$
-01110$:
+	jr	01126$
+01125$:
 	bit	7, d
-	jr	Z, 01111$
+	jr	Z, 01126$
 	scf
-01111$:
-	jr	NC, 00277$
-00276$:
+01126$:
+	jr	NC, 00286$
+00285$:
 	ldhl	sp,	#29
 	ld	(hl), #0x00
-	jr	00278$
-00277$:
+	jr	00287$
+00286$:
 	ldhl	sp,	#29
 	ld	(hl), #0x01
-00278$:
+00287$:
 	ldhl	sp,	#29
 	ld	a, (hl)
 ;geometry_boy.c:404: rect_collision_with_player(tile_x + 3, tile_x + 4, tile_y +4, tile_y + 4)
 	or	a, a
-	jp	Z, 00246$
+	jp	Z, 00255$
 00101$:
 ;geometry_boy.c:406: player_dx = 0;
 	ld	hl, #_player_dx
@@ -1052,12 +1052,12 @@ _collide::
 	ldhl	sp,	#24
 	ld	a, (hl)
 	or	a, a
-	jr	Z, 00285$
+	jr	Z, 00294$
 	ldhl	sp,	#11
 	ld	a, (hl+)
 	ld	c, a
 	ld	b, (hl)
-00285$:
+00294$:
 	sra	b
 	rr	c
 	sra	b
@@ -1072,7 +1072,7 @@ _collide::
 ;geometry_boy.c:409: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00188$:
 ;geometry_boy.c:350: return (y_px - YOFF) >> 3;
 	ldhl	sp,	#27
@@ -1104,16 +1104,16 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01112$
+	jr	Z, 01127$
 	bit	7, d
-	jr	NZ, 01113$
+	jr	NZ, 01128$
 	cp	a, a
-	jr	01113$
-01112$:
+	jr	01128$
+01127$:
 	bit	7, d
-	jr	Z, 01113$
+	jr	Z, 01128$
 	scf
-01113$:
+01128$:
 	ld	a, #0x00
 	rla
 	ldhl	sp,	#29
@@ -1131,17 +1131,17 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00286$
+	jr	C, 00295$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#25
 	bit	0, (hl)
-	jr	NZ, 00286$
+	jr	NZ, 00295$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#9
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00286$
+	jr	C, 00295$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ld	b, #0x00
 	ldhl	sp,	#13
@@ -1152,23 +1152,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01116$
+	jr	Z, 01131$
 	bit	7, d
-	jr	NZ, 01117$
+	jr	NZ, 01132$
 	cp	a, a
-	jr	01117$
-01116$:
+	jr	01132$
+01131$:
 	bit	7, d
-	jr	Z, 01117$
+	jr	Z, 01132$
 	scf
-01117$:
-	jr	NC, 00287$
-00286$:
+01132$:
+	jr	NC, 00296$
+00295$:
 	xor	a, a
-	jr	00288$
-00287$:
+	jr	00297$
+00296$:
 	ld	a, #0x01
-00288$:
+00297$:
 ;geometry_boy.c:416: rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) ||
 	or	a, a
 	jp	NZ, 00106$
@@ -1185,7 +1185,7 @@ _collide::
 	ld	a, b
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00295$
+	jr	C, 00304$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ld	b, #0x00
 	ldhl	sp,	#11
@@ -1196,23 +1196,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01118$
+	jr	Z, 01133$
 	bit	7, d
-	jr	NZ, 01119$
+	jr	NZ, 01134$
 	cp	a, a
-	jr	01119$
-01118$:
+	jr	01134$
+01133$:
 	bit	7, d
-	jr	Z, 01119$
+	jr	Z, 01134$
 	scf
-01119$:
-	jr	C, 00295$
+01134$:
+	jr	C, 00304$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#25
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00295$
+	jr	C, 00304$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#21
 	ld	c, (hl)
@@ -1225,23 +1225,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01120$
+	jr	Z, 01135$
 	bit	7, d
-	jr	NZ, 01121$
+	jr	NZ, 01136$
 	cp	a, a
-	jr	01121$
-01120$:
+	jr	01136$
+01135$:
 	bit	7, d
-	jr	Z, 01121$
+	jr	Z, 01136$
 	scf
-01121$:
-	jr	NC, 00296$
-00295$:
+01136$:
+	jr	NC, 00305$
+00304$:
 	xor	a, a
-	jr	00297$
-00296$:
+	jr	00306$
+00305$:
 	ld	a, #0x01
-00297$:
+00306$:
 ;geometry_boy.c:417: rect_collision_with_player(tile_x + 1, tile_x + 6, tile_y + 4, tile_y + 5) ||
 	or	a, a
 	jp	NZ, 00106$
@@ -1254,7 +1254,7 @@ _collide::
 	ld	a, b
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00304$
+	jr	C, 00313$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ld	b, #0x00
 	ldhl	sp,	#11
@@ -1265,23 +1265,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01122$
+	jr	Z, 01137$
 	bit	7, d
-	jr	NZ, 01123$
+	jr	NZ, 01138$
 	cp	a, a
-	jr	01123$
-01122$:
+	jr	01138$
+01137$:
 	bit	7, d
-	jr	Z, 01123$
+	jr	Z, 01138$
 	scf
-01123$:
-	jr	C, 00304$
+01138$:
+	jr	C, 00313$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#26
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00304$
+	jr	C, 00313$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#27
 	ld	c, (hl)
@@ -1294,23 +1294,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01124$
+	jr	Z, 01139$
 	bit	7, d
-	jr	NZ, 01125$
+	jr	NZ, 01140$
 	cp	a, a
-	jr	01125$
-01124$:
+	jr	01140$
+01139$:
 	bit	7, d
-	jr	Z, 01125$
+	jr	Z, 01140$
 	scf
-01125$:
-	jr	NC, 00305$
-00304$:
+01140$:
+	jr	NC, 00314$
+00313$:
 	xor	a, a
-	jr	00306$
-00305$:
+	jr	00315$
+00314$:
 	ld	a, #0x01
-00306$:
+00315$:
 ;geometry_boy.c:418: rect_collision_with_player(tile_x +2, tile_x + 5, tile_y + 2, tile_y + 3) ||
 	or	a, a
 	jr	NZ, 00106$
@@ -1323,7 +1323,7 @@ _collide::
 	ld	a, b
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00313$
+	jr	C, 00322$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ld	b, #0x00
 	ldhl	sp,	#11
@@ -1334,36 +1334,36 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01126$
+	jr	Z, 01141$
 	bit	7, d
-	jr	NZ, 01127$
+	jr	NZ, 01142$
 	cp	a, a
-	jr	01127$
-01126$:
+	jr	01142$
+01141$:
 	bit	7, d
-	jr	Z, 01127$
+	jr	Z, 01142$
 	scf
-01127$:
-	jr	C, 00313$
+01142$:
+	jr	C, 00322$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#28
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00313$
+	jr	C, 00322$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#29
 	bit	0, (hl)
-	jr	Z, 00314$
-00313$:
+	jr	Z, 00323$
+00322$:
 	xor	a, a
-	jr	00315$
-00314$:
+	jr	00324$
+00323$:
 	ld	a, #0x01
-00315$:
+00324$:
 ;geometry_boy.c:419: rect_collision_with_player(tile_x + 3, tile_x + 4, tile_y, tile_y + 1)
 	or	a, a
-	jp	Z, 00246$
+	jp	Z, 00255$
 00106$:
 ;geometry_boy.c:421: player_dx = 0;
 	ld	hl, #_player_dx
@@ -1383,7 +1383,7 @@ _collide::
 	ldhl	sp,	#24
 	ld	a, (hl)
 	or	a, a
-	jr	Z, 00322$
+	jr	Z, 00331$
 	ldhl	sp,	#11
 	ld	a, (hl)
 	ldhl	sp,	#28
@@ -1392,7 +1392,7 @@ _collide::
 	ld	a, (hl)
 	ldhl	sp,	#29
 	ld	(hl), a
-00322$:
+00331$:
 	ldhl	sp,	#29
 	sra	(hl)
 	dec	hl
@@ -1414,7 +1414,7 @@ _collide::
 ;geometry_boy.c:424: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00185$:
 ;geometry_boy.c:428: else if (tile == INVERTED_SPIKE_TILE){
 	ldhl	sp,	#4
@@ -1427,27 +1427,27 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00323$
+	jr	C, 00332$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#25
 	bit	0, (hl)
-	jr	NZ, 00323$
+	jr	NZ, 00332$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#28
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00323$
+	jr	C, 00332$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#29
 	bit	0, (hl)
-	jr	Z, 00324$
-00323$:
+	jr	Z, 00333$
+00332$:
 	ld	c, #0x00
-	jr	00325$
-00324$:
+	jr	00334$
+00333$:
 	ld	c, #0x01
-00325$:
+00334$:
 	ld	a, c
 ;geometry_boy.c:431: rect_collision_with_player(tile_x, tile_x + 7, tile_y, tile_y + 1) ||
 	or	a, a
@@ -1470,7 +1470,7 @@ _collide::
 	ld	a, c
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00332$
+	jr	C, 00341$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#27
 	ld	c, (hl)
@@ -1483,23 +1483,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01130$
+	jr	Z, 01145$
 	bit	7, d
-	jr	NZ, 01131$
+	jr	NZ, 01146$
 	cp	a, a
-	jr	01131$
-01130$:
+	jr	01146$
+01145$:
 	bit	7, d
-	jr	Z, 01131$
+	jr	Z, 01146$
 	scf
-01131$:
-	jr	C, 00332$
+01146$:
+	jr	C, 00341$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00332$
+	jr	C, 00341$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#28
 	ld	c, (hl)
@@ -1512,25 +1512,25 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01132$
+	jr	Z, 01147$
 	bit	7, d
-	jr	NZ, 01133$
+	jr	NZ, 01148$
 	cp	a, a
-	jr	01133$
-01132$:
+	jr	01148$
+01147$:
 	bit	7, d
-	jr	Z, 01133$
+	jr	Z, 01148$
 	scf
-01133$:
-	jr	NC, 00333$
-00332$:
+01148$:
+	jr	NC, 00342$
+00341$:
 	ldhl	sp,	#29
 	ld	(hl), #0x00
-	jr	00334$
-00333$:
+	jr	00343$
+00342$:
 	ldhl	sp,	#29
 	ld	(hl), #0x01
-00334$:
+00343$:
 	ldhl	sp,	#29
 	ld	a, (hl)
 ;geometry_boy.c:432: rect_collision_with_player(tile_x + 1, tile_x + 6, tile_y + 2, tile_y + 3) ||
@@ -1555,7 +1555,7 @@ _collide::
 	ld	a, c
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00341$
+	jr	C, 00350$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#27
 	ld	c, (hl)
@@ -1568,23 +1568,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01134$
+	jr	Z, 01149$
 	bit	7, d
-	jr	NZ, 01135$
+	jr	NZ, 01150$
 	cp	a, a
-	jr	01135$
-01134$:
+	jr	01150$
+01149$:
 	bit	7, d
-	jr	Z, 01135$
+	jr	Z, 01150$
 	scf
-01135$:
-	jr	C, 00341$
+01150$:
+	jr	C, 00350$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00341$
+	jr	C, 00350$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#28
 	ld	c, (hl)
@@ -1597,25 +1597,25 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01136$
+	jr	Z, 01151$
 	bit	7, d
-	jr	NZ, 01137$
+	jr	NZ, 01152$
 	cp	a, a
-	jr	01137$
-01136$:
+	jr	01152$
+01151$:
 	bit	7, d
-	jr	Z, 01137$
+	jr	Z, 01152$
 	scf
-01137$:
-	jr	NC, 00342$
-00341$:
+01152$:
+	jr	NC, 00351$
+00350$:
 	ldhl	sp,	#29
 	ld	(hl), #0x00
-	jr	00343$
-00342$:
+	jr	00352$
+00351$:
 	ldhl	sp,	#29
 	ld	(hl), #0x01
-00343$:
+00352$:
 	ldhl	sp,	#29
 	ld	a, (hl)
 ;geometry_boy.c:433: rect_collision_with_player(tile_x +2, tile_x + 5, tile_y + 4, tile_y + 5) ||
@@ -1640,7 +1640,7 @@ _collide::
 	ld	a, c
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00350$
+	jr	C, 00359$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#27
 	ld	c, (hl)
@@ -1653,23 +1653,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01138$
+	jr	Z, 01153$
 	bit	7, d
-	jr	NZ, 01139$
+	jr	NZ, 01154$
 	cp	a, a
-	jr	01139$
-01138$:
+	jr	01154$
+01153$:
 	bit	7, d
-	jr	Z, 01139$
+	jr	Z, 01154$
 	scf
-01139$:
-	jr	C, 00350$
+01154$:
+	jr	C, 00359$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00350$
+	jr	C, 00359$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#28
 	ld	c, (hl)
@@ -1682,30 +1682,30 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01140$
+	jr	Z, 01155$
 	bit	7, d
-	jr	NZ, 01141$
+	jr	NZ, 01156$
 	cp	a, a
-	jr	01141$
-01140$:
+	jr	01156$
+01155$:
 	bit	7, d
-	jr	Z, 01141$
+	jr	Z, 01156$
 	scf
-01141$:
-	jr	NC, 00351$
-00350$:
+01156$:
+	jr	NC, 00360$
+00359$:
 	ldhl	sp,	#29
 	ld	(hl), #0x00
-	jr	00352$
-00351$:
+	jr	00361$
+00360$:
 	ldhl	sp,	#29
 	ld	(hl), #0x01
-00352$:
+00361$:
 	ldhl	sp,	#29
 	ld	a, (hl)
 ;geometry_boy.c:434: rect_collision_with_player(tile_x + 3, tile_x + 4, tile_y + 6, tile_y + 7)
 	or	a, a
-	jp	Z, 00246$
+	jp	Z, 00255$
 00111$:
 ;geometry_boy.c:436: player_dx = 0;
 	ld	hl, #_player_dx
@@ -1725,7 +1725,7 @@ _collide::
 	ldhl	sp,	#24
 	ld	a, (hl)
 	or	a, a
-	jr	Z, 00359$
+	jr	Z, 00368$
 	ldhl	sp,	#11
 	ld	a, (hl)
 	ldhl	sp,	#28
@@ -1734,7 +1734,7 @@ _collide::
 	ld	a, (hl)
 	ldhl	sp,	#29
 	ld	(hl), a
-00359$:
+00368$:
 	ldhl	sp,	#29
 	sra	(hl)
 	dec	hl
@@ -1756,7 +1756,7 @@ _collide::
 ;geometry_boy.c:439: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00182$:
 ;geometry_boy.c:443: else if (tile == BACK_SPIKE_TILE){
 	ldhl	sp,	#4
@@ -1769,17 +1769,17 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00360$
+	jr	C, 00369$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#25
 	bit	0, (hl)
-	jr	NZ, 00360$
+	jr	NZ, 00369$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#21
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00360$
+	jr	C, 00369$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#26
 	ld	c, (hl)
@@ -1792,23 +1792,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01144$
+	jr	Z, 01159$
 	bit	7, d
-	jr	NZ, 01145$
+	jr	NZ, 01160$
 	cp	a, a
-	jr	01145$
-01144$:
+	jr	01160$
+01159$:
 	bit	7, d
-	jr	Z, 01145$
+	jr	Z, 01160$
 	scf
-01145$:
-	jr	NC, 00361$
-00360$:
+01160$:
+	jr	NC, 00370$
+00369$:
 	xor	a, a
-	jr	00362$
-00361$:
+	jr	00371$
+00370$:
 	ld	a, #0x01
-00362$:
+00371$:
 ;geometry_boy.c:446: rect_collision_with_player(tile_x, tile_x + 1, tile_y + 3, tile_y + 4) ||
 	or	a, a
 	jp	NZ, 00116$
@@ -1827,7 +1827,7 @@ _collide::
 	ld	a, c
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00369$
+	jr	C, 00378$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#25
 	ld	c, (hl)
@@ -1840,23 +1840,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01146$
+	jr	Z, 01161$
 	bit	7, d
-	jr	NZ, 01147$
+	jr	NZ, 01162$
 	cp	a, a
-	jr	01147$
-01146$:
+	jr	01162$
+01161$:
 	bit	7, d
-	jr	Z, 01147$
+	jr	Z, 01162$
 	scf
-01147$:
-	jr	C, 00369$
+01162$:
+	jr	C, 00378$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#26
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00369$
+	jr	C, 00378$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#27
 	ld	c, (hl)
@@ -1869,25 +1869,25 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01148$
+	jr	Z, 01163$
 	bit	7, d
-	jr	NZ, 01149$
+	jr	NZ, 01164$
 	cp	a, a
-	jr	01149$
-01148$:
+	jr	01164$
+01163$:
 	bit	7, d
-	jr	Z, 01149$
+	jr	Z, 01164$
 	scf
-01149$:
-	jr	NC, 00370$
-00369$:
+01164$:
+	jr	NC, 00379$
+00378$:
 	ldhl	sp,	#27
 	ld	(hl), #0x00
-	jr	00371$
-00370$:
+	jr	00380$
+00379$:
 	ldhl	sp,	#27
 	ld	(hl), #0x01
-00371$:
+00380$:
 	ldhl	sp,	#27
 	ld	a, (hl)
 ;geometry_boy.c:447: rect_collision_with_player(tile_x + 2, tile_x + 3, tile_y + 2, tile_y + 5) ||
@@ -1908,7 +1908,7 @@ _collide::
 	ld	a, c
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00378$
+	jr	C, 00387$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#26
 	ld	c, (hl)
@@ -1921,23 +1921,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01150$
+	jr	Z, 01165$
 	bit	7, d
-	jr	NZ, 01151$
+	jr	NZ, 01166$
 	cp	a, a
-	jr	01151$
-01150$:
+	jr	01166$
+01165$:
 	bit	7, d
-	jr	Z, 01151$
+	jr	Z, 01166$
 	scf
-01151$:
-	jr	C, 00378$
+01166$:
+	jr	C, 00387$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#27
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00378$
+	jr	C, 00387$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#28
 	ld	c, (hl)
@@ -1950,25 +1950,25 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01152$
+	jr	Z, 01167$
 	bit	7, d
-	jr	NZ, 01153$
+	jr	NZ, 01168$
 	cp	a, a
-	jr	01153$
-01152$:
+	jr	01168$
+01167$:
 	bit	7, d
-	jr	Z, 01153$
+	jr	Z, 01168$
 	scf
-01153$:
-	jr	NC, 00379$
-00378$:
+01168$:
+	jr	NC, 00388$
+00387$:
 	ldhl	sp,	#28
 	ld	(hl), #0x00
-	jr	00380$
-00379$:
+	jr	00389$
+00388$:
 	ldhl	sp,	#28
 	ld	(hl), #0x01
-00380$:
+00389$:
 	ldhl	sp,	#28
 	ld	a, (hl)
 ;geometry_boy.c:448: rect_collision_with_player(tile_x +4, tile_x + 5, tile_y + 1, tile_y + 6) ||
@@ -1987,7 +1987,7 @@ _collide::
 	ld	a, b
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00387$
+	jr	C, 00396$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ld	b, #0x00
 	ldhl	sp,	#11
@@ -1998,37 +1998,37 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01154$
+	jr	Z, 01169$
 	bit	7, d
-	jr	NZ, 01155$
+	jr	NZ, 01170$
 	cp	a, a
-	jr	01155$
-01154$:
+	jr	01170$
+01169$:
 	bit	7, d
-	jr	Z, 01155$
+	jr	Z, 01170$
 	scf
-01155$:
-	jr	C, 00387$
+01170$:
+	jr	C, 00396$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#28
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00387$
+	jr	C, 00396$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#29
 	bit	0, (hl)
-	jr	Z, 00388$
-00387$:
+	jr	Z, 00397$
+00396$:
 	ld	c, #0x00
-	jr	00389$
-00388$:
+	jr	00398$
+00397$:
 	ld	c, #0x01
-00389$:
+00398$:
 	ld	a, c
 ;geometry_boy.c:449: rect_collision_with_player(tile_x + 6, tile_x + 7, tile_y, tile_y + 7)
 	or	a, a
-	jp	Z, 00246$
+	jp	Z, 00255$
 00116$:
 ;geometry_boy.c:451: player_dx = 0;
 	ld	hl, #_player_dx
@@ -2048,7 +2048,7 @@ _collide::
 	ldhl	sp,	#24
 	ld	a, (hl)
 	or	a, a
-	jr	Z, 00396$
+	jr	Z, 00405$
 	ldhl	sp,	#11
 	ld	a, (hl)
 	ldhl	sp,	#28
@@ -2057,7 +2057,7 @@ _collide::
 	ld	a, (hl)
 	ldhl	sp,	#29
 	ld	(hl), a
-00396$:
+00405$:
 	ldhl	sp,	#29
 	sra	(hl)
 	dec	hl
@@ -2079,9 +2079,9 @@ _collide::
 ;geometry_boy.c:454: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00179$:
-;geometry_boy.c:463: player_y = player_y & 0xF8; //(player_y / 8) * 8 + 8;
+;geometry_boy.c:463: player_y = player_y & 0xF8;
 	ld	hl, #_player_y
 	ld	a, (hl)
 ;geometry_boy.c:473: player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8;
@@ -2089,7 +2089,7 @@ _collide::
 ;geometry_boy.c:485: player_x = player_x & 0xF8; //(player_x / 8) * 8;
 	ld	hl, #_player_x
 	ld	b, (hl)
-;geometry_boy.c:463: player_y = player_y & 0xF8; //(player_y / 8) * 8 + 8;
+;geometry_boy.c:463: player_y = player_y & 0xF8;
 	and	a, #0xf8
 	ldhl	sp,	#26
 ;geometry_boy.c:473: player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8;
@@ -2120,11 +2120,11 @@ _collide::
 	ld	a, (#_grav_invert)
 	or	a, a
 	jr	Z, 00122$
-;geometry_boy.c:463: player_y = player_y & 0xF8; //(player_y / 8) * 8 + 8;
+;geometry_boy.c:463: player_y = player_y & 0xF8;
 	ldhl	sp,	#26
 	ld	a, (hl)
 	ld	(#_player_y),a
-	jp	00246$
+	jp	00255$
 00122$:
 ;geometry_boy.c:465: player_y = player_y & 0xF8; //(player_y / 8) * 8;
 	ldhl	sp,	#26
@@ -2136,7 +2136,7 @@ _collide::
 ;geometry_boy.c:467: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00131$:
 ;geometry_boy.c:470: else if (vel_y < 0)
 	ldhl	sp,	#1
@@ -2157,13 +2157,13 @@ _collide::
 ;geometry_boy.c:475: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00125$:
 ;geometry_boy.c:477: player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	(#_player_y),a
-	jp	00246$
+	jp	00255$
 00128$:
 ;geometry_boy.c:483: player_dx = 0;
 	ld	hl, #_player_dx
@@ -2178,7 +2178,7 @@ _collide::
 ;geometry_boy.c:486: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00176$:
 ;geometry_boy.c:490: else if (tile == HALF_BLOCK_TILE)
 	ldhl	sp,	#4
@@ -2199,18 +2199,18 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00397$
+	jr	C, 00406$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#25
 	bit	0, (hl)
-	jr	NZ, 00397$
+	jr	NZ, 00406$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	inc	hl
 	inc	hl
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00397$
+	jr	C, 00406$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#24
 	ld	a, (hl)
@@ -2230,30 +2230,30 @@ _collide::
 	ld	a, (de)
 	ld	d, a
 	bit	7, (hl)
-	jr	Z, 01160$
+	jr	Z, 01175$
 	bit	7, d
-	jr	NZ, 01161$
+	jr	NZ, 01176$
 	cp	a, a
-	jr	01161$
-01160$:
+	jr	01176$
+01175$:
 	bit	7, d
-	jr	Z, 01161$
+	jr	Z, 01176$
 	scf
-01161$:
-	jr	NC, 00398$
-00397$:
+01176$:
+	jr	NC, 00407$
+00406$:
 	ldhl	sp,	#27
 	ld	(hl), #0x00
-	jr	00399$
-00398$:
+	jr	00408$
+00407$:
 	ldhl	sp,	#27
 	ld	(hl), #0x01
-00399$:
+00408$:
 	ldhl	sp,	#27
 	ld	a, (hl)
 ;geometry_boy.c:492: if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 4, tile_y + 7))
 	or	a, a
-	jp	Z, 00246$
+	jp	Z, 00255$
 ;geometry_boy.c:494: if (vel_y > 0)
 	ldhl	sp,	#2
 	ld	a, (hl)
@@ -2267,7 +2267,7 @@ _collide::
 	ldhl	sp,	#26
 	ld	a, (hl)
 	ld	(#_player_y),a
-	jp	00246$
+	jp	00255$
 00134$:
 ;geometry_boy.c:499: player_y = tile_y - 4;
 	ldhl	sp,	#6
@@ -2280,7 +2280,7 @@ _collide::
 ;geometry_boy.c:501: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00143$:
 ;geometry_boy.c:504: else if (vel_y < 0)
 	ldhl	sp,	#3
@@ -2301,13 +2301,13 @@ _collide::
 ;geometry_boy.c:509: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00137$:
 ;geometry_boy.c:512: player_y = (player_y & 0xF8) + 8; //(player_y / 8) * 8 + 8;
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	(#_player_y),a
-	jp	00246$
+	jp	00255$
 00140$:
 ;geometry_boy.c:518: player_dx = 0;
 	ld	hl, #_player_dx
@@ -2322,7 +2322,7 @@ _collide::
 ;geometry_boy.c:521: lose = 1;
 	ld	hl, #_lose
 	ld	(hl), #0x01
-	jp	00246$
+	jp	00255$
 00173$:
 ;geometry_boy.c:526: else if (tile == JUMP_TILE_TILE)
 	ldhl	sp,	#4
@@ -2343,17 +2343,17 @@ _collide::
 	ld	a, (hl)
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00406$
+	jr	C, 00415$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ldhl	sp,	#25
 	bit	0, (hl)
-	jr	NZ, 00406$
+	jr	NZ, 00415$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00406$
+	jr	C, 00415$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#28
 	ld	c, (hl)
@@ -2366,35 +2366,35 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01164$
+	jr	Z, 01179$
 	bit	7, d
-	jr	NZ, 01165$
+	jr	NZ, 01180$
 	cp	a, a
-	jr	01165$
-01164$:
+	jr	01180$
+01179$:
 	bit	7, d
-	jr	Z, 01165$
+	jr	Z, 01180$
 	scf
-01165$:
-	jr	NC, 00407$
-00406$:
+01180$:
+	jr	NC, 00416$
+00415$:
 	ld	c, #0x00
-	jr	00408$
-00407$:
+	jr	00417$
+00416$:
 	ld	c, #0x01
-00408$:
+00417$:
 	ld	a, c
 ;geometry_boy.c:528: if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 6, tile_y + 7) && vel_y == 0)
 	or	a, a
-	jp	Z, 00246$
+	jp	Z, 00255$
 	ldhl	sp,	#33
 	ld	a, (hl)
 	or	a, a
-	jp	NZ, 00246$
+	jp	NZ, 00255$
 ;geometry_boy.c:530: player_dy = -PLAYER_SUPER_JUMP_VEL;
 	ld	hl, #_player_dy
 	ld	(hl), #0xf7
-	jp	00246$
+	jp	00255$
 00170$:
 ;geometry_boy.c:533: else if (tile == JUMP_CIRCLE_TILE) // jump circle , hitbox is 4x4 square in center
 	ldhl	sp,	#4
@@ -2404,11 +2404,11 @@ _collide::
 ;geometry_boy.c:535: if (jpad == J_UP && vel_y == 0)
 	ld	a, (#_jpad)
 	sub	a, #0x04
-	jp	NZ,00246$
+	jp	NZ,00255$
 	ldhl	sp,	#33
 	ld	a, (hl)
 	or	a, a
-	jp	NZ, 00246$
+	jp	NZ, 00255$
 ;geometry_boy.c:537: if (rect_collision_with_player(tile_x + 2, tile_x + 5, tile_y + 2, tile_y + 5))
 	ldhl	sp,	#18
 	ld	a, (hl)
@@ -2425,7 +2425,7 @@ _collide::
 	ld	a, b
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00415$
+	jr	C, 00424$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ld	b, #0x00
 	ldhl	sp,	#11
@@ -2436,23 +2436,23 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01170$
+	jr	Z, 01185$
 	bit	7, d
-	jr	NZ, 01171$
+	jr	NZ, 01186$
 	cp	a, a
-	jr	01171$
-01170$:
+	jr	01186$
+01185$:
 	bit	7, d
-	jr	Z, 01171$
+	jr	Z, 01186$
 	scf
-01171$:
-	jr	C, 00415$
+01186$:
+	jr	C, 00424$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#29
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00415$
+	jr	C, 00424$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#28
 	ld	c, (hl)
@@ -2465,30 +2465,30 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01172$
+	jr	Z, 01187$
 	bit	7, d
-	jr	NZ, 01173$
+	jr	NZ, 01188$
 	cp	a, a
-	jr	01173$
-01172$:
+	jr	01188$
+01187$:
 	bit	7, d
-	jr	Z, 01173$
+	jr	Z, 01188$
 	scf
-01173$:
-	jr	NC, 00416$
-00415$:
+01188$:
+	jr	NC, 00425$
+00424$:
 	xor	a, a
-	jr	00417$
-00416$:
+	jr	00426$
+00425$:
 	ld	a, #0x01
-00417$:
+00426$:
 ;geometry_boy.c:537: if (rect_collision_with_player(tile_x + 2, tile_x + 5, tile_y + 2, tile_y + 5))
 	or	a, a
-	jp	Z, 00246$
+	jp	Z, 00255$
 ;geometry_boy.c:539: player_dy = -PLAYER_JUMP_VEL;
 	ld	hl, #_player_dy
 	ld	(hl), #0xfa
-	jp	00246$
+	jp	00255$
 00167$:
 ;geometry_boy.c:542: } else if (tile == SHIP_PORTAL_TILE && ((tick - saved_tick) > 10)){
 	ldhl	sp,	#4
@@ -2518,16 +2518,16 @@ _collide::
 	ld	a, #0x00
 	sbc	a, h
 	bit	7, e
-	jr	Z, 01176$
+	jr	Z, 01191$
 	bit	7, d
-	jr	NZ, 01177$
+	jr	NZ, 01192$
 	cp	a, a
-	jr	01177$
-01176$:
+	jr	01192$
+01191$:
 	bit	7, d
-	jr	Z, 01177$
+	jr	Z, 01192$
 	scf
-01177$:
+01192$:
 	jr	NC, 00163$
 ;geometry_boy.c:543: saved_tick = tick;
 	ld	a, (#_tick)
@@ -2539,22 +2539,22 @@ _collide::
 ;geometry_boy.c:545: current_vehicle = CUBE;
 	ld	hl, #_current_vehicle
 	ld	(hl), #0x00
-	jr	00246$
+	jr	00255$
 00158$:
 ;geometry_boy.c:546: } else if (current_vehicle == CUBE){
 	ld	hl, #_current_vehicle
 	ld	a, (hl)
 	or	a, a
-	jr	NZ, 00246$
+	jr	NZ, 00255$
 ;geometry_boy.c:547: current_vehicle = SHIP;
 	ld	(hl), #0x01
-	jr	00246$
+	jr	00255$
 00163$:
 ;geometry_boy.c:550: else if (tile == WIN_TILE){
 	ldhl	sp,	#5
 	ld	a, (hl)
 	sub	a, #0x09
-	jr	NZ, 00246$
+	jr	NZ, 00255$
 ;geometry_boy.c:551: player_dx = 0;
 	ld	hl, #_player_dx
 	ld	(hl), #0x00
@@ -2569,12 +2569,12 @@ _collide::
 	ldhl	sp,	#24
 	ld	a, (hl)
 	or	a, a
-	jr	Z, 00424$
+	jr	Z, 00433$
 	ldhl	sp,	#11
 	ld	a, (hl+)
 	ld	c, a
 	ld	b, (hl)
-00424$:
+00433$:
 	sra	b
 	rr	c
 	sra	b
@@ -2589,33 +2589,31 @@ _collide::
 ;geometry_boy.c:554: win = 1;
 	ld	hl, #_win
 	ld	(hl), #0x01
-00246$:
+00255$:
 ;geometry_boy.c:389: for (uint8_t i = 0; i < 4; i++)
 	ldhl	sp,	#30
 	inc	(hl)
-	jp	00245$
+	jp	00254$
 00190$:
 ;geometry_boy.c:558: if (vel_y == 0)
 	ldhl	sp,	#33
 	ld	a, (hl)
 	or	a, a
-	jp	NZ, 00247$
-;geometry_boy.c:560: if (grav_invert){
-	ld	a, (#_grav_invert)
-	or	a, a
-	jp	NZ, 00247$
-;geometry_boy.c:587: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
-	ldhl	sp,	#26
-	ld	a, (hl)
-	add	a, #0x08
-	ld	c, a
+	jp	NZ, 00256$
+;geometry_boy.c:561: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
 	ldhl	sp,	#29
 	ld	a, (hl+)
 	add	a, #0x07
 	ld	(hl), a
+;geometry_boy.c:560: if (grav_invert){
+	ld	a, (#_grav_invert)
+	or	a, a
+	jp	Z, 00207$
+;geometry_boy.c:561: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
+	ldhl	sp,	#26
 ;geometry_boy.c:350: return (y_px - YOFF) >> 3;
-	ldhl	sp,	#25
-	ld	a, c
+	ld	a, (hl-)
+	dec	a
 	ld	(hl+), a
 	xor	a, a
 	ld	(hl-), a
@@ -2696,8 +2694,430 @@ _collide::
 	call	_get_bkg_tile_xy
 	pop	hl
 	ld	a, e
+;geometry_boy.c:561: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
+	sub	a, #0x03
+	jp	Z,00191$
+	ld	hl, #_player_y
+	ld	c, (hl)
+	dec	c
+	ld	a, (#_player_x)
+	ldhl	sp,	#28
+;geometry_boy.c:350: return (y_px - YOFF) >> 3;
+	ld	(hl-), a
+	dec	hl
+	ld	a, c
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0010
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#30
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl)
+	ldhl	sp,	#26
+	ld	(hl), a
+	ldhl	sp,	#30
+	ld	a, (hl)
+	ldhl	sp,	#27
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl)
+	ldhl	sp,	#29
+	ld	(hl), a
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	a, (#_background_x_shift)
+	ldhl	sp,	#30
+	ld	(hl), a
+	ld	a, (hl-)
+	dec	hl
+	add	a, (hl)
+	inc	hl
+	inc	hl
+;geometry_boy.c:345: return (x_px - XOFF) >> 3; // >> 3 is the same as /8
+	ld	(hl), a
+	ldhl	sp,	#27
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0008
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#26
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl-), a
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl)
+	ldhl	sp,	#30
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	d, a
+	ld	e, (hl)
+	push	de
+	call	_get_bkg_tile_xy
+	pop	hl
+	ld	a, e
+;geometry_boy.c:561: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
+	sub	a, #0x03
+	jp	NZ,00256$
+00191$:
+;geometry_boy.c:563: on_ground = 1;
+	ld	hl, #_on_ground
+	ld	(hl), #0x01
+	jp	00256$
+00207$:
+;geometry_boy.c:587: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
+	ldhl	sp,	#26
+	ld	a, (hl)
+	add	a, #0x08
+	ldhl	sp,	#29
+	ld	(hl), a
+;geometry_boy.c:350: return (y_px - YOFF) >> 3;
+	ld	a, (hl-)
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0010
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#26
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl)
+	ldhl	sp,	#28
+	ld	(hl-), a
+	dec	hl
+	ld	a, (hl)
+	ldhl	sp,	#29
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl+)
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	(hl+), a
+	ld	a, (hl)
+	ldhl	sp,	#27
+	add	a, (hl)
+	ldhl	sp,	#30
+;geometry_boy.c:345: return (x_px - XOFF) >> 3; // >> 3 is the same as /8
+	ld	(hl), a
+	ldhl	sp,	#27
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0008
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#26
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl-), a
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl)
+	ldhl	sp,	#30
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	d, a
+	ld	e, (hl)
+	push	de
+	call	_get_bkg_tile_xy
+	pop	hl
+	ld	a, e
 ;geometry_boy.c:587: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
 	sub	a, #0x03
+	jp	Z,00202$
+	ld	a, (#_player_y)
+	add	a, #0x08
+	ld	c, a
+	ld	a, (#_player_x)
+	ldhl	sp,	#28
+;geometry_boy.c:350: return (y_px - YOFF) >> 3;
+	ld	(hl-), a
+	dec	hl
+	ld	a, c
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0010
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#30
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl)
+	ldhl	sp,	#26
+	ld	(hl), a
+	ldhl	sp,	#30
+	ld	a, (hl)
+	ldhl	sp,	#27
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl)
+	ldhl	sp,	#29
+	ld	(hl), a
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	a, (#_background_x_shift)
+	ldhl	sp,	#30
+	ld	(hl), a
+	ld	a, (hl-)
+	dec	hl
+	add	a, (hl)
+	inc	hl
+	inc	hl
+;geometry_boy.c:345: return (x_px - XOFF) >> 3; // >> 3 is the same as /8
+	ld	(hl), a
+	ldhl	sp,	#27
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0008
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#26
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl-), a
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl)
+	ldhl	sp,	#30
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	d, a
+	ld	e, (hl)
+	push	de
+	call	_get_bkg_tile_xy
+	pop	hl
+	ld	a, e
+;geometry_boy.c:587: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
+	sub	a, #0x03
+	jr	NZ, 00203$
+00202$:
+;geometry_boy.c:589: on_ground = 1;
+	ld	hl, #_on_ground
+	ld	(hl), #0x01
+	jp	00256$
+00203$:
+;geometry_boy.c:594: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
+	ld	a, (#_player_y)
+	add	a, #0x08
+	ldhl	sp,	#30
+	ld	(hl), a
+	ld	a, (#_player_x)
+	add	a, #0x07
+	ldhl	sp,	#28
+;geometry_boy.c:350: return (y_px - YOFF) >> 3;
+	ld	(hl+), a
+	inc	hl
+	ld	a, (hl)
+	ldhl	sp,	#26
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0010
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#30
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl)
+	ldhl	sp,	#26
+	ld	(hl), a
+	ldhl	sp,	#30
+	ld	a, (hl)
+	ldhl	sp,	#27
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl)
+	ldhl	sp,	#29
+	ld	(hl), a
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	a, (#_background_x_shift)
+	ldhl	sp,	#30
+	ld	(hl), a
+	ld	a, (hl-)
+	dec	hl
+	add	a, (hl)
+	inc	hl
+	inc	hl
+;geometry_boy.c:345: return (x_px - XOFF) >> 3; // >> 3 is the same as /8
+	ld	(hl), a
+	ldhl	sp,	#27
+	ld	(hl+), a
+	xor	a, a
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	e, a
+	ld	d, (hl)
+	ld	hl, #0x0008
+	ld	a, e
+	sub	a, l
+	ld	e, a
+	ld	a, d
+	sbc	a, h
+	ldhl	sp,	#26
+	ld	(hl-), a
+	ld	(hl), e
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl-), a
+	ld	a, (hl+)
+	inc	hl
+	ld	(hl), a
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	inc	hl
+	sra	(hl)
+	dec	hl
+	rr	(hl)
+	ld	a, (hl)
+	ldhl	sp,	#30
+;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
+	ld	(hl-), a
+	ld	a, (hl+)
+	ld	d, a
+	ld	e, (hl)
+	push	de
+	call	_get_bkg_tile_xy
+	pop	hl
+	ld	a, e
+;geometry_boy.c:594: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
+	sub	a, #0x08
 	jp	Z,00199$
 	ld	a, (#_player_y)
 	add	a, #0x08
@@ -2799,226 +3219,10 @@ _collide::
 	call	_get_bkg_tile_xy
 	pop	hl
 	ld	a, e
-;geometry_boy.c:587: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
-	sub	a, #0x03
-	jr	NZ, 00200$
+;geometry_boy.c:594: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
+	sub	a, #0x08
+	jp	NZ,00256$
 00199$:
-;geometry_boy.c:589: on_ground = 1;
-	ld	hl, #_on_ground
-	ld	(hl), #0x01
-	jp	00247$
-00200$:
-;geometry_boy.c:594: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
-	ld	a, (#_player_y)
-	add	a, #0x08
-	ldhl	sp,	#30
-	ld	(hl), a
-	ld	a, (#_player_x)
-	add	a, #0x07
-	ldhl	sp,	#28
-;geometry_boy.c:350: return (y_px - YOFF) >> 3;
-	ld	(hl+), a
-	inc	hl
-	ld	a, (hl)
-	ldhl	sp,	#26
-	ld	(hl+), a
-	xor	a, a
-	ld	(hl-), a
-	ld	a, (hl+)
-	ld	e, a
-	ld	d, (hl)
-	ld	hl, #0x0010
-	ld	a, e
-	sub	a, l
-	ld	e, a
-	ld	a, d
-	sbc	a, h
-	ldhl	sp,	#30
-	ld	(hl-), a
-	ld	(hl), e
-	ld	a, (hl)
-	ldhl	sp,	#26
-	ld	(hl), a
-	ldhl	sp,	#30
-	ld	a, (hl)
-	ldhl	sp,	#27
-	ld	(hl), a
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	ld	a, (hl)
-	ldhl	sp,	#29
-	ld	(hl), a
-;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
-	ld	a, (#_background_x_shift)
-	ldhl	sp,	#30
-	ld	(hl), a
-	ld	a, (hl-)
-	dec	hl
-	add	a, (hl)
-	inc	hl
-	inc	hl
-;geometry_boy.c:345: return (x_px - XOFF) >> 3; // >> 3 is the same as /8
-	ld	(hl), a
-	ldhl	sp,	#27
-	ld	(hl+), a
-	xor	a, a
-	ld	(hl-), a
-	ld	a, (hl+)
-	ld	e, a
-	ld	d, (hl)
-	ld	hl, #0x0008
-	ld	a, e
-	sub	a, l
-	ld	e, a
-	ld	a, d
-	sbc	a, h
-	ldhl	sp,	#26
-	ld	(hl-), a
-	ld	(hl), e
-	ld	a, (hl+)
-	inc	hl
-	ld	(hl-), a
-	ld	a, (hl+)
-	inc	hl
-	ld	(hl), a
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	ld	a, (hl)
-	ldhl	sp,	#30
-;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
-	ld	(hl-), a
-	ld	a, (hl+)
-	ld	d, a
-	ld	e, (hl)
-	push	de
-	call	_get_bkg_tile_xy
-	pop	hl
-	ld	a, e
-;geometry_boy.c:594: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
-	sub	a, #0x08
-	jp	Z,00196$
-	ld	a, (#_player_y)
-	add	a, #0x08
-	ld	c, a
-	ld	a, (#_player_x)
-	ldhl	sp,	#28
-;geometry_boy.c:350: return (y_px - YOFF) >> 3;
-	ld	(hl-), a
-	dec	hl
-	ld	a, c
-	ld	(hl+), a
-	xor	a, a
-	ld	(hl-), a
-	ld	a, (hl+)
-	ld	e, a
-	ld	d, (hl)
-	ld	hl, #0x0010
-	ld	a, e
-	sub	a, l
-	ld	e, a
-	ld	a, d
-	sbc	a, h
-	ldhl	sp,	#30
-	ld	(hl-), a
-	ld	(hl), e
-	ld	a, (hl)
-	ldhl	sp,	#26
-	ld	(hl), a
-	ldhl	sp,	#30
-	ld	a, (hl)
-	ldhl	sp,	#27
-	ld	(hl), a
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	ld	a, (hl)
-	ldhl	sp,	#29
-	ld	(hl), a
-;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
-	ld	a, (#_background_x_shift)
-	ldhl	sp,	#30
-	ld	(hl), a
-	ld	a, (hl-)
-	dec	hl
-	add	a, (hl)
-	inc	hl
-	inc	hl
-;geometry_boy.c:345: return (x_px - XOFF) >> 3; // >> 3 is the same as /8
-	ld	(hl), a
-	ldhl	sp,	#27
-	ld	(hl+), a
-	xor	a, a
-	ld	(hl-), a
-	ld	a, (hl+)
-	ld	e, a
-	ld	d, (hl)
-	ld	hl, #0x0008
-	ld	a, e
-	sub	a, l
-	ld	e, a
-	ld	a, d
-	sbc	a, h
-	ldhl	sp,	#26
-	ld	(hl-), a
-	ld	(hl), e
-	ld	a, (hl+)
-	inc	hl
-	ld	(hl-), a
-	ld	a, (hl+)
-	inc	hl
-	ld	(hl), a
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	inc	hl
-	sra	(hl)
-	dec	hl
-	rr	(hl)
-	ld	a, (hl)
-	ldhl	sp,	#30
-;geometry_boy.c:356: x_px_to_tile_ind(x_px + background_x_shift),
-	ld	(hl-), a
-	ld	a, (hl+)
-	ld	d, a
-	ld	e, (hl)
-	push	de
-	call	_get_bkg_tile_xy
-	pop	hl
-	ld	a, e
-;geometry_boy.c:594: if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == HALF_BLOCK_TILE)
-	sub	a, #0x08
-	jp	NZ,00247$
-00196$:
 ;geometry_boy.c:596: tile_x = (player_x)&0xF8;
 	ld	a, (#_player_x)
 	and	a, #0xf8
@@ -3077,7 +3281,7 @@ _collide::
 	ld	a, d
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00425$
+	jr	C, 00434$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ld	l, e
 ;	spillPairReg hl
@@ -3092,23 +3296,23 @@ _collide::
 	ld	a, b
 	sbc	a, h
 	bit	7, e
-	jr	Z, 01188$
+	jr	Z, 01206$
 	bit	7, d
-	jr	NZ, 01189$
+	jr	NZ, 01207$
 	cp	a, a
-	jr	01189$
-01188$:
+	jr	01207$
+01206$:
 	bit	7, d
-	jr	Z, 01189$
+	jr	Z, 01207$
 	scf
-01189$:
-	jr	C, 00425$
+01207$:
+	jr	C, 00434$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#24
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00425$
+	jr	C, 00434$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#26
 	ld	a, (hl+)
@@ -3127,31 +3331,31 @@ _collide::
 	ld	a, (de)
 	ld	d, a
 	bit	7, (hl)
-	jr	Z, 01190$
+	jr	Z, 01208$
 	bit	7, d
-	jr	NZ, 01191$
+	jr	NZ, 01209$
 	cp	a, a
-	jr	01191$
-01190$:
+	jr	01209$
+01208$:
 	bit	7, d
-	jr	Z, 01191$
+	jr	Z, 01209$
 	scf
-01191$:
-	jr	NC, 00426$
-00425$:
+01209$:
+	jr	NC, 00435$
+00434$:
 	xor	a, a
-	jr	00427$
-00426$:
+	jr	00436$
+00435$:
 	ld	a, #0x01
-00427$:
+00436$:
 ;geometry_boy.c:598: if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
 	or	a, a
-	jr	Z, 00194$
+	jr	Z, 00197$
 ;geometry_boy.c:600: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
-	jr	00247$
-00194$:
+	jr	00256$
+00197$:
 ;geometry_boy.c:604: tile_x = (player_x + PLAYER_WIDTH - 1) & 0xF8;
 	ld	a, (#_player_x)
 	add	a, #0x07
@@ -3172,7 +3376,7 @@ _collide::
 	ld	a, d
 	ld	hl, #_player_x
 	sub	a, (hl)
-	jr	C, 00434$
+	jr	C, 00443$
 ;geometry_boy.c:379: player_x + PLAYER_WIDTH - 1 >= x_left &&
 	ld	l, e
 ;	spillPairReg hl
@@ -3187,23 +3391,23 @@ _collide::
 	ld	a, b
 	sbc	a, h
 	bit	7, e
-	jr	Z, 01192$
+	jr	Z, 01210$
 	bit	7, d
-	jr	NZ, 01193$
+	jr	NZ, 01211$
 	cp	a, a
-	jr	01193$
-01192$:
+	jr	01211$
+01210$:
 	bit	7, d
-	jr	Z, 01193$
+	jr	Z, 01211$
 	scf
-01193$:
-	jr	C, 00434$
+01211$:
+	jr	C, 00443$
 ;geometry_boy.c:380: player_y <= y_bot &&
 	ldhl	sp,	#28
 	ld	a, (hl)
 	ld	hl, #_player_y
 	sub	a, (hl)
-	jr	C, 00434$
+	jr	C, 00443$
 ;geometry_boy.c:381: player_y + PLAYER_WIDTH - 1 >= y_top);
 	ldhl	sp,	#27
 	ld	a, (hl+)
@@ -3217,30 +3421,30 @@ _collide::
 	ld	d, (hl)
 	ld	a, b
 	bit	7,a
-	jr	Z, 01194$
+	jr	Z, 01212$
 	bit	7, d
-	jr	NZ, 01195$
+	jr	NZ, 01213$
 	cp	a, a
-	jr	01195$
-01194$:
+	jr	01213$
+01212$:
 	bit	7, d
-	jr	Z, 01195$
+	jr	Z, 01213$
 	scf
-01195$:
-	jr	NC, 00435$
-00434$:
+01213$:
+	jr	NC, 00444$
+00443$:
 	xor	a, a
-	jr	00436$
-00435$:
+	jr	00445$
+00444$:
 	ld	a, #0x01
-00436$:
+00445$:
 ;geometry_boy.c:605: if (rect_collision_with_player(tile_x, tile_x + 7, tile_y + 3, tile_y + 7))
 	or	a, a
-	jr	Z, 00247$
+	jr	Z, 00256$
 ;geometry_boy.c:607: on_ground = 1;
 	ld	hl, #_on_ground
 	ld	(hl), #0x01
-00247$:
+00256$:
 ;geometry_boy.c:614: }
 	add	sp, #31
 	ret
@@ -10043,7 +10247,7 @@ __xinit__player_dx:
 __xinit__current_vehicle:
 	.db #0x00	; 0
 __xinit__grav_invert:
-	.db #0x01	; 1
+	.db #0x00	; 0
 __xinit__player_y:
 	.db #0x90	; 144
 __xinit__player_x:

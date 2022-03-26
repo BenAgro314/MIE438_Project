@@ -76,7 +76,7 @@ typedef enum
 int8_t player_dy = 0;
 int8_t player_dx = 3; // note we don't move the player, just the background
 vehicle_t current_vehicle = CUBE;
-uint8_t grav_invert = 1;
+uint8_t grav_invert = 0;
 // player velocities
 uint8_t player_y = PLAYER_START_Y;
 uint8_t player_x = PLAYER_START_X;
@@ -389,7 +389,7 @@ void collide(int8_t vel_y)
     for (uint8_t i = 0; i < 4; i++)
     {
         tile_x = (player_x + (PLAYER_WIDTH - 1) * (i % 2));
-        tile_y = (player_y + (PLAYER_WIDTH - 1) * (i < 2));
+        tile_y = (player_y + (PLAYER_WIDTH - 1) * (i > 1));
         tile = get_tile_by_px(tile_x, tile_y);
         tile_x = tile_x & 0xF8; // divide by 8 then multiply by 8
         tile_y = tile_y & 0xF8;
@@ -460,7 +460,7 @@ void collide(int8_t vel_y)
             if (vel_y > 0)
             {                               // going down
                 if (grav_invert){
-                    player_y = player_y & 0xF8; //(player_y / 8) * 8 + 8;
+                    player_y = player_y & 0xF8;
                 } else {
                     player_y = player_y & 0xF8; //(player_y / 8) * 8;
                     player_dy = 0;
@@ -558,13 +558,13 @@ void collide(int8_t vel_y)
     if (vel_y == 0)
     {
         if (grav_invert){
-            //if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
-            //{
-                //on_ground = 1;
-            //}
-            //else
-            //{
-                //// TODO: clean this up
+            if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == BLACK_TILE || get_tile_by_px(player_x, player_y - 1) == BLACK_TILE)
+            {
+                on_ground = 1;
+            }
+            else
+            {
+                // TODO: clean this up
                 //if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y - 1) == HALF_BLOCK_TILE || get_tile_by_px(player_x, player_y - 1) == HALF_BLOCK_TILE)
                 //{
                     //tile_x = (player_x)&0xF8;
@@ -582,7 +582,7 @@ void collide(int8_t vel_y)
                         //}
                     //}
                 //}
-            //}
+            }
         } else {
             if (get_tile_by_px(player_x + PLAYER_WIDTH - 1, player_y + PLAYER_WIDTH) == BLACK_TILE || get_tile_by_px(player_x, player_y + PLAYER_WIDTH) == BLACK_TILE)
             {

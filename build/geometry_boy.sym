@@ -53,10 +53,10 @@ Symbol Table
     _aero                                                          ****** GX
     _aero_cursors                                                  ****** GX
   1 _attempts                                                      000007 GR
-  0 _attempts_text                                                 003039 GR
+  0 _attempts_text                                                 00313E GR
   0 _attempts_title                                                000007 GR
     _back_spike_parallax                                           ****** GX
-  0 _back_text                                                     003041 GR
+  0 _back_text                                                     003146 GR
   2 _background_x_shift                                            00000E GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
 Hexadecimal [24-Bits]
@@ -72,8 +72,8 @@ Symbol Table
   2 _cursor_title_position_old                                     00002A GR
     _delay                                                         ****** GX
     _down_spike_parallax                                           ****** GX
-  0 _game                                                          001395 GR
-  0 _game_title                                                    00253A GR
+  0 _game                                                          00149A GR
+  0 _game_title                                                    00263F GR
     _gb_tileset_v2                                                 ****** GX
     _gbt_loop                                                      ****** GX
     _gbt_play                                                      ****** GX
@@ -83,7 +83,7 @@ Symbol Table
   2 _grav_invert                                                   000003 GR
     _half_block_parallax                                           ****** GX
   0 _init_background                                               000070 GR
-  0 _initialize_player                                             0010D7 GR
+  0 _initialize_player                                             0011DC GR
     _joypad                                                        ****** GX
   2 _jpad                                                          00000B GR
     _jump_circle_parallax                                          ****** GX
@@ -94,11 +94,11 @@ Symbol Table
   2 _level_banks                                                   00001E GR
   2 _level_ind                                                     000015 GR
   2 _level_maps                                                    000016 GR
-  0 _level_select                                                  002A27 GR
-  0 _level_text                                                    00302C GR
+  0 _level_select                                                  002B2C GR
+  0 _level_text                                                    003131 GR
   2 _level_widths                                                  00001A GR
   2 _lose                                                          000009 GR
-  0 _main                                                          003045 GR
+  0 _main                                                          00314A GR
     _nima                                                          ****** GX
   2 _old_background_x_shift                                        000010 GR
   2 _old_px_progress_bar                                           000024 GR
@@ -108,15 +108,15 @@ Symbol Table
     _parallax_tileset_v2                                           ****** GX
   2 _player_dx                                                     000001 GR
   2 _player_dy                                                     000000 GR
-  0 _player_select                                                 002550 GR
+  0 _player_select                                                 002655 GR
   2 _player_sprite_num                                             000006 GR
-  0 _player_text                                                   00254A GR
+  0 _player_text                                                   00264F GR
   2 _player_x                                                      000005 GR
   2 _player_y                                                      000004 GR
     _players                                                       ****** GX
   2 _prev_jpad                                                     00000A GR
     _progress_bar_tiles                                            ****** GX
-  0 _progress_text                                                 003031 GR
+  0 _progress_text                                                 003136 GR
   1 _px_progress                                                   00000B GR
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 3.
 Hexadecimal [24-Bits]
@@ -140,13 +140,13 @@ Symbol Table
     _set_win_tile_xy                                               ****** GX
     _shadow_OAM                                                    ****** GX
     _ship_parallax                                                 ****** GX
-  0 _skip_to                                                       00111A GR
+  0 _skip_to                                                       00121F GR
     _small_spike_parallax                                          ****** GX
     _song_Data                                                     ****** GX
-  0 _start_text                                                    002545 GR
+  0 _start_text                                                    00264A GR
   2 _tick                                                          00000C GR
-  0 _tick_player                                                   000FD7 GR
-  0 _title                                                         001CFA GR
+  0 _tick_player                                                   0010DC GR
+  0 _title                                                         001DFF GR
   2 _title_loaded                                                  000028 GR
     _title_map_v2                                                  ****** GX
   1 _vbl_count                                                     000006 GR
@@ -160,7 +160,7 @@ Hexadecimal [24-Bits]
 
 Area Table
 
-   0 _CODE                                      size   31B3   flags    0
+   0 _CODE                                      size   32B8   flags    0
    1 _DATA                                      size      F   flags    0
    2 _INITIALIZED                               size     2B   flags    0
    3 _DABS                                      size      0   flags    8
