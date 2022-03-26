@@ -52,10 +52,10 @@ Symbol Table
     _aero                                                          ****** GX
     _aero_cursors                                                  ****** GX
   1 _attempts                                                      000007 GR
-  0 _attempts_text                                                 002CF6 GR
+  0 _attempts_text                                                 002F87 GR
   0 _attempts_title                                                000007 GR
     _back_spike_parallax                                           ****** GX
-  0 _back_text                                                     002CFE GR
+  0 _back_text                                                     002F8F GR
   2 _background_x_shift                                            00000D GR
     _big_spike_parallax                                            ****** GX
 ASxxxx Assembler V02.00 + NoICE + SDCC mods  (GameBoy Z80-like CPU), page 2.
@@ -71,8 +71,8 @@ Symbol Table
   2 _cursor_title_position_old                                     000029 GR
     _delay                                                         ****** GX
     _down_spike_parallax                                           ****** GX
-  0 _game                                                          001068 GR
-  0 _game_title                                                    0021F7 GR
+  0 _game                                                          0012E3 GR
+  0 _game_title                                                    002488 GR
     _gb_tileset_v2                                                 ****** GX
     _gbt_loop                                                      ****** GX
     _gbt_play                                                      ****** GX
@@ -92,11 +92,11 @@ Symbol Table
   2 _level_banks                                                   00001D GR
   2 _level_ind                                                     000014 GR
   2 _level_maps                                                    000015 GR
-  0 _level_select                                                  0026E4 GR
-  0 _level_text                                                    002CE9 GR
+  0 _level_select                                                  002975 GR
+  0 _level_text                                                    002F7A GR
   2 _level_widths                                                  000019 GR
   2 _lose                                                          000008 GR
-  0 _main                                                          002D02 GR
+  0 _main                                                          002F93 GR
     _nima                                                          ****** GX
   2 _old_background_x_shift                                        00000F GR
   2 _old_px_progress_bar                                           000023 GR
@@ -106,15 +106,15 @@ Symbol Table
     _parallax_tileset_v2                                           ****** GX
   2 _player_dx                                                     000001 GR
   2 _player_dy                                                     000000 GR
-  0 _player_select                                                 00220D GR
+  0 _player_select                                                 00249E GR
   2 _player_sprite_num                                             000005 GR
-  0 _player_text                                                   002207 GR
+  0 _player_text                                                   002498 GR
   2 _player_x                                                      000004 GR
   2 _player_y                                                      000003 GR
     _players                                                       ****** GX
   2 _prev_jpad                                                     000009 GR
     _progress_bar_tiles                                            ****** GX
-  0 _progress_text                                                 002CEE GR
+  0 _progress_text                                                 002F7F GR
   1 _px_progress                                                   00000B GR
   2 _px_progress_bar                                               000021 GR
     _remove_LCD                                                    ****** GX
@@ -137,12 +137,14 @@ Symbol Table
     _set_sprite_data                                               ****** GX
     _set_win_tile_xy                                               ****** GX
     _shadow_OAM                                                    ****** GX
+    _ship_parallax                                                 ****** GX
+  0 _skip_to                                                       001068 GR
     _small_spike_parallax                                          ****** GX
     _song_Data                                                     ****** GX
-  0 _start_text                                                    002202 GR
+  0 _start_text                                                    002493 GR
   2 _tick                                                          00000B GR
   0 _tick_player                                                   000F74 GR
-  0 _title                                                         0019B7 GR
+  0 _title                                                         001C48 GR
   2 _title_loaded                                                  000027 GR
     _title_map_v2                                                  ****** GX
   1 _vbl_count                                                     000006 GR
@@ -157,7 +159,7 @@ Hexadecimal [24-Bits]
 
 Area Table
 
-   0 _CODE                                      size   2E70   flags    0
+   0 _CODE                                      size   3101   flags    0
    1 _DATA                                      size      F   flags    0
    2 _INITIALIZED                               size     2A   flags    0
    3 _DABS                                      size      0   flags    8

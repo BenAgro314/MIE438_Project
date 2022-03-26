@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Thu Mar 24 18:18:37 2022
+# Make data base, printed on Fri Mar 25 20:08:38 2022
 
 # Variables
 
@@ -109,7 +109,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1001/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 4059837
+GIO_LAUNCHED_DESKTOP_FILE_PID = 594777
 # automatic
 %F = $(notdir $%)
 # environment
@@ -141,7 +141,7 @@ VSCODE_CODE_CACHE_PATH = /home/agrobenj/.config/Code/CachedData/c722ca6c7eed3d79
 # environment
 LOGNAME = agrobenj
 # environment
-APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = true
+APPLICATION_INSIGHTS_NO_DIAGNOSTIC_CHANNEL = 1
 # environment
 CONDA_PROMPT_MODIFIER = (base) 
 # environment
@@ -173,7 +173,7 @@ CC = ../gbdk/bin/lcc
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1001/vscode-ipc-f35590e3-9555-4a53-a6f0-dd1f7a6d4b3f.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1001/vscode-ipc-36309205-976a-41ac-a581-f07f421e2329.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -243,7 +243,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 4059837
+VSCODE_PID = 594777
 # environment
 _CE_CONDA = 
 # variable set hash-table stats:
@@ -280,6 +280,7 @@ Makefile:
 #  Successfully updated.
 
 # Not a target:
+ 
 .DEFAULT:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -300,7 +301,6 @@ make:
 	$(CC) -c -o build/gbt_player.o music/gbt_player.s
 	$(CC) -c -o build/gbt_player_bank1.o music/gbt_player_bank1.s
 	
- 
 	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
 	rm -f *.sym
 
@@ -326,6 +326,6 @@ clean:
 # strcache performance: lookups = 33 / hit rate = 18%
 # hash-table stats:
 # Load=27/8192=0%, Rehash=0, Collisions=1/33=3%
-# Finished Make data base on Thu Mar 24 18:18:37 2022
+# Finished Make data base on Fri Mar 25 20:08:38 2022
 
  

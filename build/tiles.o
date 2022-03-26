@@ -1,7 +1,8 @@
 XL3
-H A areas 1A global symbols
+H A areas 1C global symbols
 M tiles
 O -mgbz80
+S ___bank_ship_parallax Def000002
 S ___bank_gb_tileset_v2 Def000002
 S ___bank_parallax_tileset_v2 Def000002
 S ___bank_half_block_parallax Def000002
@@ -21,11 +22,12 @@ A _DABS size 0 flags 8 addr 0
 A _HOME size 0 flags 0 addr 0
 A _GSINIT size 0 flags 0 addr 0
 A _GSFINAL size 0 flags 0 addr 0
-A _CODE_2 size F90 flags 0 addr 0
+A _CODE_2 size 1010 flags 0 addr 0
 S _big_spike_parallax Def0002E0
 S _nima Def0004E0
 S _aero Def000960
 S _down_spike_parallax Def000E90
+S _ship_parallax Def000F90
 S _gb_tileset_v2 Def000000
 S _parallax_tileset_v2 Def0001E0
 S _half_block_parallax Def000360
@@ -685,4 +687,26 @@ R 00 00 07 00
 T 78 0F 00 FF FF 3F 3F 0F 0F 07 03 03 03 0F 0F 3F
 R 00 00 07 00
 T 85 0F 00 3F FF FF FF FF 3F 3F 0F 0F 03 03
+R 00 00 07 00
+T 90 0F 00
+R 00 00 07 00
+T 90 0F 00 01 C0 01 E0 01 FE FC FF FC FF 01 FE 01
+R 00 00 07 00
+T 9D 0F 00 E0 01 C0 00 C0 00 E0 00 FE FC FF FC FF
+R 00 00 07 00
+T AA 0F 00 00 FE 00 E0 00 C0 20 C0 00 E0 00 FE FC
+R 00 00 07 00
+T B7 0F 00 FF FC FF 00 FE 00 E0 20 C0 30 C0 10 E0
+R 00 00 07 00
+T C4 0F 00 00 FE FC FF FC FF 00 FE 10 E0 30 C0 18
+R 00 00 07 00
+T D1 0F 00 C0 18 E0 00 FE FC FF FC FF 00 FE 18 E0
+R 00 00 07 00
+T DE 0F 00 18 C0 0C C0 0C E0 00 FE FC FF FC FF 00
+R 00 00 07 00
+T EB 0F 00 FE 0C E0 0C C0 06 C0 06 E0 00 FE FC FF
+R 00 00 07 00
+T F8 0F 00 FC FF 00 FE 06 E0 06 C0 03 C0 03 E0 01
+R 00 00 07 00
+T 05 10 00 FE FC FF FC FF 01 FE 03 E0 03 C0
 R 00 00 07 00

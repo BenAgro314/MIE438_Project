@@ -12,3 +12,4 @@
 #include "sprites/aero_cursors.c"
 #include "sprites/down_spike_parallax.c"
 #include "sprites/back_spike_parallax.c"
+#include "sprites/ship_parallax.c"

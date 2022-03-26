@@ -8,6 +8,8 @@
 ;--------------------------------------------------------
 ; Public variables in this module
 ;--------------------------------------------------------
+	.globl _ship_parallax
+	.globl ___bank_ship_parallax
 	.globl _back_spike_parallax
 	.globl ___bank_back_spike_parallax
 	.globl _down_spike_parallax
@@ -4074,5 +4076,135 @@ _back_spike_parallax:
 	.db #0x0f	; 15
 	.db #0x03	; 3
 	.db #0x03	; 3
+___bank_ship_parallax	=	0x0002
+_ship_parallax:
+	.db #0x01	; 1
+	.db #0xc0	; 192
+	.db #0x01	; 1
+	.db #0xe0	; 224
+	.db #0x01	; 1
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x01	; 1
+	.db #0xfe	; 254
+	.db #0x01	; 1
+	.db #0xe0	; 224
+	.db #0x01	; 1
+	.db #0xc0	; 192
+	.db #0x00	; 0
+	.db #0xc0	; 192
+	.db #0x00	; 0
+	.db #0xe0	; 224
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0x00	; 0
+	.db #0xe0	; 224
+	.db #0x00	; 0
+	.db #0xc0	; 192
+	.db #0x20	; 32
+	.db #0xc0	; 192
+	.db #0x00	; 0
+	.db #0xe0	; 224
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0x00	; 0
+	.db #0xe0	; 224
+	.db #0x20	; 32
+	.db #0xc0	; 192
+	.db #0x30	; 48	'0'
+	.db #0xc0	; 192
+	.db #0x10	; 16
+	.db #0xe0	; 224
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0x10	; 16
+	.db #0xe0	; 224
+	.db #0x30	; 48	'0'
+	.db #0xc0	; 192
+	.db #0x18	; 24
+	.db #0xc0	; 192
+	.db #0x18	; 24
+	.db #0xe0	; 224
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0x18	; 24
+	.db #0xe0	; 224
+	.db #0x18	; 24
+	.db #0xc0	; 192
+	.db #0x0c	; 12
+	.db #0xc0	; 192
+	.db #0x0c	; 12
+	.db #0xe0	; 224
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0x0c	; 12
+	.db #0xe0	; 224
+	.db #0x0c	; 12
+	.db #0xc0	; 192
+	.db #0x06	; 6
+	.db #0xc0	; 192
+	.db #0x06	; 6
+	.db #0xe0	; 224
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x00	; 0
+	.db #0xfe	; 254
+	.db #0x06	; 6
+	.db #0xe0	; 224
+	.db #0x06	; 6
+	.db #0xc0	; 192
+	.db #0x03	; 3
+	.db #0xc0	; 192
+	.db #0x03	; 3
+	.db #0xe0	; 224
+	.db #0x01	; 1
+	.db #0xfe	; 254
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0xfc	; 252
+	.db #0xff	; 255
+	.db #0x01	; 1
+	.db #0xfe	; 254
+	.db #0x03	; 3
+	.db #0xe0	; 224
+	.db #0x03	; 3
+	.db #0xc0	; 192
 	.area _INITIALIZER
 	.area _CABS (ABS)

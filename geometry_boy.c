@@ -21,6 +21,9 @@
 
 // debug flags
 //#define INVINCIBLE
+//#define SKIP
+#define SKIP_X_PX 374*8
+#define SKIP_Y_PX 144
 
 #define XOFF 8
 #define YOFF 16
@@ -619,6 +622,38 @@ void initialize_player()
     set_sprite_tile(1, 1);
 }
 
+//void skip_to(uint16_t start_x_tile, uint8_t start_y_px)
+//{
+    //// initialize the background to map
+    //count = 0;
+    //for (render_row = 0; render_row < 18; render_row++)
+    //{
+        //SWITCH_ROM_MBC1(level_banks[level_ind]);
+        //set_bkg_tiles(0, render_row, 32, 1, level_maps[level_ind] + start_x_tile + count);
+        //SWITCH_ROM_MBC1(saved_bank);
+        //count += level_widths[level_ind];
+    //}
+
+    //old_scroll_x = start_x_tile << 3;
+    //background_x_shift = (start_x_tile << 3) + 8 + 3;
+    //old_background_x_shift = start_x_tile << 3;
+
+    //player_y = start_y_px;
+    //render_player();
+//}
+
+void skip_to(uint16_t background_x, uint8_t char_y) {
+
+    while (background_x_shift < background_x){
+        SWITCH_ROM_MBC1(level_banks[level_ind]);
+        scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
+        SWITCH_ROM_MBC1(saved_bank);
+        update_HUD_bar();
+    }
+    player_y = char_y;
+    render_player();
+}
+
 screen_t game()
 {
     gbt_play(song_Data, musicBank, 1);
@@ -648,6 +683,11 @@ screen_t game()
     SWITCH_ROM_MBC1(level_banks[level_ind]);
     init_background(level_maps[level_ind], level_widths[level_ind]);
     SWITCH_ROM_MBC1(saved_bank);
+
+#ifdef SKIP
+    skip_to(SKIP_X_PX, SKIP_Y_PX);
+    delay(500);
+#endif
 
     while (1)
     {
@@ -708,6 +748,12 @@ screen_t game()
             update_HUD_attempts();
             update_HUD_bar();
             wait_vbl_done();
+
+            #ifdef SKIP
+                skip_to(SKIP_X_PX, SKIP_Y_PX);
+                delay(500);
+            #endif
+
         } else if (win){
             disable_interrupts();
             remove_LCD(lcd_interrupt_game);
@@ -743,6 +789,7 @@ screen_t game()
         set_bkg_data(0x06, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
         set_bkg_data(0x07, 1, jump_tile_parallax + parallax_tile_ind);   // load tiles into VRAM
         set_bkg_data(0x0A, 1, down_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
+        set_bkg_data(0x0B, 1, ship_parallax + parallax_tile_ind);   // load tiles into VRAM
         set_bkg_data(0x0C, 1, back_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
         SWITCH_ROM_MBC1(saved_bank);
 

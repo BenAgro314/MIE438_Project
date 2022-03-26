@@ -12,5 +12,6 @@
 #include "sprites/aero_cursors.h" // i dont like this, fix it
 #include "sprites/down_spike_parallax.h"
 #include "sprites/back_spike_parallax.h"
+#include "sprites/ship_parallax.h"
 
 #define tilesBank 2
