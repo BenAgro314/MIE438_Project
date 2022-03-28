@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Fri Mar 25 20:08:38 2022
+# Make data base, printed on Mon Mar 28 14:59:04 2022
 
 # Variables
 
@@ -109,7 +109,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1001/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 594777
+GIO_LAUNCHED_DESKTOP_FILE_PID = 1458588
 # automatic
 %F = $(notdir $%)
 # environment
@@ -173,7 +173,7 @@ CC = ../gbdk/bin/lcc
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1001/vscode-ipc-36309205-976a-41ac-a581-f07f421e2329.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1001/vscode-ipc-d8c2e219-e90f-470a-bb7b-c02d20209996.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -243,7 +243,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 594777
+VSCODE_PID = 1458588
 # environment
 _CE_CONDA = 
 # variable set hash-table stats:
@@ -280,7 +280,6 @@ Makefile:
 #  Successfully updated.
 
 # Not a target:
- 
 .DEFAULT:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
@@ -295,6 +294,7 @@ make:
 	$(CC) -Wa-l -Wf-bo3 -c -o build/title_map.o sprites/title_map_v2.c
 	$(CC) -Wa-l -Wf-bo4 -c -o build/level1.o sprites/level1_v2.c
 	$(CC) -Wa-l -Wf-bo4 -c -o build/level2.o sprites/level2.c
+ 
 	$(CC) -Wa-l -Wf-bo2 -c -o build/tiles.o tiles.c
 	$(CC) -Wa-l -c -o build/geometry_boy.o geometry_boy.c
 	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo3 -c -o build/music_output.o output.c
@@ -326,6 +326,6 @@ clean:
 # strcache performance: lookups = 33 / hit rate = 18%
 # hash-table stats:
 # Load=27/8192=0%, Rehash=0, Collisions=1/33=3%
-# Finished Make data base on Fri Mar 25 20:08:38 2022
+# Finished Make data base on Mon Mar 28 14:59:04 2022
 
  
