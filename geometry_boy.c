@@ -18,12 +18,13 @@
 #include "sprites/title_map_v2.h" // bank3 
 #include "sprites/level1_v2.h" //  bank 4 
 #include "sprites/level2.h" // bank 4
+#include "sprites/level3.h" // bank 5
 
-// debug flags
+// debug flagss
 //#define INVINCIBLE
 //#define SKIP
-#define SKIP_X_PX 374*8
-#define SKIP_Y_PX 144
+//#define SKIP_X_PX 244*8
+//#define SKIP_Y_PX 144   //144
 
 #define XOFF 8
 #define YOFF 16
@@ -109,11 +110,11 @@ uint8_t parallax_tile_ind = 0;
 
 // level stuff
 uint8_t level_ind = 0;
-#define NUM_LEVELS 2
+#define NUM_LEVELS 3
 #define LEVEL_END_OFFSET 20 // tiles that are black at the level end
-unsigned char *level_maps[NUM_LEVELS] = {level1_v2, level2};
-uint16_t level_widths[NUM_LEVELS] = {level1_v2Width, level2Width};
-uint8_t level_banks[NUM_LEVELS] = {level1_v2Bank, level2Bank};
+unsigned char *level_maps[NUM_LEVELS] = {level1_v2, level2, level3};
+uint16_t level_widths[NUM_LEVELS] = {level1_v2Width, level2Width, level3Width};
+uint8_t level_banks[NUM_LEVELS] = {level1_v2Bank, level2Bank, level3Bank};
 uint16_t current_attempts = 0;
 uint16_t px_progress_bar = 0;
 uint16_t old_px_progress_bar = 0;
