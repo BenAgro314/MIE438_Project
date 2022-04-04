@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// music (bank 3)
-#define musicBank 3
+// music (bank 2)
+#define musicBank 2
 #include "music/gbt_player.h"
 
 // tiles (bank 2)
@@ -667,6 +667,7 @@ screen_t game()
 
     while (1)
     {
+        if (sys_time )
         if (vbl_count == 0)
         {
             wait_vbl_done();
