@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Apr  4 11:09:48 2022
+# Make data base, printed on Mon Apr  4 11:21:48 2022
 
 # Variables
 
@@ -255,9 +255,9 @@ _CE_CONDA =
 
 # Directories
 
-# . (device 66307, inode 12587739): 19 files, no impossibilities.
+# . (device 66307, inode 12587739): 20 files, no impossibilities.
 
-# 19 files, no impossibilities in 1 directories.
+# 20 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -275,9 +275,16 @@ all:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-04-04 11:09:44.17847457
+#  Last modified 2022-04-04 11:17:47.36173793
 #  File has been updated.
 #  Successfully updated.
+
+build:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 33):
+	mkdir $@
 
 # Not a target:
 .DEFAULT:
@@ -285,11 +292,12 @@ Makefile:
 #  Modification time never checked.
 #  File has not been updated.
 
-make:
+make: | build
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 16):
+#  recipe to execute (from 'Makefile', line 17):
+ 
 	$(WINE) music/mod2gbt music/song_gdash.mod song 2
 	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o build/music_output.o output.c 
 	$(CC) -Wa-l -Wf-bo2 -c -o build/tiles.o tiles.c
@@ -308,25 +316,24 @@ clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 32):
+#  recipe to execute (from 'Makefile', line 36):
 	rm -f *.o *.lst *.map *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi *.sav
 	rm -f build/*.o build/*.lst build/*.map build/*.gb build/*~ build/*.rel build/*.cdb build/*.ihx build/*.lnk build/*.sym build/*.asm build/*.noi build/*.sav
 
 # files hash-table stats:
-# Load=6/1024=1%, Rehash=0, Collisions=0/16=0%
+# Load=7/1024=1%, Rehash=0, Collisions=0/19=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 26 / storage = 236 B / avg = 9 B
-# current buf: size = 8162 B / used = 236 B / count = 26 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 252 B / avg = 9 B
+# current buf: size = 8162 B / used = 252 B / count = 27 / avg = 9 B
 
-# strcache performance: lookups = 32 / hit rate = 18%
+# strcache performance: lookups = 36 / hit rate = 25%
 # hash-table stats:
- 
-# Load=26/8192=0%, Rehash=0, Collisions=1/32=3%
-# Finished Make data base on Mon Apr  4 11:09:48 2022
+# Load=27/8192=0%, Rehash=0, Collisions=1/36=3%
+# Finished Make data base on Mon Apr  4 11:21:48 2022
 
  

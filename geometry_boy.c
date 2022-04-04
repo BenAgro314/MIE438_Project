@@ -667,7 +667,6 @@ screen_t game()
 
     while (1)
     {
-        if (sys_time )
         if (vbl_count == 0)
         {
             wait_vbl_done();
@@ -699,14 +698,17 @@ screen_t game()
             return LEVEL_SELECT;
         }
 
-        tick_player();
-        render_player();
+        if (sys_time % 2 == 0){
+            tick_player();
+            render_player();
 
-        SWITCH_ROM_MBC1(level_banks[level_ind]);
-        scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
-        SWITCH_ROM_MBC1(saved_bank);
+            SWITCH_ROM_MBC1(level_banks[level_ind]);
+            scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
+            SWITCH_ROM_MBC1(saved_bank);
 
-        update_HUD_bar();
+            update_HUD_bar();
+            tick++;
+        }
 
         if (lose)
         {
@@ -770,11 +772,10 @@ screen_t game()
         set_bkg_data(BACK_SPIKE_TILE, 1, back_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
         SWITCH_ROM_MBC1(saved_bank);
 
-        tick++;
         gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(8);     // LOOP_DELAY
-        gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(8);     // LOOP_DELAY
+        //delay(8);     // LOOP_DELAY
+        //gbt_update(); // This will change to ROM bank 1. Basically play the music
+        //delay(8);     // LOOP_DELAY
     }
 }
 
@@ -1000,6 +1001,7 @@ screen_t title()
                 if (cursor_title_position == 0)
                 {
                     cursor_title_position_old = 1; // force a change the next time title runs
+                    level_ind = 0;
                     return LEVEL_SELECT;
                 }
                 else if (cursor_title_position == 1)
@@ -1058,6 +1060,7 @@ screen_t player_select()
 
     while (1)
     {
+
         if (vbl_count == 0)
         {
             wait_vbl_done();
@@ -1152,7 +1155,7 @@ screen_t player_select()
         }
         tick++;
 
-        delay(LOOP_DELAY);
+        //delay(LOOP_DELAY);
     }
 }
 
@@ -1376,7 +1379,6 @@ void main()
         }
         else if (current_screen == LEVEL_SELECT)
         {
-            level_ind = 0;
             current_screen = level_select();
         }
         else if (current_screen == PLAYER_SELECT)
