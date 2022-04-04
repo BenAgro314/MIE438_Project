@@ -1,0 +1,6 @@
+build/*.o
+build/*.sym
+build/*.lst
+*.ihx
+*.map
+*.sav
