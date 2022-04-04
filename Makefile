@@ -12,7 +12,8 @@ ifeq ($(OS),Windows_NT)
 else
 	WINE := wine
 endif
-make:
+
+make: | build
 	$(WINE) music/mod2gbt music/song_gdash.mod song 2
 	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o build/music_output.o output.c 
 	$(CC) -Wa-l -Wf-bo2 -c -o build/tiles.o tiles.c
@@ -27,6 +28,9 @@ make:
 	
 	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/level3.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
 	rm -f *.sym
+
+build:
+	mkdir $@
 
 clean:
 	rm -f *.o *.lst *.map *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi *.sav
