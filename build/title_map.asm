@@ -1,6 +1,6 @@
 ;--------------------------------------------------------
 ; File Created by SDCC : free open source ANSI-C Compiler
-; Version 4.1.6 #12539 (Linux)
+; Version 4.1.6 #12539 (MINGW32)
 ;--------------------------------------------------------
 	.module title_map_v2
 	.optsdcc -mgbz80
