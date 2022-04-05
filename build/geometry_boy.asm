@@ -47,6 +47,7 @@
 	.globl _old_px_progress_bar
 	.globl _px_progress_bar
 	.globl _current_attempts
+	.globl _level_songs
 	.globl _level_banks
 	.globl _level_widths
 	.globl _level_maps
@@ -153,6 +154,8 @@ _level_widths::
 	.ds 6
 _level_banks::
 	.ds 3
+_level_songs::
+	.ds 6
 _current_attempts::
 	.ds 2
 _px_progress_bar::
@@ -3829,11 +3832,23 @@ _skip_to::
 ; ---------------------------------
 _game::
 	add	sp, #-8
-;geometry_boy.c:635: gbt_play(level1song_Data, musicBank, 1);
-	ld	hl, #0x102
+;geometry_boy.c:635: gbt_play(level_songs[level_ind], musicBank, 7);
+	ld	bc, #_level_songs+0
+	ld	hl, #_level_ind
+	ld	l, (hl)
+;	spillPairReg hl
+;	spillPairReg hl
+	ld	h, #0x00
+;	spillPairReg hl
+;	spillPairReg hl
+	add	hl, hl
+	add	hl, bc
+	ld	a, (hl+)
+	ld	c, a
+	ld	b, (hl)
+	ld	hl, #0x702
 	push	hl
-	ld	de, #_level1song_Data
-	push	de
+	push	bc
 	call	_gbt_play
 	add	sp, #4
 ;geometry_boy.c:636: gbt_loop(1);
@@ -4436,17 +4451,30 @@ _game::
 	ldh	(_LCDC_REG + 0), a
 ;geometry_boy.c:700: gbt_stop();
 	call	_gbt_stop
-;geometry_boy.c:701: return LEVEL_SELECT;
+;geometry_boy.c:701: gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+	ld	hl, #0x702
+	push	hl
+	ld	de, #_level2song_Data
+	push	de
+	call	_gbt_play
+	add	sp, #4
+;geometry_boy.c:702: gbt_loop(1);
+	ld	a, #0x01
+	push	af
+	inc	sp
+	call	_gbt_loop
+	inc	sp
+;geometry_boy.c:703: return LEVEL_SELECT;
 	ld	e, #0x02
 	jp	00217$
 00106$:
-;geometry_boy.c:704: if (sys_time % 2 == 0){
+;geometry_boy.c:706: if (sys_time % 2 == 0){
 	ld	hl, #_sys_time
 	ld	a, (hl+)
 	ld	c, (hl)
 	rrca
 	jp	C,00108$
-;geometry_boy.c:705: tick_player();
+;geometry_boy.c:707: tick_player();
 	call	_tick_player
 ;geometry_boy.c:603: move_sprite(0, player_x, player_y);
 	ld	hl, #_player_y
@@ -4494,9 +4522,9 @@ _game::
 	inc	bc
 	xor	a, a
 	ld	(bc), a
-;geometry_boy.c:706: render_player();
+;geometry_boy.c:708: render_player();
 00164$:
-;geometry_boy.c:708: SWITCH_ROM_MBC1(level_banks[level_ind]);
+;geometry_boy.c:710: SWITCH_ROM_MBC1(level_banks[level_ind]);
 	ld	a, #<(_level_banks)
 	ld	hl, #_level_ind
 	add	a, (hl)
@@ -4507,7 +4535,7 @@ _game::
 	ld	a, (bc)
 	ldh	(__current_bank + 0), a
 	ld	(#0x2000),a
-;geometry_boy.c:709: scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
+;geometry_boy.c:711: scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -4709,9 +4737,9 @@ _game::
 	ld	a, (hl)
 	sub	a, #0x12
 	jr	C, 00213$
-;geometry_boy.c:709: scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
+;geometry_boy.c:711: scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
 00168$:
-;geometry_boy.c:710: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:712: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
@@ -4851,17 +4879,17 @@ _game::
 	ld	hl, #_render_col
 	inc	(hl)
 	jr	00173$
-;geometry_boy.c:712: update_HUD_bar();
+;geometry_boy.c:714: update_HUD_bar();
 00178$:
-;geometry_boy.c:713: tick++;
+;geometry_boy.c:715: tick++;
 	ld	hl, #_tick
 	inc	(hl)
 00108$:
-;geometry_boy.c:716: if (lose)
+;geometry_boy.c:718: if (lose)
 	ld	a, (#_lose)
 	or	a, a
 	jp	Z, 00116$
-;geometry_boy.c:718: SWITCH_ROM_MBC1(level_banks[level_ind]);
+;geometry_boy.c:720: SWITCH_ROM_MBC1(level_banks[level_ind]);
 	ld	a, #<(_level_banks)
 	ld	hl, #_level_ind
 	add	a, (hl)
@@ -4872,7 +4900,7 @@ _game::
 	ld	a, (bc)
 	ldh	(__current_bank + 0), a
 	ld	(#0x2000),a
-;geometry_boy.c:719: init_background(level_maps[level_ind], level_widths[level_ind]);
+;geometry_boy.c:721: init_background(level_maps[level_ind], level_widths[level_ind]);
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -4906,17 +4934,17 @@ _game::
 	push	bc
 	call	_init_background
 	add	sp, #4
-;geometry_boy.c:720: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:722: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:721: ENABLE_RAM_MBC1;
+;geometry_boy.c:723: ENABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x0a
-;geometry_boy.c:722: *(attempts[level_ind]) = *(attempts[level_ind])+1;
+;geometry_boy.c:724: *(attempts[level_ind]) = *(attempts[level_ind])+1;
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -4943,7 +4971,7 @@ _game::
 	inc	bc
 	ld	a, d
 	ld	(bc), a
-;geometry_boy.c:723: if (background_x_shift + player_x > *(px_progress[level_ind]))
+;geometry_boy.c:725: if (background_x_shift + player_x > *(px_progress[level_ind]))
 	ld	hl, #_player_x
 	ld	c, (hl)
 	ld	b, #0x00
@@ -4994,7 +5022,7 @@ _game::
 	ld	a, h
 	sbc	a, b
 	jr	NC, 00110$
-;geometry_boy.c:725: *(px_progress[level_ind]) = background_x_shift + player_x;
+;geometry_boy.c:727: *(px_progress[level_ind]) = background_x_shift + player_x;
 	ldhl	sp,	#6
 	ld	a,	(hl+)
 	ld	h, (hl)
@@ -5003,7 +5031,7 @@ _game::
 	ld	(hl+), a
 	ld	(hl), b
 00110$:
-;geometry_boy.c:727: DISABLE_RAM_MBC1;
+;geometry_boy.c:729: DISABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x00
 ;geometry_boy.c:170: vbl_count = 0;
@@ -5064,7 +5092,7 @@ _game::
 ;geometry_boy.c:186: SCX_REG = 0;
 	ld	a, #0x00
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:729: current_attempts++;
+;geometry_boy.c:731: current_attempts++;
 	ld	hl, #_current_attempts
 	inc	(hl)
 	jr	NZ, 00441$
@@ -5255,25 +5283,25 @@ _game::
 	ld	hl, #_render_col
 	inc	(hl)
 	jr	00186$
-;geometry_boy.c:731: update_HUD_bar();
+;geometry_boy.c:733: update_HUD_bar();
 00191$:
-;geometry_boy.c:732: wait_vbl_done();
+;geometry_boy.c:734: wait_vbl_done();
 	call	_wait_vbl_done
 	jp	00117$
 00116$:
-;geometry_boy.c:739: } else if (win){
+;geometry_boy.c:741: } else if (win){
 	ld	hl, #_win
 	ld	a, (hl)
 	or	a, a
 	jp	Z, 00117$
 ;../gbdk/include/gb/gb.h:660: __asm__("di");
 	di
-;geometry_boy.c:741: remove_LCD(lcd_interrupt_game);
+;geometry_boy.c:743: remove_LCD(lcd_interrupt_game);
 	ld	de, #_lcd_interrupt_game
 	push	de
 	call	_remove_LCD
 	pop	hl
-;geometry_boy.c:742: remove_VBL(vbl_interrupt_game);
+;geometry_boy.c:744: remove_VBL(vbl_interrupt_game);
 	ld	de, #_vbl_interrupt_game
 	push	de
 	call	_remove_VBL
@@ -5281,10 +5309,10 @@ _game::
 	inc	sp
 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
 	ei
-;geometry_boy.c:744: ENABLE_RAM_MBC1;
+;geometry_boy.c:746: ENABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x0a
-;geometry_boy.c:745: *(attempts[level_ind]) = *(attempts[level_ind])+1;
+;geometry_boy.c:747: *(attempts[level_ind]) = *(attempts[level_ind])+1;
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -5311,7 +5339,7 @@ _game::
 	inc	bc
 	ld	a, d
 	ld	(bc), a
-;geometry_boy.c:746: if (background_x_shift + player_x > *(px_progress[level_ind]))
+;geometry_boy.c:748: if (background_x_shift + player_x > *(px_progress[level_ind]))
 	ld	hl, #_player_x
 	ld	c, (hl)
 	ld	b, #0x00
@@ -5374,7 +5402,7 @@ _game::
 	ld	a, h
 	sbc	a, b
 	jr	NC, 00112$
-;geometry_boy.c:748: *(px_progress[level_ind]) = (level_widths[level_ind] - LEVEL_END_OFFSET) << 3;
+;geometry_boy.c:750: *(px_progress[level_ind]) = (level_widths[level_ind] - LEVEL_END_OFFSET) << 3;
 	ldhl	sp,#4
 	ld	a, (hl+)
 	ld	e, a
@@ -5407,10 +5435,10 @@ _game::
 	ld	(hl+), a
 	ld	(hl), b
 00112$:
-;geometry_boy.c:750: player_x = 0;
+;geometry_boy.c:752: player_x = 0;
 	ld	hl, #_player_x
 	ld	(hl), #0x00
-;geometry_boy.c:751: player_y = 0;
+;geometry_boy.c:753: player_y = 0;
 	ld	hl, #_player_y
 	ld	(hl), #0x00
 ;geometry_boy.c:602: if (current_vehicle == CUBE){
@@ -5456,7 +5484,7 @@ _game::
 	inc	bc
 	xor	a, a
 	ld	(bc), a
-;geometry_boy.c:752: render_player();
+;geometry_boy.c:754: render_player();
 00203$:
 ;geometry_boy.c:170: vbl_count = 0;
 	ld	hl, #_vbl_count
@@ -5516,41 +5544,54 @@ _game::
 ;geometry_boy.c:186: SCX_REG = 0;
 	xor	a, a
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:754: DISABLE_RAM_MBC1;
+;geometry_boy.c:756: DISABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x00
-;geometry_boy.c:755: HIDE_WIN;
+;geometry_boy.c:757: HIDE_WIN;
 	ldh	a, (_LCDC_REG + 0)
 	and	a, #0xdf
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:756: HIDE_SPRITES;
+;geometry_boy.c:758: HIDE_SPRITES;
 	ldh	a, (_LCDC_REG + 0)
 	and	a, #0xfd
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:757: gbt_stop();
+;geometry_boy.c:759: gbt_stop();
 	call	_gbt_stop
-;geometry_boy.c:758: return LEVEL_SELECT;
+;geometry_boy.c:760: gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+	ld	hl, #0x702
+	push	hl
+	ld	de, #_level2song_Data
+	push	de
+	call	_gbt_play
+	add	sp, #4
+;geometry_boy.c:761: gbt_loop(1);
+	ld	a, #0x01
+	push	af
+	inc	sp
+	call	_gbt_loop
+	inc	sp
+;geometry_boy.c:762: return LEVEL_SELECT;
 	ld	e, #0x02
 	jp	00217$
 00117$:
-;geometry_boy.c:761: parallax_tile_ind += 16;
+;geometry_boy.c:765: parallax_tile_ind += 16;
 	ld	hl, #_parallax_tile_ind
 	ld	a, (hl)
 	add	a, #0x10
 	ld	(hl), a
-;geometry_boy.c:762: if (parallax_tile_ind > 112)
+;geometry_boy.c:766: if (parallax_tile_ind > 112)
 	ld	a, #0x70
 	sub	a, (hl)
 	jr	NC, 00119$
-;geometry_boy.c:764: parallax_tile_ind = 0;
+;geometry_boy.c:768: parallax_tile_ind = 0;
 	ld	(hl), #0x00
 00119$:
-;geometry_boy.c:766: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:770: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:767: set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
+;geometry_boy.c:771: set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
 	ld	a, #<(_parallax_tileset_v2)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5564,7 +5605,7 @@ _game::
 	push	af
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:768: set_bkg_data(SMALL_SPIKE_TILE, 1, small_spike_parallax + parallax_tile_ind);  // load tiles into VRAM
+;geometry_boy.c:772: set_bkg_data(SMALL_SPIKE_TILE, 1, small_spike_parallax + parallax_tile_ind);  // load tiles into VRAM
 	ld	a, #<(_small_spike_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5577,7 +5618,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:769: set_bkg_data(BIG_SPIKE_TILE, 1, big_spike_parallax + parallax_tile_ind);    // load tiles into VRAM
+;geometry_boy.c:773: set_bkg_data(BIG_SPIKE_TILE, 1, big_spike_parallax + parallax_tile_ind);    // load tiles into VRAM
 	ld	a, #<(_big_spike_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5590,7 +5631,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:770: set_bkg_data(HALF_BLOCK_TILE, 1, half_block_parallax + parallax_tile_ind);  // load tiles into VRAM
+;geometry_boy.c:774: set_bkg_data(HALF_BLOCK_TILE, 1, half_block_parallax + parallax_tile_ind);  // load tiles into VRAM
 	ld	a, #<(_half_block_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5603,7 +5644,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:771: set_bkg_data(JUMP_CIRCLE_TILE, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
+;geometry_boy.c:775: set_bkg_data(JUMP_CIRCLE_TILE, 1, jump_circle_parallax + parallax_tile_ind); // load tiles into VRAM
 	ld	a, #<(_jump_circle_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5616,7 +5657,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:772: set_bkg_data(JUMP_TILE_TILE, 1, jump_tile_parallax + parallax_tile_ind);   // load tiles into VRAM
+;geometry_boy.c:776: set_bkg_data(JUMP_TILE_TILE, 1, jump_tile_parallax + parallax_tile_ind);   // load tiles into VRAM
 	ld	a, #<(_jump_tile_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5629,7 +5670,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:773: set_bkg_data(INVERTED_SPIKE_TILE, 1, down_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
+;geometry_boy.c:777: set_bkg_data(INVERTED_SPIKE_TILE, 1, down_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
 	ld	a, #<(_down_spike_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5642,7 +5683,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:774: set_bkg_data(SHIP_PORTAL_TILE, 1, ship_parallax + parallax_tile_ind);   // load tiles into VRAM
+;geometry_boy.c:778: set_bkg_data(SHIP_PORTAL_TILE, 1, ship_parallax + parallax_tile_ind);   // load tiles into VRAM
 	ld	a, #<(_ship_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5655,7 +5696,7 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:775: set_bkg_data(BACK_SPIKE_TILE, 1, back_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
+;geometry_boy.c:779: set_bkg_data(BACK_SPIKE_TILE, 1, back_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
 	ld	a, #<(_back_spike_parallax)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -5668,21 +5709,21 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:776: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:780: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:778: gbt_update(); // This will change to ROM bank 1. Basically play the music
+;geometry_boy.c:782: gbt_update(); // This will change to ROM bank 1. Basically play the music
 	call	_gbt_update
 	jp	00121$
 00217$:
-;geometry_boy.c:783: }
+;geometry_boy.c:787: }
 	add	sp, #8
 	ret
-;geometry_boy.c:810: screen_t title()
+;geometry_boy.c:814: screen_t title()
 ;	---------------------------------
 ; Function title
 ; ---------------------------------
@@ -5690,7 +5731,7 @@ _title::
 	add	sp, #-6
 ;../gbdk/include/gb/gb.h:660: __asm__("di");
 	di
-;geometry_boy.c:813: add_VBL(vbl_interrupt_title);
+;geometry_boy.c:820: add_VBL(vbl_interrupt_title);
 	ld	de, #_vbl_interrupt_title
 	push	de
 	call	_add_VBL
@@ -5698,13 +5739,13 @@ _title::
 	inc	sp
 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
 	ei
-;geometry_boy.c:815: set_interrupts(VBL_IFLAG);
+;geometry_boy.c:822: set_interrupts(VBL_IFLAG);
 	ld	a, #0x01
 	push	af
 	inc	sp
 	call	_set_interrupts
 	inc	sp
-;geometry_boy.c:816: wait_vbl_done();
+;geometry_boy.c:823: wait_vbl_done();
 	call	_wait_vbl_done
 ;geometry_boy.c:159: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
@@ -5811,39 +5852,39 @@ _title::
 ;geometry_boy.c:186: SCX_REG = 0;
 	xor	a, a
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:821: SWITCH_ROM_MBC1(title_map_v2Bank);
+;geometry_boy.c:828: SWITCH_ROM_MBC1(title_map_v2Bank);
 	ld	a, #0x03
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x03
-;geometry_boy.c:822: init_background(title_map_v2, title_map_v2Width);
+;geometry_boy.c:829: init_background(title_map_v2, title_map_v2Width);
 	ld	de, #0x003c
 	push	de
 	ld	de, #_title_map_v2
 	push	de
 	call	_init_background
 	add	sp, #4
-;geometry_boy.c:823: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:830: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:826: if (title_loaded)
+;geometry_boy.c:833: if (title_loaded)
 	ld	a, (#_title_loaded)
 	or	a, a
 	jp	Z, 00109$
-;geometry_boy.c:828: for (render_col = 0; render_col < 11; render_col++)
+;geometry_boy.c:835: for (render_col = 0; render_col < 11; render_col++)
 	ld	hl, #_render_col
 	ld	(hl), #0x00
-00202$:
-;geometry_boy.c:830: SWITCH_ROM_MBC1(tilesBank);
+00203$:
+;geometry_boy.c:837: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:831: set_sprite_data(TITLE_OAM + render_col, 1, nima + 16 * (13 + game_title[render_col] - 65)); // load tiles into VRAM
+;geometry_boy.c:838: set_sprite_data(TITLE_OAM + render_col, 1, nima + 16 * (13 + game_title[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_game_title)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -5881,13 +5922,13 @@ _title::
 	dec	hl
 	ld	(hl), a
 	ld	a, #0x04
-00424$:
+00425$:
 	ldhl	sp,	#2
 	sla	(hl)
 	inc	hl
 	rl	(hl)
 	dec	a
-	jr	NZ, 00424$
+	jr	NZ, 00425$
 	ld	de, #_nima
 	ld	a, (hl-)
 	ld	l, (hl)
@@ -5917,14 +5958,14 @@ _title::
 	inc	sp
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:832: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:839: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:833: set_sprite_tile(TITLE_OAM + render_col, TITLE_OAM + render_col);
+;geometry_boy.c:840: set_sprite_tile(TITLE_OAM + render_col, TITLE_OAM + render_col);
 	ld	a, (#_render_col)
 	add	a, #0x0b
 	ld	c, a
@@ -5942,20 +5983,20 @@ _title::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:831: set_sprite_data(TITLE_OAM + render_col, 1, nima + 16 * (13 + game_title[render_col] - 65)); // load tiles into VRAM
+;geometry_boy.c:838: set_sprite_data(TITLE_OAM + render_col, 1, nima + 16 * (13 + game_title[render_col] - 65)); // load tiles into VRAM
 	ld	a, (#_render_col)
 	ldhl	sp,	#4
 	ld	(hl), a
-;geometry_boy.c:836: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * (render_col - 8) + 20, TITLE_START_Y + YOFF + 10);
+;geometry_boy.c:843: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * (render_col - 8) + 20, TITLE_START_Y + YOFF + 10);
 	ld	a, (hl+)
 	add	a, #0x0b
 	ld	(hl), a
-;geometry_boy.c:834: if (render_col > 7)
+;geometry_boy.c:841: if (render_col > 7)
 	ld	a, #0x07
 	ld	hl, #_render_col
 	sub	a, (hl)
 	jr	NC, 00102$
-;geometry_boy.c:836: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * (render_col - 8) + 20, TITLE_START_Y + YOFF + 10);
+;geometry_boy.c:843: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * (render_col - 8) + 20, TITLE_START_Y + YOFF + 10);
 	ldhl	sp,	#4
 	ld	a, (hl)
 	add	a, #0xf8
@@ -5974,13 +6015,13 @@ _title::
 	ld	(hl+), a
 	ld	(hl), #0x00
 	ld	a, #0x02
-00425$:
+00426$:
 	ldhl	sp,	#2
 	sla	(hl)
 	inc	hl
 	rl	(hl)
 	dec	a
-	jr	NZ, 00425$
+	jr	NZ, 00426$
 	dec	hl
 	ld	a, (hl+)
 	ld	e, a
@@ -6010,10 +6051,10 @@ _title::
 	inc	bc
 	ld	a, (hl)
 	ld	(bc), a
-;geometry_boy.c:836: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * (render_col - 8) + 20, TITLE_START_Y + YOFF + 10);
-	jr	00203$
+;geometry_boy.c:843: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * (render_col - 8) + 20, TITLE_START_Y + YOFF + 10);
+	jr	00204$
 00102$:
-;geometry_boy.c:840: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * render_col, TITLE_START_Y + YOFF);
+;geometry_boy.c:847: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * render_col, TITLE_START_Y + YOFF);
 	ld	a, (#_render_col)
 	ldhl	sp,	#4
 	ld	(hl), a
@@ -6040,13 +6081,13 @@ _title::
 	dec	hl
 	ld	(hl), a
 	ld	a, #0x02
-00426$:
+00427$:
 	ldhl	sp,	#2
 	sla	(hl)
 	inc	hl
 	rl	(hl)
 	dec	a
-	jr	NZ, 00426$
+	jr	NZ, 00427$
 	dec	hl
 	ld	a, (hl+)
 	ld	e, a
@@ -6094,27 +6135,27 @@ _title::
 	ldhl	sp,	#1
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:840: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * render_col, TITLE_START_Y + YOFF);
-00203$:
-;geometry_boy.c:828: for (render_col = 0; render_col < 11; render_col++)
+;geometry_boy.c:847: move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * render_col, TITLE_START_Y + YOFF);
+00204$:
+;geometry_boy.c:835: for (render_col = 0; render_col < 11; render_col++)
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x0b
-	jp	C, 00202$
-;geometry_boy.c:843: for (render_col = 0; render_col < 6; render_col++)
+	jp	C, 00203$
+;geometry_boy.c:850: for (render_col = 0; render_col < 6; render_col++)
 	ld	(hl), #0x00
-00204$:
-;geometry_boy.c:846: if (render_col < 5)
+00205$:
+;geometry_boy.c:853: if (render_col < 5)
 	ld	a, (#_render_col)
 	sub	a, #0x05
 	jr	NC, 00106$
-;geometry_boy.c:848: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:855: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:849: set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
+;geometry_boy.c:856: set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_start_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -6150,14 +6191,14 @@ _title::
 	inc	sp
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:850: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:857: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:851: set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
+;geometry_boy.c:858: set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
 	ld	a, (#_render_col)
 	add	a, #0x16
 	ld	c, a
@@ -6175,7 +6216,7 @@ _title::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:852: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+;geometry_boy.c:859: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
 	ld	hl, #_render_col
 	ld	a, (hl)
 	add	a, a
@@ -6200,14 +6241,14 @@ _title::
 	ld	a, #0x68
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:852: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+;geometry_boy.c:859: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
 00106$:
-;geometry_boy.c:854: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:861: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:855: set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
+;geometry_boy.c:862: set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_player_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -6243,14 +6284,14 @@ _title::
 	inc	sp
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:856: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:863: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:857: set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
+;geometry_boy.c:864: set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
 	ld	a, (#_render_col)
 	add	a, #0x1b
 	ld	c, a
@@ -6268,7 +6309,7 @@ _title::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:858: move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+;geometry_boy.c:865: move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
 	ld	hl, #_render_col
 	ld	a, (hl)
 	add	a, a
@@ -6293,25 +6334,25 @@ _title::
 	ld	a, #0x78
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:843: for (render_col = 0; render_col < 6; render_col++)
+;geometry_boy.c:850: for (render_col = 0; render_col < 6; render_col++)
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x06
-	jp	C, 00204$
-;geometry_boy.c:861: SWITCH_ROM_MBC1(tilesBank);
+	jp	C, 00205$
+;geometry_boy.c:868: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:862: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
+;geometry_boy.c:869: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
 	ld	de, #_aero_cursors
 	push	de
 	ld	hl, #0x10a
 	push	hl
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:863: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:870: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
@@ -6336,47 +6377,62 @@ _title::
 	inc	bc
 	ld	a, (bc)
 	ld	(bc), a
-;geometry_boy.c:867: scroll_sprite(TITLE_OAM + 10, 0, -2);
+;geometry_boy.c:874: scroll_sprite(TITLE_OAM + 10, 0, -2);
+	jr	00110$
 00109$:
-;geometry_boy.c:870: SHOW_BKG;
+;geometry_boy.c:876: gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+	ld	hl, #0x702
+	push	hl
+	ld	de, #_level2song_Data
+	push	de
+	call	_gbt_play
+	add	sp, #4
+;geometry_boy.c:877: gbt_loop(1);
+	ld	a, #0x01
+	push	af
+	inc	sp
+	call	_gbt_loop
+	inc	sp
+00110$:
+;geometry_boy.c:880: SHOW_BKG;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x01
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:871: DISPLAY_ON;
+;geometry_boy.c:881: DISPLAY_ON;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x80
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:873: SHOW_SPRITES;
+;geometry_boy.c:883: SHOW_SPRITES;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x02
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:875: uint8_t title_index = 0;
+;geometry_boy.c:885: uint8_t title_index = 0;
 	ldhl	sp,	#2
 	ld	(hl), #0x00
-;geometry_boy.c:877: while (1)
-00157$:
-;geometry_boy.c:879: if (vbl_count == 0)
+;geometry_boy.c:887: while (1)
+00158$:
+;geometry_boy.c:889: if (vbl_count == 0)
 	ld	a, (#_vbl_count)
 	or	a, a
-	jr	NZ, 00111$
-;geometry_boy.c:881: wait_vbl_done();
+	jr	NZ, 00112$
+;geometry_boy.c:891: wait_vbl_done();
 	call	_wait_vbl_done
-00111$:
-;geometry_boy.c:883: vbl_count = 0;
+00112$:
+;geometry_boy.c:893: vbl_count = 0;
 	ld	hl, #_vbl_count
 	ld	(hl), #0x00
-;geometry_boy.c:885: if (sys_time % 2 == 0){
+;geometry_boy.c:895: if (sys_time % 2 == 0){
 	ld	hl, #_sys_time
 	ld	a, (hl+)
 	ld	c, (hl)
 	rrca
-	jp	C,00113$
-;geometry_boy.c:886: SWITCH_ROM_MBC1(title_map_v2Bank);
+	jp	C,00114$
+;geometry_boy.c:896: SWITCH_ROM_MBC1(title_map_v2Bank);
 	ld	a, #0x03
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x03
-;geometry_boy.c:887: scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
+;geometry_boy.c:897: scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
 	ld	a, (#_player_dx)
 ;geometry_boy.c:282: background_x_shift = (background_x_shift + x_shift);
 	ld	e, #0x00
@@ -6407,7 +6463,7 @@ _title::
 	inc	hl
 	ld	a, (de)
 	sbc	a, (hl)
-	jp	C, 00176$
+	jp	C, 00177$
 ;geometry_boy.c:286: old_background_x_shift = ((background_x_shift >> 3) << 3) + 8 + x_shift; // old_background_x_shift = (background_x_shift / 8) * 8 + 8 + x_shift;
 	ld	hl, #_background_x_shift
 	ld	a, (hl+)
@@ -6428,9 +6484,9 @@ _title::
 	ld	d, h
 	add	a, #0x08
 	ld	e, a
-	jr	NC, 00429$
+	jr	NC, 00430$
 	inc	d
-00429$:
+00430$:
 	ldhl	sp,	#4
 	ld	a,	(hl+)
 	ld	h, (hl)
@@ -6467,7 +6523,7 @@ _title::
 ;geometry_boy.c:289: for (render_row = 0; render_row < 18; render_row++)
 	ld	hl, #_render_row
 	ld	(hl), #0x00
-00206$:
+00207$:
 ;geometry_boy.c:292: set_bkg_tiles(((background_x_shift >> 3) - 1) & 31, render_row, 1, 1, map + count);
 	ld	a, #<(_title_map_v2)
 	ld	hl, #_count
@@ -6524,35 +6580,35 @@ _title::
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x12
-	jr	C, 00206$
-;geometry_boy.c:887: scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
-00176$:
-;geometry_boy.c:888: SWITCH_ROM_MBC1(saved_bank);
+	jr	C, 00207$
+;geometry_boy.c:897: scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
+00177$:
+;geometry_boy.c:898: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-00113$:
-;geometry_boy.c:891: parallax_tile_ind += 16;
+00114$:
+;geometry_boy.c:901: parallax_tile_ind += 16;
 	ld	hl, #_parallax_tile_ind
 	ld	a, (hl)
 	add	a, #0x10
 	ld	(hl), a
-;geometry_boy.c:892: if (parallax_tile_ind > 112)
+;geometry_boy.c:902: if (parallax_tile_ind > 112)
 	ld	a, #0x70
 	sub	a, (hl)
-	jr	NC, 00115$
-;geometry_boy.c:894: parallax_tile_ind = 0;
+	jr	NC, 00116$
+;geometry_boy.c:904: parallax_tile_ind = 0;
 	ld	(hl), #0x00
-00115$:
-;geometry_boy.c:896: SWITCH_ROM_MBC1(tilesBank);
+00116$:
+;geometry_boy.c:906: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:897: set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
+;geometry_boy.c:907: set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
 	ld	a, #<(_parallax_tileset_v2)
 	ld	hl, #_parallax_tile_ind
 	add	a, (hl)
@@ -6566,54 +6622,54 @@ _title::
 	push	af
 	call	_set_bkg_data
 	add	sp, #4
-;geometry_boy.c:898: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:908: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:885: if (sys_time % 2 == 0){
+;geometry_boy.c:895: if (sys_time % 2 == 0){
 	ld	hl, #_sys_time
 	ld	a, (hl+)
 	ld	c, a
 	ld	b, (hl)
-;geometry_boy.c:907: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
+;geometry_boy.c:917: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
 	ldhl	sp,	#2
 	ld	a, (hl-)
-;geometry_boy.c:902: if (sys_time % 8 == 0)
+;geometry_boy.c:912: if (sys_time % 8 == 0)
 	ld	(hl+), a
 	inc	hl
 	ld	a, c
 	and	a, #0x07
 	ld	(hl+), a
 	ld	(hl), #0x00
-;geometry_boy.c:907: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
+;geometry_boy.c:917: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
 	ldhl	sp,	#1
 	ld	a, (hl)
 	add	a, #0x0b
 	ldhl	sp,	#5
 	ld	(hl), a
-;geometry_boy.c:900: if (!title_loaded)
+;geometry_boy.c:910: if (!title_loaded)
 	ld	a, (#_title_loaded)
 	or	a, a
-	jp	NZ, 00154$
-;geometry_boy.c:902: if (sys_time % 8 == 0)
+	jp	NZ, 00155$
+;geometry_boy.c:912: if (sys_time % 8 == 0)
 	ldhl	sp,	#4
 	ld	a, (hl-)
 	or	a, (hl)
-	jp	NZ, 00155$
-;geometry_boy.c:904: if (title_index < 11)
+	jp	NZ, 00156$
+;geometry_boy.c:914: if (title_index < 11)
 	dec	hl
 	ld	a, (hl)
 	sub	a, #0x0b
-	jp	NC, 00123$
-;geometry_boy.c:906: SWITCH_ROM_MBC1(tilesBank);
+	jp	NC, 00124$
+;geometry_boy.c:916: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:907: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
+;geometry_boy.c:917: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
 	ld	de, #_game_title
 	ldhl	sp,	#2
 	ld	l, (hl)
@@ -6644,14 +6700,14 @@ _title::
 	inc	sp
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:908: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:918: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:909: set_sprite_tile(TITLE_OAM + title_index, TITLE_OAM + title_index);
+;geometry_boy.c:919: set_sprite_tile(TITLE_OAM + title_index, TITLE_OAM + title_index);
 	ldhl	sp,	#5
 	ld	c, (hl)
 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
@@ -6668,12 +6724,12 @@ _title::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:910: if (title_index > 7)
+;geometry_boy.c:920: if (title_index > 7)
 	ld	a, #0x07
 	ldhl	sp,	#2
 	sub	a, (hl)
-	jr	NC, 00117$
-;geometry_boy.c:912: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * (title_index - 8) + 20, TITLE_START_Y + YOFF + 10);
+	jr	NC, 00118$
+;geometry_boy.c:922: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * (title_index - 8) + 20, TITLE_START_Y + YOFF + 10);
 	dec	hl
 	ld	a, (hl)
 	add	a, #0xf8
@@ -6698,10 +6754,10 @@ _title::
 	ld	a, #0x2a
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:912: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * (title_index - 8) + 20, TITLE_START_Y + YOFF + 10);
-	jr	00118$
-00117$:
-;geometry_boy.c:916: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * title_index, TITLE_START_Y + YOFF);
+;geometry_boy.c:922: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * (title_index - 8) + 20, TITLE_START_Y + YOFF + 10);
+	jr	00119$
+00118$:
+;geometry_boy.c:926: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * title_index, TITLE_START_Y + YOFF);
 	ldhl	sp,	#2
 	ld	a, (hl)
 	add	a, a
@@ -6725,28 +6781,28 @@ _title::
 	ld	a, #0x20
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:916: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * title_index, TITLE_START_Y + YOFF);
-00118$:
-;geometry_boy.c:918: title_index = title_index + 1;
+;geometry_boy.c:926: move_sprite(TITLE_OAM + title_index, TITLE_START_X + XOFF + 8 * title_index, TITLE_START_Y + YOFF);
+00119$:
+;geometry_boy.c:928: title_index = title_index + 1;
 	ldhl	sp,	#2
 	inc	(hl)
 	ld	a, (hl)
-	jp	00155$
-00123$:
-;geometry_boy.c:922: for (render_col = 0; render_col < 6; render_col++)
+	jp	00156$
+00124$:
+;geometry_boy.c:932: for (render_col = 0; render_col < 6; render_col++)
 	ld	hl, #_render_col
 	ld	(hl), #0x00
-00208$:
-;geometry_boy.c:925: if (render_col < 5)
+00209$:
+;geometry_boy.c:935: if (render_col < 5)
 	ld	a, (#_render_col)
 	sub	a, #0x05
-	jr	NC, 00120$
-;geometry_boy.c:927: SWITCH_ROM_MBC1(tilesBank);
+	jr	NC, 00121$
+;geometry_boy.c:937: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:928: set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
+;geometry_boy.c:938: set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_start_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -6782,14 +6838,14 @@ _title::
 	inc	sp
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:929: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:939: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:930: set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
+;geometry_boy.c:940: set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
 	ld	a, (#_render_col)
 	add	a, #0x16
 	ld	c, a
@@ -6807,7 +6863,7 @@ _title::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:931: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+;geometry_boy.c:941: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
 	ld	hl, #_render_col
 	ld	a, (hl)
 	add	a, a
@@ -6832,14 +6888,14 @@ _title::
 	ld	a, #0x68
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:931: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
-00120$:
-;geometry_boy.c:933: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:941: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+00121$:
+;geometry_boy.c:943: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:934: set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
+;geometry_boy.c:944: set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_player_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -6875,14 +6931,14 @@ _title::
 	inc	sp
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:935: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:945: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:936: set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
+;geometry_boy.c:946: set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
 	ld	a, (#_render_col)
 	add	a, #0x1b
 	ld	c, a
@@ -6900,7 +6956,7 @@ _title::
 	inc	hl
 	inc	hl
 	ld	(hl), c
-;geometry_boy.c:937: move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+;geometry_boy.c:947: move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
 	ld	hl, #_render_col
 	ld	a, (hl)
 	add	a, a
@@ -6925,25 +6981,25 @@ _title::
 	ld	a, #0x78
 	ld	(hl+), a
 	ld	(hl), c
-;geometry_boy.c:922: for (render_col = 0; render_col < 6; render_col++)
+;geometry_boy.c:932: for (render_col = 0; render_col < 6; render_col++)
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x06
-	jp	C, 00208$
-;geometry_boy.c:940: SWITCH_ROM_MBC1(tilesBank);
+	jp	C, 00209$
+;geometry_boy.c:950: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:941: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
+;geometry_boy.c:951: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
 	ld	de, #_aero_cursors
 	push	de
 	ld	hl, #0x10a
 	push	hl
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:942: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:952: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
@@ -6959,10 +7015,10 @@ _title::
 	ld	a, #0x68
 	ld	(hl+), a
 	ld	(hl), #0x30
-;geometry_boy.c:947: title_loaded = 1;
+;geometry_boy.c:957: title_loaded = 1;
 	ld	hl, #_title_loaded
 	ld	(hl), #0x01
-;geometry_boy.c:948: title_index = 0;
+;geometry_boy.c:958: title_index = 0;
 	ldhl	sp,	#2
 	ld	(hl), #0x00
 ;../gbdk/include/gb/gb.h:1415: OAM_item_t * itm = &shadow_OAM[nb];
@@ -6974,20 +7030,20 @@ _title::
 	inc	bc
 	ld	a, (bc)
 	ld	(bc), a
-;geometry_boy.c:949: scroll_sprite(TITLE_OAM + 10, 0, -2);
-	jp	00155$
-00154$:
-;geometry_boy.c:956: if (sys_time % 8 == 0)
+;geometry_boy.c:959: scroll_sprite(TITLE_OAM + 10, 0, -2);
+	jp	00156$
+00155$:
+;geometry_boy.c:966: if (sys_time % 8 == 0)
 	ldhl	sp,	#4
 	ld	a, (hl-)
 	or	a, (hl)
-	jr	NZ, 00131$
-;geometry_boy.c:958: if (title_index == 0)
+	jr	NZ, 00132$
+;geometry_boy.c:968: if (title_index == 0)
 	dec	hl
 	ld	a, (hl)
 	or	a, a
-	jr	NZ, 00128$
-;geometry_boy.c:960: scroll_sprite(TITLE_OAM + title_index, 0, -2);
+	jr	NZ, 00129$
+;geometry_boy.c:970: scroll_sprite(TITLE_OAM + title_index, 0, -2);
 	ldhl	sp,	#5
 ;../gbdk/include/gb/gb.h:1415: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	l, (hl)
@@ -7015,10 +7071,10 @@ _title::
 	inc	bc
 	ld	a, (bc)
 	ld	(bc), a
-;geometry_boy.c:961: scroll_sprite(TITLE_OAM + 10, 0, +2);
-	jr	00129$
-00128$:
-;geometry_boy.c:965: scroll_sprite(TITLE_OAM + title_index, 0, -2);
+;geometry_boy.c:971: scroll_sprite(TITLE_OAM + 10, 0, +2);
+	jr	00130$
+00129$:
+;geometry_boy.c:975: scroll_sprite(TITLE_OAM + title_index, 0, -2);
 	ldhl	sp,	#5
 ;../gbdk/include/gb/gb.h:1415: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	l, (hl)
@@ -7037,7 +7093,7 @@ _title::
 	ld	(hl+), a
 	ld	a, (hl)
 	ld	(hl), a
-;geometry_boy.c:966: scroll_sprite(TITLE_OAM + title_index - 1, 0, +2);
+;geometry_boy.c:976: scroll_sprite(TITLE_OAM + title_index - 1, 0, +2);
 	ldhl	sp,	#1
 	ld	a, (hl)
 	add	a, #0x0a
@@ -7058,9 +7114,9 @@ _title::
 	ld	(hl+), a
 	ld	a, (hl)
 	ld	(hl), a
-;geometry_boy.c:966: scroll_sprite(TITLE_OAM + title_index - 1, 0, +2);
-00129$:
-;geometry_boy.c:968: title_index = (title_index + 1) % 11;
+;geometry_boy.c:976: scroll_sprite(TITLE_OAM + title_index - 1, 0, +2);
+00130$:
+;geometry_boy.c:978: title_index = (title_index + 1) % 11;
 	ldhl	sp,	#2
 	ld	c, (hl)
 	ld	b, #0x00
@@ -7072,123 +7128,123 @@ _title::
 	add	sp, #4
 	ldhl	sp,	#2
 	ld	(hl), e
-00131$:
-;geometry_boy.c:971: prev_jpad = jpad;
+00132$:
+;geometry_boy.c:981: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ld	(#_prev_jpad),a
-;geometry_boy.c:972: jpad = joypad();
+;geometry_boy.c:982: jpad = joypad();
 	call	_joypad
 	ld	hl, #_jpad
 	ld	(hl), e
-;geometry_boy.c:974: if (debounce_input(J_DOWN, jpad, prev_jpad))
+;geometry_boy.c:984: if (debounce_input(J_DOWN, jpad, prev_jpad))
 	ld	a, (#_prev_jpad)
 	ldhl	sp,	#3
 	ld	(hl), a
-;geometry_boy.c:971: prev_jpad = jpad;
+;geometry_boy.c:981: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ldhl	sp,	#4
 ;geometry_boy.c:360: return (button == target) && !(prev_button == target);
 	ld	(hl-), a
 	ld	a, (hl)
 	sub	a, #0x08
-	jr	NZ, 00219$
+	jr	NZ, 00220$
 	ldhl	sp,	#4
 	ld	a, (hl)
 	sub	a, #0x08
-	jr	NZ, 00220$
-00219$:
-	ldhl	sp,	#5
-	ld	(hl), #0x00
-	jr	00221$
+	jr	NZ, 00221$
 00220$:
 	ldhl	sp,	#5
-	ld	(hl), #0x01
+	ld	(hl), #0x00
+	jr	00222$
 00221$:
 	ldhl	sp,	#5
+	ld	(hl), #0x01
+00222$:
+	ldhl	sp,	#5
 	ld	a, (hl)
-;geometry_boy.c:974: if (debounce_input(J_DOWN, jpad, prev_jpad))
+;geometry_boy.c:984: if (debounce_input(J_DOWN, jpad, prev_jpad))
 	or	a, a
-	jr	Z, 00135$
-;geometry_boy.c:976: cursor_title_position = 1;
+	jr	Z, 00136$
+;geometry_boy.c:986: cursor_title_position = 1;
 	ld	hl, #_cursor_title_position
 	ld	(hl), #0x01
-	jr	00136$
-00135$:
+	jr	00137$
+00136$:
 ;geometry_boy.c:360: return (button == target) && !(prev_button == target);
 	ldhl	sp,	#3
 	ld	a, (hl)
 	sub	a, #0x04
-	jr	NZ, 00222$
+	jr	NZ, 00223$
 	ldhl	sp,	#4
 	ld	a, (hl)
 	sub	a, #0x04
-	jr	NZ, 00223$
-00222$:
-	xor	a, a
-	jr	00224$
+	jr	NZ, 00224$
 00223$:
-	ld	a, #0x01
+	xor	a, a
+	jr	00225$
 00224$:
-;geometry_boy.c:978: else if (debounce_input(J_UP, jpad, prev_jpad))
+	ld	a, #0x01
+00225$:
+;geometry_boy.c:988: else if (debounce_input(J_UP, jpad, prev_jpad))
 	or	a, a
-	jr	Z, 00136$
-;geometry_boy.c:980: cursor_title_position = 0;
+	jr	Z, 00137$
+;geometry_boy.c:990: cursor_title_position = 0;
 	ld	hl, #_cursor_title_position
 	ld	(hl), #0x00
-00136$:
-;geometry_boy.c:983: if (cursor_title_position != cursor_title_position_old)
+00137$:
+;geometry_boy.c:993: if (cursor_title_position != cursor_title_position_old)
 	ld	a, (#_cursor_title_position)
 	ld	hl, #_cursor_title_position_old
 	sub	a, (hl)
-	jr	Z, 00151$
-;geometry_boy.c:985: if (cursor_title_position == 0)
+	jr	Z, 00152$
+;geometry_boy.c:995: if (cursor_title_position == 0)
 	ld	a, (#_cursor_title_position)
 	or	a, a
-	jr	NZ, 00140$
+	jr	NZ, 00141$
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	hl, #(_shadow_OAM + 40)
 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
 	ld	a, #0x68
 	ld	(hl+), a
 	ld	(hl), #0x30
-;geometry_boy.c:987: move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
-	jr	00141$
-00140$:
-;geometry_boy.c:989: else if (cursor_title_position == 1)
+;geometry_boy.c:997: move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
+	jr	00142$
+00141$:
+;geometry_boy.c:999: else if (cursor_title_position == 1)
 	ld	a, (#_cursor_title_position)
 	dec	a
-	jr	NZ, 00141$
+	jr	NZ, 00142$
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
 	ld	hl, #(_shadow_OAM + 40)
 ;../gbdk/include/gb/gb.h:1400: itm->y=y, itm->x=x;
 	ld	a, #0x78
 	ld	(hl+), a
 	ld	(hl), #0x30
-;geometry_boy.c:991: move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
-00141$:
-;geometry_boy.c:993: cursor_title_position_old = cursor_title_position;
+;geometry_boy.c:1001: move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+00142$:
+;geometry_boy.c:1003: cursor_title_position_old = cursor_title_position;
 	ld	a, (#_cursor_title_position)
 	ld	(#_cursor_title_position_old),a
-	jp	00155$
-00151$:
+	jp	00156$
+00152$:
 ;geometry_boy.c:360: return (button == target) && !(prev_button == target);
 	ldhl	sp,	#3
 	ld	a, (hl)
 	sub	a, #0x40
-	jr	NZ, 00225$
+	jr	NZ, 00226$
 	ldhl	sp,	#4
 	ld	a, (hl)
 	sub	a, #0x40
-	jr	NZ, 00226$
-00225$:
-	xor	a, a
-	jr	00227$
+	jr	NZ, 00227$
 00226$:
-	ld	a, #0x01
+	xor	a, a
+	jr	00228$
 00227$:
-;geometry_boy.c:996: else if (debounce_input(J_SELECT, jpad, prev_jpad))
+	ld	a, #0x01
+00228$:
+;geometry_boy.c:1006: else if (debounce_input(J_SELECT, jpad, prev_jpad))
 	or	a, a
-	jp	Z, 00155$
+	jp	Z, 00156$
 ;../gbdk/include/gb/gb.h:660: __asm__("di");
 	di
 ;geometry_boy.c:313: SWITCH_ROM_MBC1(tilesBank);
@@ -7214,11 +7270,11 @@ _title::
 ;geometry_boy.c:316: for (render_row = 0; render_row < 18; render_row++)
 	ld	hl, #_render_row
 	ld	(hl), #0x00
-00212$:
+00213$:
 ;geometry_boy.c:318: for (render_col = 0; render_col < 20; render_col++)
 	ld	hl, #_render_col
 	ld	(hl), #0x00
-00210$:
+00211$:
 ;geometry_boy.c:320: set_bkg_tile_xy(render_col, render_row, 0);
 	xor	a, a
 	push	af
@@ -7235,14 +7291,14 @@ _title::
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x14
-	jr	C, 00210$
+	jr	C, 00211$
 ;geometry_boy.c:316: for (render_row = 0; render_row < 18; render_row++)
 	ld	hl, #_render_row
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x12
-	jr	C, 00212$
-;geometry_boy.c:1000: remove_VBL(vbl_interrupt_title);
+	jr	C, 00213$
+;geometry_boy.c:1010: remove_VBL(vbl_interrupt_title);
 	ld	de, #_vbl_interrupt_title
 	push	de
 	call	_remove_VBL
@@ -7250,12 +7306,12 @@ _title::
 	inc	sp
 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
 	ei
-;geometry_boy.c:1002: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:1012: for (uint8_t i = 0; i < 40; i++)
 	ld	c, #0x00
-00215$:
+00216$:
 	ld	a, c
 	sub	a, #0x28
-	jr	NC, 00142$
+	jr	NC, 00143$
 ;../gbdk/include/gb/gb.h:1425: shadow_OAM[nb].y = 0;
 	ld	de, #_shadow_OAM+0
 	ld	l, c
@@ -7268,42 +7324,44 @@ _title::
 	add	hl, hl
 	add	hl, de
 	ld	(hl), #0x00
-;geometry_boy.c:1002: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:1012: for (uint8_t i = 0; i < 40; i++)
 	inc	c
-	jr	00215$
-00142$:
-;geometry_boy.c:1006: if (cursor_title_position == 0)
+	jr	00216$
+00143$:
+;geometry_boy.c:1016: if (cursor_title_position == 0)
 	ld	a, (#_cursor_title_position)
 	or	a, a
-	jr	NZ, 00146$
-;geometry_boy.c:1008: cursor_title_position_old = 1; // force a change the next time title runs
+	jr	NZ, 00147$
+;geometry_boy.c:1018: cursor_title_position_old = 1; // force a change the next time title runs
 	ld	hl, #_cursor_title_position_old
 	ld	(hl), #0x01
-;geometry_boy.c:1009: level_ind = 0;
+;geometry_boy.c:1019: level_ind = 0;
 	ld	hl, #_level_ind
 	ld	(hl), #0x00
-;geometry_boy.c:1010: gbt_stop();
-	call	_gbt_stop
-;geometry_boy.c:1011: return LEVEL_SELECT;
+;geometry_boy.c:1020: gbt_update();
+	call	_gbt_update
+;geometry_boy.c:1022: return LEVEL_SELECT;
 	ld	e, #0x02
-	jr	00217$
-00146$:
-;geometry_boy.c:1013: else if (cursor_title_position == 1)
+	jr	00218$
+00147$:
+;geometry_boy.c:1024: else if (cursor_title_position == 1)
 	ld	a, (#_cursor_title_position)
 	dec	a
-	jr	NZ, 00155$
-;geometry_boy.c:1015: cursor_title_position_old = 0;
+	jr	NZ, 00156$
+;geometry_boy.c:1026: cursor_title_position_old = 0;
 	ld	hl, #_cursor_title_position_old
 	ld	(hl), #0x00
-;geometry_boy.c:1016: return PLAYER_SELECT;
-	ld	e, #0x03
-	jr	00217$
-00155$:
-;geometry_boy.c:1020: gbt_update(); // This will change to ROM bank 1. Basically play the music
+;geometry_boy.c:1027: gbt_update();
 	call	_gbt_update
-	jp	00157$
-00217$:
-;geometry_boy.c:1023: }
+;geometry_boy.c:1028: return PLAYER_SELECT;
+	ld	e, #0x03
+	jr	00218$
+00156$:
+;geometry_boy.c:1032: gbt_update(); // This will change to ROM bank 1. Basically play the music
+	call	_gbt_update
+	jp	00158$
+00218$:
+;geometry_boy.c:1035: }
 	add	sp, #6
 	ret
 _game_title:
@@ -7331,12 +7389,12 @@ _player_text:
 	.db #0x59	;  89	'Y'
 	.db #0x45	;  69	'E'
 	.db #0x52	;  82	'R'
-;geometry_boy.c:1030: void move_sprite_on_grid(uint8_t sprite_num, uint8_t offset, uint8_t neg_x_offset, uint8_t neg_y_offset){
+;geometry_boy.c:1042: void move_sprite_on_grid(uint8_t sprite_num, uint8_t offset, uint8_t neg_x_offset, uint8_t neg_y_offset){
 ;	---------------------------------
 ; Function move_sprite_on_grid
 ; ---------------------------------
 _move_sprite_on_grid::
-;geometry_boy.c:1033: ((offset / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - neg_y_offset);
+;geometry_boy.c:1045: ((offset / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - neg_y_offset);
 	ldhl	sp,	#3
 	ld	c, (hl)
 	ld	b, #0x00
@@ -7369,7 +7427,7 @@ _move_sprite_on_grid::
 	add	a, #0x24
 	ldhl	sp,	#5
 	ld	e, (hl)
-;geometry_boy.c:1032: ((offset % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - neg_x_offset,
+;geometry_boy.c:1044: ((offset % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - neg_x_offset,
 	dec	hl
 	sub	a, e
 	ld	d, a
@@ -7399,16 +7457,16 @@ _move_sprite_on_grid::
 	ld	a, d
 	ld	(hl+), a
 	ld	(hl), e
-;geometry_boy.c:1033: ((offset / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - neg_y_offset);
-;geometry_boy.c:1034: }
+;geometry_boy.c:1045: ((offset / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - neg_y_offset);
+;geometry_boy.c:1046: }
 	ret
-;geometry_boy.c:1036: screen_t player_select()
+;geometry_boy.c:1048: screen_t player_select()
 ;	---------------------------------
 ; Function player_select
 ; ---------------------------------
 _player_select::
 	dec	sp
-;geometry_boy.c:1038: wait_vbl_done();
+;geometry_boy.c:1050: wait_vbl_done();
 	call	_wait_vbl_done
 ;geometry_boy.c:313: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
@@ -7461,26 +7519,26 @@ _player_select::
 	ld	a, (hl)
 	sub	a, #0x12
 	jr	C, 00141$
-;geometry_boy.c:1042: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:1054: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:1044: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors + 16); // Load into VRAM
+;geometry_boy.c:1056: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors + 16); // Load into VRAM
 	ld	de, #(_aero_cursors + 16)
 	push	de
 	ld	hl, #0x10a
 	push	hl
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:1046: set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
+;geometry_boy.c:1058: set_sprite_data(PLAYER_SPRITES_OAM, 16, players); // Load into VRAM
 	ld	de, #_players
 	push	de
 	ld	hl, #0x100b
 	push	hl
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:1047: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:1059: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
@@ -7490,7 +7548,7 @@ _player_select::
 ;../gbdk/include/gb/gb.h:1326: shadow_OAM[nb].tile=tile;
 	ld	hl, #(_shadow_OAM + 42)
 	ld	(hl), #0x0a
-;geometry_boy.c:1050: move_sprite_on_grid(CURSOR_TEXT_OAM, player_sprite_num, 16, 0);
+;geometry_boy.c:1062: move_sprite_on_grid(CURSOR_TEXT_OAM, player_sprite_num, 16, 0);
 	ld	hl, #0x10
 	push	hl
 	ld	a, (#_player_sprite_num)
@@ -7499,10 +7557,10 @@ _player_select::
 	push	hl
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1054: for (uint8_t i = 0; i < 16; i++)
+;geometry_boy.c:1066: for (uint8_t i = 0; i < 16; i++)
 	ld	c, #0x00
 00144$:
-;geometry_boy.c:1056: set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
+;geometry_boy.c:1068: set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
 	ld	a,c
 	cp	a,#0x10
 	jr	NC, 00101$
@@ -7526,7 +7584,7 @@ _player_select::
 	inc	hl
 	pop	de
 	ld	(hl), e
-;geometry_boy.c:1057: move_sprite_on_grid(PLAYER_SPRITES_OAM + i, i, 0, 0);
+;geometry_boy.c:1069: move_sprite_on_grid(PLAYER_SPRITES_OAM + i, i, 0, 0);
 	push	bc
 	xor	a, a
 	rrca
@@ -7540,15 +7598,15 @@ _player_select::
 	call	_move_sprite_on_grid
 	add	sp, #4
 	pop	bc
-;geometry_boy.c:1054: for (uint8_t i = 0; i < 16; i++)
+;geometry_boy.c:1066: for (uint8_t i = 0; i < 16; i++)
 	inc	c
 	jr	00144$
 00101$:
-;geometry_boy.c:1060: SHOW_SPRITES;
+;geometry_boy.c:1072: SHOW_SPRITES;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x02
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:1062: uint8_t is_up = 0;
+;geometry_boy.c:1074: uint8_t is_up = 0;
 	ldhl	sp,	#0
 	ld	(hl), #0x00
 ;geometry_boy.c:170: vbl_count = 0;
@@ -7609,31 +7667,31 @@ _player_select::
 ;geometry_boy.c:186: SCX_REG = 0;
 	xor	a, a
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:1066: while (1)
+;geometry_boy.c:1078: while (1)
 00125$:
-;geometry_boy.c:1068: if (vbl_count == 0)
+;geometry_boy.c:1080: if (vbl_count == 0)
 	ld	a, (#_vbl_count)
 	or	a, a
 	jr	NZ, 00103$
-;geometry_boy.c:1070: wait_vbl_done();
+;geometry_boy.c:1082: wait_vbl_done();
 	call	_wait_vbl_done
 00103$:
-;geometry_boy.c:1072: vbl_count = 0;
+;geometry_boy.c:1084: vbl_count = 0;
 	ld	hl, #_vbl_count
 	ld	(hl), #0x00
-;geometry_boy.c:1074: gbt_update(); //update the music loop
+;geometry_boy.c:1086: gbt_update(); //update the music loop
 	call	_gbt_update
-;geometry_boy.c:1076: prev_jpad = jpad;
+;geometry_boy.c:1088: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ld	(#_prev_jpad),a
-;geometry_boy.c:1077: jpad = joypad();
+;geometry_boy.c:1089: jpad = joypad();
 	call	_joypad
 	ld	hl, #_jpad
 	ld	(hl), e
-;geometry_boy.c:1079: if (debounce_input(J_UP, jpad, prev_jpad))
+;geometry_boy.c:1091: if (debounce_input(J_UP, jpad, prev_jpad))
 	ld	hl, #_prev_jpad
 	ld	c, (hl)
-;geometry_boy.c:1076: prev_jpad = jpad;
+;geometry_boy.c:1088: prev_jpad = jpad;
 	ld	hl, #_jpad
 	ld	b, (hl)
 ;geometry_boy.c:360: return (button == target) && !(prev_button == target);
@@ -7649,16 +7707,16 @@ _player_select::
 00152$:
 	ld	e, #0x01
 00153$:
-;geometry_boy.c:1081: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
+;geometry_boy.c:1093: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
 	ld	hl, #_player_sprite_num
 	ld	a, (hl)
 	add	a, #0x0b
 	ld	d, a
-;geometry_boy.c:1079: if (debounce_input(J_UP, jpad, prev_jpad))
+;geometry_boy.c:1091: if (debounce_input(J_UP, jpad, prev_jpad))
 	ld	a, e
 	or	a, a
 	jr	Z, 00117$
-;geometry_boy.c:1081: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
+;geometry_boy.c:1093: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
 	xor	a, a
 	rrca
 	push	af
@@ -7670,12 +7728,12 @@ _player_select::
 	inc	sp
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1082: player_sprite_num += 12;
+;geometry_boy.c:1094: player_sprite_num += 12;
 	ld	hl, #_player_sprite_num
 	ld	a, (hl)
 	add	a, #0x0c
 	ld	(hl), a
-;geometry_boy.c:1083: player_sprite_num %= 16;
+;geometry_boy.c:1095: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
@@ -7694,10 +7752,10 @@ _player_select::
 00155$:
 	ld	a, #0x01
 00156$:
-;geometry_boy.c:1085: else if (debounce_input(J_DOWN, jpad, prev_jpad))
+;geometry_boy.c:1097: else if (debounce_input(J_DOWN, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00114$
-;geometry_boy.c:1087: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
+;geometry_boy.c:1099: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
 	xor	a, a
 	rrca
 	push	af
@@ -7709,12 +7767,12 @@ _player_select::
 	inc	sp
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1088: player_sprite_num += 4;
+;geometry_boy.c:1100: player_sprite_num += 4;
 	ld	hl, #_player_sprite_num
 	ld	a, (hl)
 	add	a, #0x04
 	ld	(hl), a
-;geometry_boy.c:1089: player_sprite_num %= 16;
+;geometry_boy.c:1101: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
@@ -7733,10 +7791,10 @@ _player_select::
 00158$:
 	ld	a, #0x01
 00159$:
-;geometry_boy.c:1091: else if (debounce_input(J_LEFT, jpad, prev_jpad))
+;geometry_boy.c:1103: else if (debounce_input(J_LEFT, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00111$
-;geometry_boy.c:1093: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
+;geometry_boy.c:1105: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
 	xor	a, a
 	rrca
 	push	af
@@ -7748,12 +7806,12 @@ _player_select::
 	inc	sp
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1094: player_sprite_num += 15;
+;geometry_boy.c:1106: player_sprite_num += 15;
 	ld	hl, #_player_sprite_num
 	ld	a, (hl)
 	add	a, #0x0f
 	ld	(hl), a
-;geometry_boy.c:1095: player_sprite_num %= 16;
+;geometry_boy.c:1107: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
@@ -7772,10 +7830,10 @@ _player_select::
 00161$:
 	ld	a, #0x01
 00162$:
-;geometry_boy.c:1097: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
+;geometry_boy.c:1109: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00108$
-;geometry_boy.c:1099: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
+;geometry_boy.c:1111: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
 	xor	a, a
 	rrca
 	push	af
@@ -7787,11 +7845,11 @@ _player_select::
 	inc	sp
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1100: player_sprite_num += 1;
+;geometry_boy.c:1112: player_sprite_num += 1;
 	ld	hl, #_player_sprite_num
 	inc	(hl)
 	ld	a, (hl)
-;geometry_boy.c:1101: player_sprite_num %= 16;
+;geometry_boy.c:1113: player_sprite_num %= 16;
 	ld	a, (hl)
 	and	a, #0x0f
 	ld	(hl), a
@@ -7810,10 +7868,10 @@ _player_select::
 00164$:
 	ld	a, #0x01
 00165$:
-;geometry_boy.c:1103: else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
+;geometry_boy.c:1115: else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00118$
-;geometry_boy.c:1105: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:1117: for (uint8_t i = 0; i < 40; i++)
 	ld	c, #0x00
 00147$:
 	ld	a, c
@@ -7831,15 +7889,15 @@ _player_select::
 	add	hl, hl
 	add	hl, de
 	ld	(hl), #0x00
-;geometry_boy.c:1105: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:1117: for (uint8_t i = 0; i < 40; i++)
 	inc	c
 	jr	00147$
 00104$:
-;geometry_boy.c:1109: return TITLE;
+;geometry_boy.c:1121: return TITLE;
 	ld	e, #0x00
 	jr	00149$
 00118$:
-;geometry_boy.c:1112: move_sprite_on_grid(CURSOR_TEXT_OAM, player_sprite_num, 16, 0);
+;geometry_boy.c:1124: move_sprite_on_grid(CURSOR_TEXT_OAM, player_sprite_num, 16, 0);
 	ld	hl, #0x10
 	push	hl
 	ld	a, (#_player_sprite_num)
@@ -7848,22 +7906,22 @@ _player_select::
 	push	hl
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1114: if (sys_time % 8 == 0){
+;geometry_boy.c:1126: if (sys_time % 8 == 0){
 	ld	hl, #_sys_time
 	ld	a, (hl+)
 	ld	c, (hl)
 	and	a, #0x07
 	jp	NZ,00125$
-;geometry_boy.c:1081: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
+;geometry_boy.c:1093: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
 	ld	a, (#_player_sprite_num)
 	add	a, #0x0b
 	ld	b, a
-;geometry_boy.c:1115: if (is_up)
+;geometry_boy.c:1127: if (is_up)
 	ldhl	sp,	#0
 	ld	a, (hl)
 	or	a, a
 	jr	Z, 00120$
-;geometry_boy.c:1117: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 2);
+;geometry_boy.c:1129: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 2);
 	ld	a, #0x02
 	push	af
 	inc	sp
@@ -7877,12 +7935,12 @@ _player_select::
 	inc	sp
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1118: is_up = 0;
+;geometry_boy.c:1130: is_up = 0;
 	ldhl	sp,	#0
 	ld	(hl), #0x00
 	jp	00125$
 00120$:
-;geometry_boy.c:1122: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
+;geometry_boy.c:1134: move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
 	xor	a, a
 	rrca
 	push	af
@@ -7894,46 +7952,33 @@ _player_select::
 	inc	sp
 	call	_move_sprite_on_grid
 	add	sp, #4
-;geometry_boy.c:1123: is_up = 1;
+;geometry_boy.c:1135: is_up = 1;
 	ldhl	sp,	#0
 	ld	(hl), #0x01
 	jp	00125$
 00149$:
-;geometry_boy.c:1127: }
+;geometry_boy.c:1139: }
 	inc	sp
 	ret
-;geometry_boy.c:1147: screen_t level_select()
+;geometry_boy.c:1159: screen_t level_select()
 ;	---------------------------------
 ; Function level_select
 ; ---------------------------------
 _level_select::
 	add	sp, #-6
-;geometry_boy.c:1149: gbt_play(level3song_Data, musicBank, 7); //mainscreen music
-	ld	hl, #0x702
-	push	hl
-	ld	de, #_level3song_Data
-	push	de
-	call	_gbt_play
-	add	sp, #4
-;geometry_boy.c:1150: gbt_loop(1);
-	ld	a, #0x01
-	push	af
-	inc	sp
-	call	_gbt_loop
-	inc	sp
-;geometry_boy.c:1151: HIDE_WIN;
+;geometry_boy.c:1163: HIDE_WIN;
 	ldh	a, (_LCDC_REG + 0)
 	and	a, #0xdf
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:1152: SHOW_BKG;
+;geometry_boy.c:1164: SHOW_BKG;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x01
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:1153: SHOW_SPRITES;
+;geometry_boy.c:1165: SHOW_SPRITES;
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x02
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:1155: wait_vbl_done();
+;geometry_boy.c:1167: wait_vbl_done();
 	call	_wait_vbl_done
 ;geometry_boy.c:329: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
@@ -8043,19 +8088,19 @@ _level_select::
 ;geometry_boy.c:186: SCX_REG = 0;
 	xor	a, a
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:1160: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:1172: SWITCH_ROM_MBC1(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
 	ld	hl, #0x2000
 	ld	(hl), #0x02
-;geometry_boy.c:1161: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
+;geometry_boy.c:1173: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
 	ld	de, #_aero_cursors
 	push	de
 	ld	hl, #0x10a
 	push	hl
 	call	_set_sprite_data
 	add	sp, #4
-;geometry_boy.c:1162: SWITCH_ROM_MBC1(saved_bank);
+;geometry_boy.c:1174: SWITCH_ROM_MBC1(saved_bank);
 	ld	hl, #_saved_bank
 	ld	a, (hl)
 	ldh	(__current_bank + 0), a
@@ -8071,11 +8116,11 @@ _level_select::
 	ld	a, #0x68
 	ld	(hl+), a
 	ld	(hl), #0x30
-;geometry_boy.c:1167: for (render_col = 0; render_col < 5; render_col++){
+;geometry_boy.c:1179: for (render_col = 0; render_col < 5; render_col++){
 	ld	hl, #_render_col
 	ld	(hl), #0x00
 00161$:
-;geometry_boy.c:1168: set_bkg_tile_xy(render_col + LEVEL_TEXT_START_COL, LEVEL_TEXT_ROW, LETTER_TILES + (level_text[render_col] - 65));
+;geometry_boy.c:1180: set_bkg_tile_xy(render_col + LEVEL_TEXT_START_COL, LEVEL_TEXT_ROW, LETTER_TILES + (level_text[render_col] - 65));
 	ld	a, #<(_level_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -8099,16 +8144,16 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1167: for (render_col = 0; render_col < 5; render_col++){
+;geometry_boy.c:1179: for (render_col = 0; render_col < 5; render_col++){
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x05
 	jr	C, 00161$
-;geometry_boy.c:1171: for (render_col = 0; render_col < 8; render_col++){
+;geometry_boy.c:1183: for (render_col = 0; render_col < 8; render_col++){
 	ld	(hl), #0x00
 00163$:
-;geometry_boy.c:1172: set_bkg_tile_xy(render_col + PROGRESS_TEXT_START_COL, PROGRESS_TEXT_ROW, LETTER_TILES + (progress_text[render_col] - 65));
+;geometry_boy.c:1184: set_bkg_tile_xy(render_col + PROGRESS_TEXT_START_COL, PROGRESS_TEXT_ROW, LETTER_TILES + (progress_text[render_col] - 65));
 	ld	a, #<(_progress_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -8132,16 +8177,16 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1171: for (render_col = 0; render_col < 8; render_col++){
+;geometry_boy.c:1183: for (render_col = 0; render_col < 8; render_col++){
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x08
 	jr	C, 00163$
-;geometry_boy.c:1175: for (render_col = 0; render_col < 8; render_col++){
+;geometry_boy.c:1187: for (render_col = 0; render_col < 8; render_col++){
 	ld	(hl), #0x00
 00165$:
-;geometry_boy.c:1176: set_bkg_tile_xy(render_col + PROGRESS_TEXT_START_COL, ATTEMPTS_TEXT_ROW, LETTER_TILES + (attempts_text[render_col] - 65));
+;geometry_boy.c:1188: set_bkg_tile_xy(render_col + PROGRESS_TEXT_START_COL, ATTEMPTS_TEXT_ROW, LETTER_TILES + (attempts_text[render_col] - 65));
 	ld	a, #<(_attempts_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -8165,16 +8210,16 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1175: for (render_col = 0; render_col < 8; render_col++){
+;geometry_boy.c:1187: for (render_col = 0; render_col < 8; render_col++){
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x08
 	jr	C, 00165$
-;geometry_boy.c:1179: for (render_col = 0; render_col < 5; render_col++){
+;geometry_boy.c:1191: for (render_col = 0; render_col < 5; render_col++){
 	ld	(hl), #0x00
 00167$:
-;geometry_boy.c:1180: set_bkg_tile_xy(render_col + START_TEXT_START_COL, START_TEXT_ROW, LETTER_TILES + (start_text[render_col] - 65));
+;geometry_boy.c:1192: set_bkg_tile_xy(render_col + START_TEXT_START_COL, START_TEXT_ROW, LETTER_TILES + (start_text[render_col] - 65));
 	ld	a, #<(_start_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -8198,16 +8243,16 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1179: for (render_col = 0; render_col < 5; render_col++){
+;geometry_boy.c:1191: for (render_col = 0; render_col < 5; render_col++){
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x05
 	jr	C, 00167$
-;geometry_boy.c:1183: for (render_col = 0; render_col < 4; render_col++){
+;geometry_boy.c:1195: for (render_col = 0; render_col < 4; render_col++){
 	ld	(hl), #0x00
 00169$:
-;geometry_boy.c:1184: set_bkg_tile_xy(render_col + START_TEXT_START_COL, BACK_TEXT_ROW, LETTER_TILES + (back_text[render_col] - 65));
+;geometry_boy.c:1196: set_bkg_tile_xy(render_col + START_TEXT_START_COL, BACK_TEXT_ROW, LETTER_TILES + (back_text[render_col] - 65));
 	ld	a, #<(_back_text)
 	ld	hl, #_render_col
 	add	a, (hl)
@@ -8231,21 +8276,21 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1183: for (render_col = 0; render_col < 4; render_col++){
+;geometry_boy.c:1195: for (render_col = 0; render_col < 4; render_col++){
 	ld	hl, #_render_col
 	inc	(hl)
 	ld	a, (hl)
 	sub	a, #0x04
 	jr	C, 00169$
-;geometry_boy.c:1188: uint8_t tmp = level_ind + 1;
+;geometry_boy.c:1200: uint8_t tmp = level_ind + 1;
 	ld	hl, #_level_ind
 	ld	c, (hl)
 	inc	c
-;geometry_boy.c:1189: for (render_col = 1; render_col != 0xFF; render_col--){
+;geometry_boy.c:1201: for (render_col = 1; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	ld	(hl), #0x01
 00171$:
-;geometry_boy.c:1190: set_bkg_tile_xy(LEVEL_TEXT_START_COL + 6 + render_col, LEVEL_TEXT_ROW, NUMBER_TILES + (tmp % 10));
+;geometry_boy.c:1202: set_bkg_tile_xy(LEVEL_TEXT_START_COL + 6 + render_col, LEVEL_TEXT_ROW, NUMBER_TILES + (tmp % 10));
 	ld	b, #0x00
 	push	bc
 	ld	de, #0x000a
@@ -8271,23 +8316,23 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1191: tmp = tmp / 10;
+;geometry_boy.c:1203: tmp = tmp / 10;
 	ld	de, #0x000a
 	push	de
 	push	bc
 	call	__divsint
 	add	sp, #4
 	ld	c, e
-;geometry_boy.c:1189: for (render_col = 1; render_col != 0xFF; render_col--){
+;geometry_boy.c:1201: for (render_col = 1; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	dec	(hl)
 	ld	a, (hl)
 	inc	a
 	jr	NZ, 00171$
-;geometry_boy.c:1197: ENABLE_RAM_MBC1;
+;geometry_boy.c:1209: ENABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x0a
-;geometry_boy.c:1198: progress = *(px_progress[level_ind]);
+;geometry_boy.c:1210: progress = *(px_progress[level_ind]);
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8324,7 +8369,7 @@ _level_select::
 	xor	a, a
 	ld	(hl+), a
 	ld	(hl), a
-;geometry_boy.c:1199: saved_attempts = *(attempts[level_ind]);
+;geometry_boy.c:1211: saved_attempts = *(attempts[level_ind]);
 	ld	hl, #_attempts
 	add	hl, bc
 	ld	a, (hl+)
@@ -8338,10 +8383,10 @@ _level_select::
 	inc	de
 	ld	a, (de)
 	ld	(hl), a
-;geometry_boy.c:1200: DISABLE_RAM_MBC1;
+;geometry_boy.c:1212: DISABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x00
-;geometry_boy.c:1201: progress = progress * 100;
+;geometry_boy.c:1213: progress = progress * 100;
 	ldhl	sp,	#4
 	ld	a, (hl+)
 	ld	e, a
@@ -8368,7 +8413,7 @@ _level_select::
 	ld	a, c
 	ld	(hl+), a
 	ld	(hl), b
-;geometry_boy.c:1202: progress = progress / (level_widths[level_ind] -LEVEL_END_OFFSET);
+;geometry_boy.c:1214: progress = progress / (level_widths[level_ind] -LEVEL_END_OFFSET);
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8403,7 +8448,7 @@ _level_select::
 	add	sp, #8
 	ld	c, l
 	ld	b, h
-;geometry_boy.c:1203: progress = progress >> 3;
+;geometry_boy.c:1215: progress = progress >> 3;
 	ld	a, #0x03
 00431$:
 	srl	b
@@ -8412,11 +8457,11 @@ _level_select::
 	rr	e
 	dec	a
 	jr	NZ, 00431$
-;geometry_boy.c:1206: for (render_col = 2; render_col != 0xFF; render_col--){
+;geometry_boy.c:1218: for (render_col = 2; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	ld	(hl), #0x02
 00173$:
-;geometry_boy.c:1207: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, PROGRESS_TEXT_ROW + 1, NUMBER_TILES + (progress % 10));
+;geometry_boy.c:1219: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, PROGRESS_TEXT_ROW + 1, NUMBER_TILES + (progress % 10));
 	push	bc
 	push	de
 	ld	hl, #0x0000
@@ -8467,7 +8512,7 @@ _level_select::
 	call	_set_bkg_tile_xy
 	add	sp, #3
 	pop	de
-;geometry_boy.c:1208: progress = progress / 10;
+;geometry_boy.c:1220: progress = progress / 10;
 	ld	hl, #0x0000
 	push	hl
 	ld	l, #0x0a
@@ -8478,13 +8523,13 @@ _level_select::
 	add	sp, #8
 	ld	c, l
 	ld	b, h
-;geometry_boy.c:1206: for (render_col = 2; render_col != 0xFF; render_col--){
+;geometry_boy.c:1218: for (render_col = 2; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	dec	(hl)
 	ld	a, (hl)
 	inc	a
 	jr	NZ, 00173$
-;geometry_boy.c:1210: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 5, PROGRESS_TEXT_ROW + 1, PERCENT_TILE);
+;geometry_boy.c:1222: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 5, PROGRESS_TEXT_ROW + 1, PERCENT_TILE);
 	ld	hl, #0x3305
 	push	hl
 	ld	a, #0x0b
@@ -8492,11 +8537,11 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1212: for (render_col = 3; render_col != 0xFF; render_col--){
+;geometry_boy.c:1224: for (render_col = 3; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	ld	(hl), #0x03
 00175$:
-;geometry_boy.c:1213: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, ATTEMPTS_TEXT_ROW + 1, NUMBER_TILES + (saved_attempts % 10));
+;geometry_boy.c:1225: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, ATTEMPTS_TEXT_ROW + 1, NUMBER_TILES + (saved_attempts % 10));
 	pop	bc
 	push	bc
 	push	bc
@@ -8523,51 +8568,51 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1214: saved_attempts = saved_attempts / 10;
+;geometry_boy.c:1226: saved_attempts = saved_attempts / 10;
 	ld	de, #0x000a
 	push	de
 	push	bc
 	call	__divuint
 	add	sp, #6
 	push	de
-;geometry_boy.c:1212: for (render_col = 3; render_col != 0xFF; render_col--){
+;geometry_boy.c:1224: for (render_col = 3; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	dec	(hl)
 	ld	a, (hl)
 	inc	a
 	jr	NZ, 00175$
-;geometry_boy.c:1218: while(1)
+;geometry_boy.c:1230: while(1)
 	ld	hl, #_cursor_title_position_old
 	ld	(hl), #0x00
 00141$:
-;geometry_boy.c:1220: if (sys_time % 2 == 0){
+;geometry_boy.c:1232: if (sys_time % 2 == 0){
 	ld	hl, #_sys_time
 	ld	a, (hl+)
 	ld	c, (hl)
 	rrca
 	jr	NC, 00141$
-;geometry_boy.c:1224: prev_jpad = jpad;
+;geometry_boy.c:1236: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ld	(#_prev_jpad),a
-;geometry_boy.c:1225: jpad = joypad();
+;geometry_boy.c:1237: jpad = joypad();
 	call	_joypad
 	ld	hl, #_jpad
 	ld	(hl), e
-;geometry_boy.c:1226: render = 0;
+;geometry_boy.c:1238: render = 0;
 	ldhl	sp,	#2
 	ld	(hl), #0x00
-;geometry_boy.c:1228: gbt_update(); //level select music
+;geometry_boy.c:1240: gbt_update(); //level select music
 	call	_gbt_update
-;geometry_boy.c:1229: delay(12);
+;geometry_boy.c:1241: delay(12);
 	ld	de, #0x000c
 	push	de
 	call	_delay
 	pop	hl
-;geometry_boy.c:1231: if (debounce_input(J_DOWN, jpad, prev_jpad))
+;geometry_boy.c:1243: if (debounce_input(J_DOWN, jpad, prev_jpad))
 	ld	a, (#_prev_jpad)
 	ldhl	sp,	#3
 	ld	(hl), a
-;geometry_boy.c:1224: prev_jpad = jpad;
+;geometry_boy.c:1236: prev_jpad = jpad;
 	ld	a, (#_jpad)
 	ldhl	sp,	#4
 ;geometry_boy.c:360: return (button == target) && !(prev_button == target);
@@ -8587,11 +8632,11 @@ _level_select::
 00190$:
 	ldhl	sp,	#5
 	ld	(hl), a
-;geometry_boy.c:1231: if (debounce_input(J_DOWN, jpad, prev_jpad))
+;geometry_boy.c:1243: if (debounce_input(J_DOWN, jpad, prev_jpad))
 	ld	a, (hl)
 	or	a, a
 	jr	Z, 00133$
-;geometry_boy.c:1233: cursor_title_position = 1;
+;geometry_boy.c:1245: cursor_title_position = 1;
 	ld	hl, #_cursor_title_position
 	ld	(hl), #0x01
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
@@ -8600,7 +8645,7 @@ _level_select::
 	ld	(hl), #0x78
 	ld	hl, #(_shadow_OAM + 41)
 	ld	(hl), #0x30
-;geometry_boy.c:1234: move_sprite(CURSOR_TEXT_OAM, (START_TEXT_START_COL << 3) + XOFF - 16, (BACK_TEXT_ROW << 3) + YOFF);
+;geometry_boy.c:1246: move_sprite(CURSOR_TEXT_OAM, (START_TEXT_START_COL << 3) + XOFF - 16, (BACK_TEXT_ROW << 3) + YOFF);
 	jp	00134$
 00133$:
 ;geometry_boy.c:360: return (button == target) && !(prev_button == target);
@@ -8618,10 +8663,10 @@ _level_select::
 00192$:
 	ld	a, #0x01
 00193$:
-;geometry_boy.c:1236: else if (debounce_input(J_UP, jpad, prev_jpad))
+;geometry_boy.c:1248: else if (debounce_input(J_UP, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00130$
-;geometry_boy.c:1238: cursor_title_position = 0;
+;geometry_boy.c:1250: cursor_title_position = 0;
 	ld	hl, #_cursor_title_position
 	ld	(hl), #0x00
 ;../gbdk/include/gb/gb.h:1399: OAM_item_t * itm = &shadow_OAM[nb];
@@ -8630,7 +8675,7 @@ _level_select::
 	ld	(hl), #0x68
 	ld	hl, #(_shadow_OAM + 41)
 	ld	(hl), #0x30
-;geometry_boy.c:1239: move_sprite(CURSOR_TEXT_OAM, (START_TEXT_START_COL << 3) + XOFF - 16, (START_TEXT_ROW << 3) + YOFF);
+;geometry_boy.c:1251: move_sprite(CURSOR_TEXT_OAM, (START_TEXT_START_COL << 3) + XOFF - 16, (START_TEXT_ROW << 3) + YOFF);
 	jp	00134$
 00130$:
 ;geometry_boy.c:360: return (button == target) && !(prev_button == target);
@@ -8648,17 +8693,17 @@ _level_select::
 00195$:
 	ld	a, #0x01
 00196$:
-;geometry_boy.c:1242: else if (debounce_input(J_LEFT, jpad, prev_jpad))
+;geometry_boy.c:1254: else if (debounce_input(J_LEFT, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00127$
-;geometry_boy.c:1244: if (level_ind > 0){
+;geometry_boy.c:1256: if (level_ind > 0){
 	ld	hl, #_level_ind
 	ld	a, (hl)
 	or	a, a
 	jp	Z, 00134$
-;geometry_boy.c:1245: level_ind--;
+;geometry_boy.c:1257: level_ind--;
 	dec	(hl)
-;geometry_boy.c:1246: render = 1;
+;geometry_boy.c:1258: render = 1;
 	ldhl	sp,	#2
 	ld	(hl), #0x01
 	jp	00134$
@@ -8678,17 +8723,17 @@ _level_select::
 00198$:
 	ld	a, #0x01
 00199$:
-;geometry_boy.c:1250: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
+;geometry_boy.c:1262: else if (debounce_input(J_RIGHT, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00124$
-;geometry_boy.c:1252: if (level_ind < NUM_LEVELS - 1){
+;geometry_boy.c:1264: if (level_ind < NUM_LEVELS - 1){
 	ld	hl, #_level_ind
 	ld	a, (hl)
 	sub	a, #0x02
-	jp	NC, 00134$
-;geometry_boy.c:1253: level_ind ++;
+	jr	NC, 00134$
+;geometry_boy.c:1265: level_ind ++;
 	inc	(hl)
-;geometry_boy.c:1254: render = 1;
+;geometry_boy.c:1266: render = 1;
 	ldhl	sp,	#2
 	ld	(hl), #0x01
 	jr	00134$
@@ -8712,10 +8757,10 @@ _level_select::
 00202$:
 	ldhl	sp,	#5
 	ld	a, (hl)
-;geometry_boy.c:1258: else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
+;geometry_boy.c:1270: else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
 	or	a, a
 	jr	Z, 00134$
-;geometry_boy.c:1262: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:1274: for (uint8_t i = 0; i < 40; i++)
 	ld	(hl), #0x00
 00178$:
 	ldhl	sp,	#5
@@ -8738,64 +8783,49 @@ _level_select::
 	ld	hl, #_shadow_OAM
 	add	hl, bc
 	ld	(hl), #0x00
-;geometry_boy.c:1262: for (uint8_t i = 0; i < 40; i++)
+;geometry_boy.c:1274: for (uint8_t i = 0; i < 40; i++)
 	ldhl	sp,	#5
 	inc	(hl)
 	jr	00178$
 00115$:
-;geometry_boy.c:1267: if (cursor_title_position == 0)
+;geometry_boy.c:1279: if (cursor_title_position == 0)
 	ld	hl, #_cursor_title_position
 	ld	a, (hl)
-;geometry_boy.c:1269: cursor_title_position = 0;
+;geometry_boy.c:1281: cursor_title_position = 0;
 	or	a,a
 	jr	NZ, 00119$
 	ld	(hl),a
-;geometry_boy.c:1270: gbt_stop(); //stop mainscreen music
+;geometry_boy.c:1282: gbt_stop(); //stop mainscreen music
 	call	_gbt_stop
-;geometry_boy.c:1271: return GAME;
+;geometry_boy.c:1283: return GAME;
 	ld	e, #0x01
 	jp	00186$
 00119$:
-;geometry_boy.c:1274: else if (cursor_title_position == 1)
+;geometry_boy.c:1286: else if (cursor_title_position == 1)
 	ld	a, (#_cursor_title_position)
 	dec	a
 	jr	NZ, 00134$
-;geometry_boy.c:1276: cursor_title_position = 0;
+;geometry_boy.c:1288: cursor_title_position = 0;
 	ld	hl, #_cursor_title_position
 	ld	(hl), #0x00
-;geometry_boy.c:1277: gbt_stop();
-	call	_gbt_stop
-;geometry_boy.c:1278: gbt_play(level2song_Data, musicBank, 7); //mainscreen music
-	ld	hl, #0x702
-	push	hl
-	ld	de, #_level2song_Data
-	push	de
-	call	_gbt_play
-	add	sp, #4
-;geometry_boy.c:1279: gbt_loop(1);
-	ld	a, #0x01
-	push	af
-	inc	sp
-	call	_gbt_loop
-	inc	sp
-;geometry_boy.c:1280: return TITLE;
+;geometry_boy.c:1292: return TITLE;
 	ld	e, #0x00
 	jp	00186$
 00134$:
-;geometry_boy.c:1284: if (render){
+;geometry_boy.c:1296: if (render){
 	ldhl	sp,	#2
 	ld	a, (hl)
 	or	a, a
 	jp	Z, 00141$
-;geometry_boy.c:1286: tmp = level_ind + 1;
+;geometry_boy.c:1298: tmp = level_ind + 1;
 	ld	hl, #_level_ind
 	ld	c, (hl)
 	inc	c
-;geometry_boy.c:1287: for (render_col = 1; render_col != 0xFF; render_col--){
+;geometry_boy.c:1299: for (render_col = 1; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	ld	(hl), #0x01
 00180$:
-;geometry_boy.c:1288: set_bkg_tile_xy(LEVEL_TEXT_START_COL + 6 + render_col, LEVEL_TEXT_ROW, NUMBER_TILES + (tmp % 10));
+;geometry_boy.c:1300: set_bkg_tile_xy(LEVEL_TEXT_START_COL + 6 + render_col, LEVEL_TEXT_ROW, NUMBER_TILES + (tmp % 10));
 	ld	b, #0x00
 	push	bc
 	ld	de, #0x000a
@@ -8821,23 +8851,23 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1289: tmp = tmp / 10;
+;geometry_boy.c:1301: tmp = tmp / 10;
 	ld	de, #0x000a
 	push	de
 	push	bc
 	call	__divsint
 	add	sp, #4
 	ld	c, e
-;geometry_boy.c:1287: for (render_col = 1; render_col != 0xFF; render_col--){
+;geometry_boy.c:1299: for (render_col = 1; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	dec	(hl)
 	ld	a, (hl)
 	inc	a
 	jr	NZ, 00180$
-;geometry_boy.c:1292: ENABLE_RAM_MBC1;
+;geometry_boy.c:1304: ENABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x0a
-;geometry_boy.c:1293: progress = *(px_progress[level_ind]);
+;geometry_boy.c:1305: progress = *(px_progress[level_ind]);
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8874,7 +8904,7 @@ _level_select::
 	xor	a, a
 	ld	(hl+), a
 	ld	(hl), a
-;geometry_boy.c:1294: saved_attempts = *(attempts[level_ind]);
+;geometry_boy.c:1306: saved_attempts = *(attempts[level_ind]);
 	ld	hl, #_attempts
 	add	hl, bc
 	ld	a, (hl+)
@@ -8888,10 +8918,10 @@ _level_select::
 	inc	de
 	ld	a, (de)
 	ld	(hl), a
-;geometry_boy.c:1295: DISABLE_RAM_MBC1;
+;geometry_boy.c:1307: DISABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x00
-;geometry_boy.c:1296: progress = progress * 100;
+;geometry_boy.c:1308: progress = progress * 100;
 	ldhl	sp,	#4
 	ld	a, (hl+)
 	ld	e, a
@@ -8918,7 +8948,7 @@ _level_select::
 	ld	a, c
 	ld	(hl+), a
 	ld	(hl), b
-;geometry_boy.c:1297: progress = progress / (level_widths[level_ind] -LEVEL_END_OFFSET);
+;geometry_boy.c:1309: progress = progress / (level_widths[level_ind] -LEVEL_END_OFFSET);
 	ld	hl, #_level_ind
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -8953,7 +8983,7 @@ _level_select::
 	add	sp, #8
 	ld	c, l
 	ld	b, h
-;geometry_boy.c:1298: progress = progress >> 3;
+;geometry_boy.c:1310: progress = progress >> 3;
 	ld	a, #0x03
 00463$:
 	srl	b
@@ -8962,11 +8992,11 @@ _level_select::
 	rr	e
 	dec	a
 	jr	NZ, 00463$
-;geometry_boy.c:1301: for (render_col = 2; render_col != 0xFF; render_col--){
+;geometry_boy.c:1313: for (render_col = 2; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	ld	(hl), #0x02
 00182$:
-;geometry_boy.c:1302: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, PROGRESS_TEXT_ROW + 1, NUMBER_TILES + (progress % 10));
+;geometry_boy.c:1314: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, PROGRESS_TEXT_ROW + 1, NUMBER_TILES + (progress % 10));
 	push	bc
 	push	de
 	ld	hl, #0x0000
@@ -9017,7 +9047,7 @@ _level_select::
 	call	_set_bkg_tile_xy
 	add	sp, #3
 	pop	de
-;geometry_boy.c:1303: progress = progress / 10;
+;geometry_boy.c:1315: progress = progress / 10;
 	ld	hl, #0x0000
 	push	hl
 	ld	l, #0x0a
@@ -9028,13 +9058,13 @@ _level_select::
 	add	sp, #8
 	ld	c, l
 	ld	b, h
-;geometry_boy.c:1301: for (render_col = 2; render_col != 0xFF; render_col--){
+;geometry_boy.c:1313: for (render_col = 2; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	dec	(hl)
 	ld	a, (hl)
 	inc	a
 	jr	NZ, 00182$
-;geometry_boy.c:1305: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 5, PROGRESS_TEXT_ROW + 1, PERCENT_TILE);
+;geometry_boy.c:1317: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 5, PROGRESS_TEXT_ROW + 1, PERCENT_TILE);
 	ld	hl, #0x3305
 	push	hl
 	ld	a, #0x0b
@@ -9042,11 +9072,11 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1307: for (render_col = 3; render_col != 0xFF; render_col--){
+;geometry_boy.c:1319: for (render_col = 3; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	ld	(hl), #0x03
 00184$:
-;geometry_boy.c:1308: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, ATTEMPTS_TEXT_ROW + 1, NUMBER_TILES + (saved_attempts % 10));
+;geometry_boy.c:1320: set_bkg_tile_xy(PROGRESS_TEXT_START_COL + 2 + render_col, ATTEMPTS_TEXT_ROW + 1, NUMBER_TILES + (saved_attempts % 10));
 	pop	bc
 	push	bc
 	push	bc
@@ -9073,14 +9103,14 @@ _level_select::
 	inc	sp
 	call	_set_bkg_tile_xy
 	add	sp, #3
-;geometry_boy.c:1309: saved_attempts = saved_attempts / 10;
+;geometry_boy.c:1321: saved_attempts = saved_attempts / 10;
 	ld	de, #0x000a
 	push	de
 	push	bc
 	call	__divuint
 	add	sp, #6
 	push	de
-;geometry_boy.c:1307: for (render_col = 3; render_col != 0xFF; render_col--){
+;geometry_boy.c:1319: for (render_col = 3; render_col != 0xFF; render_col--){
 	ld	hl, #_render_col
 	dec	(hl)
 	ld	a, (hl)
@@ -9088,7 +9118,7 @@ _level_select::
 	jp	Z,00141$
 	jr	00184$
 00186$:
-;geometry_boy.c:1313: }
+;geometry_boy.c:1325: }
 	add	sp, #6
 	ret
 _level_text:
@@ -9120,7 +9150,7 @@ _back_text:
 	.db #0x41	;  65	'A'
 	.db #0x43	;  67	'C'
 	.db #0x4b	;  75	'K'
-;geometry_boy.c:1315: void main()
+;geometry_boy.c:1327: void main()
 ;	---------------------------------
 ; Function main
 ; ---------------------------------
@@ -9186,20 +9216,7 @@ _main::
 	ldh	(_SCX_REG + 0), a
 ;../gbdk/include/gb/gb.h:660: __asm__("di");
 	di
-;geometry_boy.c:1320: gbt_play(level2song_Data, musicBank, 7); //mainscreen music
-	ld	hl, #0x702
-	push	hl
-	ld	de, #_level2song_Data
-	push	de
-	call	_gbt_play
-	add	sp, #4
-;geometry_boy.c:1321: gbt_loop(1);
-	ld	a, #0x01
-	push	af
-	inc	sp
-	call	_gbt_loop
-	inc	sp
-;geometry_boy.c:1322: set_interrupts(VBL_IFLAG); // interrupt set after finished drawing the screen
+;geometry_boy.c:1332: set_interrupts(VBL_IFLAG); // interrupt set after finished drawing the screen
 	ld	a, #0x01
 	push	af
 	inc	sp
@@ -9207,19 +9224,19 @@ _main::
 	inc	sp
 ;../gbdk/include/gb/gb.h:644: __asm__("ei");
 	ei
-;geometry_boy.c:1327: SPRITES_8x8;
+;geometry_boy.c:1337: SPRITES_8x8;
 	ldh	a, (_LCDC_REG + 0)
 	and	a, #0xfb
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:1328: saved_bank = _current_bank;
+;geometry_boy.c:1338: saved_bank = _current_bank;
 	ldh	a, (__current_bank + 0)
 	ld	(#_saved_bank),a
-;geometry_boy.c:1329: screen_t current_screen = TITLE;
+;geometry_boy.c:1339: screen_t current_screen = TITLE;
 	ld	c, #0x00
-;geometry_boy.c:1331: ENABLE_RAM_MBC1;
+;geometry_boy.c:1341: ENABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x0a
-;geometry_boy.c:1332: for (uint8_t i = 0; i < NUM_LEVELS; i++){
+;geometry_boy.c:1342: for (uint8_t i = 0; i < NUM_LEVELS; i++){
 	ldhl	sp,	#6
 	ld	(hl), #0x00
 00123$:
@@ -9227,7 +9244,7 @@ _main::
 	ld	a, (hl)
 	sub	a, #0x03
 	jr	NC, 00101$
-;geometry_boy.c:1333: attempts[i] = (uint16_t *) (START_ATTEMPTS + (i << 1));
+;geometry_boy.c:1343: attempts[i] = (uint16_t *) (START_ATTEMPTS + (i << 1));
 	ld	a, (hl)
 	ld	b, #0x00
 	add	a, a
@@ -9266,7 +9283,7 @@ _main::
 	inc	de
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:1334: px_progress[i] = (uint16_t *) (START_PROGRESS + (i << 1));
+;geometry_boy.c:1344: px_progress[i] = (uint16_t *) (START_PROGRESS + (i << 1));
 	pop	de
 	push	de
 	ld	hl, #_px_progress
@@ -9288,13 +9305,13 @@ _main::
 	ld	a, (hl+)
 	ld	(de), a
 	inc	de
-;geometry_boy.c:1332: for (uint8_t i = 0; i < NUM_LEVELS; i++){
+;geometry_boy.c:1342: for (uint8_t i = 0; i < NUM_LEVELS; i++){
 	ld	a, (hl+)
 	ld	(de), a
 	inc	(hl)
 	jr	00123$
 00101$:
-;geometry_boy.c:1337: if (*saved != 's')
+;geometry_boy.c:1347: if (*saved != 's')
 	ld	hl, #_saved
 	ld	l, (hl)
 ;	spillPairReg hl
@@ -9306,9 +9323,9 @@ _main::
 	ld	a, (hl)
 	sub	a, #0x73
 	jr	Z, 00104$
-;geometry_boy.c:1339: *saved = 's';
+;geometry_boy.c:1349: *saved = 's';
 	ld	(hl), #0x73
-;geometry_boy.c:1340: for (uint8_t i = 0; i < NUM_LEVELS; i++)
+;geometry_boy.c:1350: for (uint8_t i = 0; i < NUM_LEVELS; i++)
 	ldhl	sp,	#6
 	ld	(hl), #0x00
 00126$:
@@ -9316,7 +9333,7 @@ _main::
 	ld	a, (hl)
 	sub	a, #0x03
 	jr	NC, 00104$
-;geometry_boy.c:1342: *(attempts[i]) = 0;
+;geometry_boy.c:1352: *(attempts[i]) = 0;
 	ld	a, (hl)
 	ld	b, #0x00
 	add	a, a
@@ -9352,7 +9369,7 @@ _main::
 	xor	a, a
 	ld	(hl+), a
 	ld	(hl), a
-;geometry_boy.c:1343: *(px_progress[i]) = 0;
+;geometry_boy.c:1353: *(px_progress[i]) = 0;
 	ldhl	sp,#2
 	ld	a, (hl+)
 	ld	e, a
@@ -9382,54 +9399,54 @@ _main::
 	xor	a, a
 	ld	(hl+), a
 	ld	(hl), a
-;geometry_boy.c:1340: for (uint8_t i = 0; i < NUM_LEVELS; i++)
+;geometry_boy.c:1350: for (uint8_t i = 0; i < NUM_LEVELS; i++)
 	ldhl	sp,	#6
 	inc	(hl)
 	jr	00126$
 00104$:
-;geometry_boy.c:1346: DISABLE_RAM_MBC1;
+;geometry_boy.c:1356: DISABLE_RAM_MBC1;
 	ld	hl, #0x0000
 	ld	(hl), #0x00
-;geometry_boy.c:1348: while (1)
+;geometry_boy.c:1358: while (1)
 00117$:
-;geometry_boy.c:1350: wait_vbl_done(); // wait until finished drawing the screen
+;geometry_boy.c:1360: wait_vbl_done(); // wait until finished drawing the screen
 	call	_wait_vbl_done
-;geometry_boy.c:1353: if (current_screen == TITLE)
+;geometry_boy.c:1363: if (current_screen == TITLE)
 	ld	a, c
 	or	a, a
 	jr	NZ, 00114$
-;geometry_boy.c:1355: current_screen = title();
+;geometry_boy.c:1365: current_screen = title();
 	call	_title
 	ld	c, e
 	jr	00117$
 00114$:
-;geometry_boy.c:1357: else if (current_screen == LEVEL_SELECT)
+;geometry_boy.c:1367: else if (current_screen == LEVEL_SELECT)
 	ld	a, c
 	sub	a, #0x02
 	jr	NZ, 00111$
-;geometry_boy.c:1359: current_screen = level_select();
+;geometry_boy.c:1369: current_screen = level_select();
 	call	_level_select
 	ld	c, e
 	jr	00117$
 00111$:
-;geometry_boy.c:1361: else if (current_screen == PLAYER_SELECT)
+;geometry_boy.c:1371: else if (current_screen == PLAYER_SELECT)
 	ld	a, c
 	sub	a, #0x03
 	jr	NZ, 00108$
-;geometry_boy.c:1363: current_screen = player_select();
+;geometry_boy.c:1373: current_screen = player_select();
 	call	_player_select
 	ld	c, e
 	jr	00117$
 00108$:
-;geometry_boy.c:1365: else if (current_screen == GAME)
+;geometry_boy.c:1375: else if (current_screen == GAME)
 	ld	a, c
 	dec	a
 	jr	NZ, 00117$
-;geometry_boy.c:1367: current_screen = game();
+;geometry_boy.c:1377: current_screen = game();
 	call	_game
 	ld	c, e
 	jr	00117$
-;geometry_boy.c:1370: }
+;geometry_boy.c:1380: }
 	add	sp, #7
 	ret
 	.area _CODE_0
@@ -9482,6 +9499,10 @@ __xinit__level_banks:
 	.db #0x03	; 3
 	.db #0x04	; 4
 	.db #0x04	; 4
+__xinit__level_songs:
+	.dw _level1song_Data
+	.dw _level3song_Data
+	.dw _level1song_Data
 __xinit__current_attempts:
 	.dw #0x0000
 __xinit__px_progress_bar:

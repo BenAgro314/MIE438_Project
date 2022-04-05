@@ -65,7 +65,6 @@ typedef enum
 } screen_t;
 
 // For music
-extern const unsigned char *song_Data[];
 extern const unsigned char * level1song_Data[];
 extern const unsigned char * level2song_Data[];
 extern const unsigned char * level3song_Data[];
@@ -118,6 +117,7 @@ uint8_t level_ind = 0;
 unsigned char *level_maps[NUM_LEVELS] = {level1_v2, level2, level3};
 uint16_t level_widths[NUM_LEVELS] = {level1_v2Width, level2Width, level3Width};
 uint8_t level_banks[NUM_LEVELS] = {level1_v2Bank, level2Bank, level3Bank};
+unsigned char **level_songs[NUM_LEVELS] = {level1song_Data, level3song_Data, level1song_Data};
 uint16_t current_attempts = 0;
 uint16_t px_progress_bar = 0;
 uint16_t old_px_progress_bar = 0;
@@ -632,7 +632,7 @@ void skip_to(uint16_t background_x, uint8_t char_y) {
 
 screen_t game()
 {
-    gbt_play(level1song_Data, musicBank, 1);
+    gbt_play(level_songs[level_ind], musicBank, 7);
     gbt_loop(1);
     STAT_REG |= 0x40; // enable LYC=LY interrupt
     LYC_REG = 16;     // the scanline on which to trigger
@@ -698,6 +698,8 @@ screen_t game()
             HIDE_WIN;
             HIDE_SPRITES;
             gbt_stop();
+            gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+            gbt_loop(1);
             return LEVEL_SELECT;
         }
 
@@ -755,6 +757,8 @@ screen_t game()
             HIDE_WIN;
             HIDE_SPRITES;
             gbt_stop();
+            gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+            gbt_loop(1);
             return LEVEL_SELECT;
         }
 
@@ -809,6 +813,9 @@ uint8_t cursor_title_position_old = 0;
 
 screen_t title()
 {
+
+
+
     disable_interrupts();
     add_VBL(vbl_interrupt_title);
     enable_interrupts();
@@ -865,6 +872,9 @@ screen_t title()
         set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
         move_sprite(CURSOR_TEXT_OAM, TITLE_CURSOR_START_X, START_TEXT_START_Y + YOFF);
         scroll_sprite(TITLE_OAM + 10, 0, -2);
+    } else {
+        gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+        gbt_loop(1);
     }
 
     SHOW_BKG;
@@ -1007,12 +1017,14 @@ screen_t title()
                 {
                     cursor_title_position_old = 1; // force a change the next time title runs
                     level_ind = 0;
-                    gbt_stop();
+                    gbt_update();
+                    //gbt_stop();
                     return LEVEL_SELECT;
                 }
                 else if (cursor_title_position == 1)
                 {
                     cursor_title_position_old = 0;
+                    gbt_update();
                     return PLAYER_SELECT;
                 }
             }
@@ -1146,8 +1158,8 @@ const char back_text[] = {'B', 'A', 'C', 'K'};
 
 screen_t level_select()
 {
-    gbt_play(level3song_Data, musicBank, 7); //mainscreen music
-    gbt_loop(1);
+    //gbt_play(level3song_Data, musicBank, 7); //mainscreen music
+    //gbt_loop(1);
     HIDE_WIN;
     SHOW_BKG;
     SHOW_SPRITES;
@@ -1274,9 +1286,9 @@ screen_t level_select()
             else if (cursor_title_position == 1)
             {
                 cursor_title_position = 0;
-                gbt_stop();
-                gbt_play(level2song_Data, musicBank, 7); //mainscreen music
-                gbt_loop(1);
+                //gbt_stop();
+                //gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+                //gbt_loop(1);
                 return TITLE;
             }
         }
@@ -1317,8 +1329,6 @@ void main()
     reset_tracking();
     // load music begins
     disable_interrupts();
-    gbt_play(level2song_Data, musicBank, 7); //mainscreen music
-    gbt_loop(1);
     set_interrupts(VBL_IFLAG); // interrupt set after finished drawing the screen
     enable_interrupts();
     // end of music setup
