@@ -6,8 +6,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// music (bank 3)
-#define musicBank 3
+// music (bank 2)
+#define musicBank 2
 #include "music/gbt_player.h"
 
 // tiles (bank 2)
@@ -66,6 +66,9 @@ typedef enum
 
 // For music
 extern const unsigned char *song_Data[];
+extern const unsigned char * level1song_Data[];
+extern const unsigned char * level2song_Data[];
+extern const unsigned char * level3song_Data[];
 
 typedef enum
 {
@@ -629,7 +632,7 @@ void skip_to(uint16_t background_x, uint8_t char_y) {
 
 screen_t game()
 {
-    gbt_play(song_Data, musicBank, 1);
+    gbt_play(level1song_Data, musicBank, 1);
     gbt_loop(1);
     STAT_REG |= 0x40; // enable LYC=LY interrupt
     LYC_REG = 16;     // the scanline on which to trigger
@@ -698,14 +701,17 @@ screen_t game()
             return LEVEL_SELECT;
         }
 
-        tick_player();
-        render_player();
+        if (sys_time % 2 == 0){
+            tick_player();
+            render_player();
 
-        SWITCH_ROM_MBC1(level_banks[level_ind]);
-        scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
-        SWITCH_ROM_MBC1(saved_bank);
+            SWITCH_ROM_MBC1(level_banks[level_ind]);
+            scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
+            SWITCH_ROM_MBC1(saved_bank);
 
-        update_HUD_bar();
+            update_HUD_bar();
+            tick++;
+        }
 
         if (lose)
         {
@@ -769,11 +775,10 @@ screen_t game()
         set_bkg_data(BACK_SPIKE_TILE, 1, back_spike_parallax + parallax_tile_ind);   // load tiles into VRAM
         SWITCH_ROM_MBC1(saved_bank);
 
-        tick++;
         gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(8);     // LOOP_DELAY
-        gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(8);     // LOOP_DELAY
+        //delay(8);     // LOOP_DELAY
+        //gbt_update(); // This will change to ROM bank 1. Basically play the music
+        //delay(8);     // LOOP_DELAY
     }
 }
 
@@ -820,37 +825,37 @@ screen_t title()
 
     if (title_loaded)
     {
-        for (int i = 0; i < 11; i++)
+        for (render_col = 0; render_col < 11; render_col++)
         {
             SWITCH_ROM_MBC1(tilesBank);
-            set_sprite_data(TITLE_OAM + i, 1, nima + 16 * (13 + game_title[i] - 65)); // load tiles into VRAM
+            set_sprite_data(TITLE_OAM + render_col, 1, nima + 16 * (13 + game_title[render_col] - 65)); // load tiles into VRAM
             SWITCH_ROM_MBC1(saved_bank);
-            set_sprite_tile(TITLE_OAM + i, TITLE_OAM + i);
-            if (i > 7)
+            set_sprite_tile(TITLE_OAM + render_col, TITLE_OAM + render_col);
+            if (render_col > 7)
             {
-                move_sprite(TITLE_OAM + i, TITLE_START_X + XOFF + 8 * (i - 8) + 20, TITLE_START_Y + YOFF + 10);
+                move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * (render_col - 8) + 20, TITLE_START_Y + YOFF + 10);
             }
             else
             {
-                move_sprite(TITLE_OAM + i, TITLE_START_X + XOFF + 8 * i, TITLE_START_Y + YOFF);
+                move_sprite(TITLE_OAM + render_col, TITLE_START_X + XOFF + 8 * render_col, TITLE_START_Y + YOFF);
             }
         }
-        for (uint8_t i = 0; i < 6; i++)
+        for (render_col = 0; render_col < 6; render_col++)
         {
             // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
-            if (i < 5)
+            if (render_col < 5)
             {
                 SWITCH_ROM_MBC1(tilesBank);
-                set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
+                set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
                 SWITCH_ROM_MBC1(saved_bank);
-                set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
-                move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+                set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
+                move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
             }
             SWITCH_ROM_MBC1(tilesBank);
-            set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
+            set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
             SWITCH_ROM_MBC1(saved_bank);
-            set_sprite_tile(PLAYER_TEXT_OAM + i, PLAYER_TEXT_OAM + i);
-            move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+            set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
+            move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
         }
         // Load cursor
         SWITCH_ROM_MBC1(tilesBank);
@@ -877,9 +882,11 @@ screen_t title()
         }
         vbl_count = 0;
 
-        SWITCH_ROM_MBC1(title_map_v2Bank);
-        scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
-        SWITCH_ROM_MBC1(saved_bank);
+        if (sys_time % 2 == 0){
+            SWITCH_ROM_MBC1(title_map_v2Bank);
+            scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
+            SWITCH_ROM_MBC1(saved_bank);
+        }
 
         parallax_tile_ind += 16;
         if (parallax_tile_ind > 112)
@@ -892,8 +899,8 @@ screen_t title()
 
         if (!title_loaded)
         {
-            if (tick % 4 == 0)
-            { // change from 6 to 4 because power of 2 modulu is optimized
+            if (sys_time % 8 == 0)
+            { 
                 if (title_index < 11)
                 {
                     SWITCH_ROM_MBC1(tilesBank);
@@ -912,22 +919,22 @@ screen_t title()
                 }
                 else
                 {
-                    for (uint8_t i = 0; i < 6; i++)
+                    for (render_col = 0; render_col < 6; render_col++)
                     {
                         // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
-                        if (i < 5)
+                        if (render_col < 5)
                         {
                             SWITCH_ROM_MBC1(tilesBank);
-                            set_sprite_data(START_TEXT_OAM + i, 1, aero + 16 * (13 + start_text[i] - 65)); // load tiles into VRAM
+                            set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
                             SWITCH_ROM_MBC1(saved_bank);
-                            set_sprite_tile(START_TEXT_OAM + i, START_TEXT_OAM + i);
-                            move_sprite(START_TEXT_OAM + i, 8 * i + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
+                            set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
+                            move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
                         }
                         SWITCH_ROM_MBC1(tilesBank);
-                        set_sprite_data(PLAYER_TEXT_OAM + i, 1, aero + 16 * (13 + player_text[i] - 65)); // load tiles into VRAM
+                        set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
                         SWITCH_ROM_MBC1(saved_bank);
-                        set_sprite_tile(PLAYER_TEXT_OAM + i, PLAYER_TEXT_OAM + i);
-                        move_sprite(PLAYER_TEXT_OAM + i, PLAYER_TEXT_START_X + XOFF + 8 * i, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
+                        set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
+                        move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
                     }
                     // Load cursor
                     SWITCH_ROM_MBC1(tilesBank);
@@ -946,7 +953,7 @@ screen_t title()
         else
         {
             // Making the letters bounce
-            if (tick % 4 == 0)
+            if (sys_time % 8 == 0)
             {
                 if (title_index == 0)
                 {
@@ -999,6 +1006,8 @@ screen_t title()
                 if (cursor_title_position == 0)
                 {
                     cursor_title_position_old = 1; // force a change the next time title runs
+                    level_ind = 0;
+                    gbt_stop();
                     return LEVEL_SELECT;
                 }
                 else if (cursor_title_position == 1)
@@ -1008,10 +1017,8 @@ screen_t title()
                 }
             }
         }
-
-        tick++;
-        //gbt_update(); // This will change to ROM bank 1. Basically play the music
-        delay(LOOP_DELAY);    // LOOP_DELAY
+        gbt_update(); // This will change to ROM bank 1. Basically play the music
+        //delay(LOOP_DELAY);    // LOOP_DELAY
     }
 }
 
@@ -1020,9 +1027,14 @@ screen_t title()
 #define PLAYERS_GRID_STARTY 20
 #define PLAYERS_GRID_SPACING 32
 
+void move_sprite_on_grid(uint8_t sprite_num, uint8_t offset, uint8_t neg_x_offset, uint8_t neg_y_offset){
+    move_sprite(sprite_num,
+                ((offset % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - neg_x_offset,
+                ((offset / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - neg_y_offset);
+}
+
 screen_t player_select()
 {
-
     wait_vbl_done();
     clear_background();
 
@@ -1035,18 +1047,14 @@ screen_t player_select()
     SWITCH_ROM_MBC1(saved_bank);
     // Starting at OAM 10 want to use 0-9 for something else. PLAYER_SPRITES start at 11
     set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
-    move_sprite(CURSOR_TEXT_OAM,
-                ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-                ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+    move_sprite_on_grid(CURSOR_TEXT_OAM, player_sprite_num, 16, 0);
 
     // Loading in characters
 
     for (uint8_t i = 0; i < 16; i++)
     {
         set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
-        move_sprite(PLAYER_SPRITES_OAM + i,
-                    ((i % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                    ((i / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+        move_sprite_on_grid(PLAYER_SPRITES_OAM + i, i, 0, 0);
     }
 
     SHOW_SPRITES;
@@ -1062,69 +1070,38 @@ screen_t player_select()
             wait_vbl_done();
         }
         vbl_count = 0;
-
+        
+        gbt_update(); //update the music loop
+        
         prev_jpad = jpad;
         jpad = joypad();
 
         if (debounce_input(J_UP, jpad, prev_jpad))
         {
-            move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-
+            move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 12;
             player_sprite_num %= 16;
-
-            move_sprite(CURSOR_TEXT_OAM,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
         }
-
         else if (debounce_input(J_DOWN, jpad, prev_jpad))
         {
-            move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-
+            move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 4;
             player_sprite_num %= 16;
-
-            move_sprite(CURSOR_TEXT_OAM,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
         }
-
         else if (debounce_input(J_LEFT, jpad, prev_jpad))
         {
-            move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-
+            move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 15;
             player_sprite_num %= 16;
-
-            move_sprite(CURSOR_TEXT_OAM,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
         }
-
         else if (debounce_input(J_RIGHT, jpad, prev_jpad))
         {
-            move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
-
+            move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 1;
             player_sprite_num %= 16;
-
-            move_sprite(CURSOR_TEXT_OAM,
-                        ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF - 16,
-                        ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
         }
-
         else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
         {
-
             for (uint8_t i = 0; i < 40; i++)
             {
                 hide_sprite(i);
@@ -1132,26 +1109,20 @@ screen_t player_select()
             return TITLE;
         }
 
-        if (tick % 4 == 0)
-        {
+        move_sprite_on_grid(CURSOR_TEXT_OAM, player_sprite_num, 16, 0);
+
+        if (sys_time % 8 == 0){
             if (is_up)
             {
-                move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-                            ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                            ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF - 2);
+                move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 2);
                 is_up = 0;
             }
             else
             {
-                move_sprite(PLAYER_SPRITES_OAM + player_sprite_num,
-                            ((player_sprite_num % 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTX + XOFF,
-                            ((player_sprite_num / 4) * PLAYERS_GRID_SPACING) + PLAYERS_GRID_STARTY + YOFF);
+                move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
                 is_up = 1;
             }
-        }
-        tick++;
-
-        delay(LOOP_DELAY);
+        } 
     }
 }
 
@@ -1175,7 +1146,8 @@ const char back_text[] = {'B', 'A', 'C', 'K'};
 
 screen_t level_select()
 {
-    
+    gbt_play(level3song_Data, musicBank, 7); //mainscreen music
+    gbt_loop(1);
     HIDE_WIN;
     SHOW_BKG;
     SHOW_SPRITES;
@@ -1243,12 +1215,18 @@ screen_t level_select()
     }
 
     uint8_t render = 0;
-    while (1)
-    {
+    while(1)
+    {        
+        if (sys_time % 2 == 0){
+            continue;
+        }
 
         prev_jpad = jpad;
         jpad = joypad();
         render = 0;
+        
+        gbt_update(); //level select music
+        delay(12);
 
         if (debounce_input(J_DOWN, jpad, prev_jpad))
         {
@@ -1289,12 +1267,16 @@ screen_t level_select()
             if (cursor_title_position == 0)
             {
                 cursor_title_position = 0;
+                gbt_stop(); //stop mainscreen music
                 return GAME;
             }
 
             else if (cursor_title_position == 1)
             {
                 cursor_title_position = 0;
+                gbt_stop();
+                gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+                gbt_loop(1);
                 return TITLE;
             }
         }
@@ -1327,8 +1309,6 @@ screen_t level_select()
                 saved_attempts = saved_attempts / 10;
             }
         }
-
-        delay(LOOP_DELAY);
     }
 }
 
@@ -1337,7 +1317,8 @@ void main()
     reset_tracking();
     // load music begins
     disable_interrupts();
-
+    gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+    gbt_loop(1);
     set_interrupts(VBL_IFLAG); // interrupt set after finished drawing the screen
     enable_interrupts();
     // end of music setup
@@ -1368,14 +1349,13 @@ void main()
     {
         wait_vbl_done(); // wait until finished drawing the screen
         // play the music within while(1) of each function below. (currently only done in game()). done via gbt_update()
-
+        
         if (current_screen == TITLE)
         {
             current_screen = title();
         }
         else if (current_screen == LEVEL_SELECT)
         {
-            level_ind = 0;
             current_screen = level_select();
         }
         else if (current_screen == PLAYER_SELECT)

@@ -6,7 +6,7 @@
 
  Info:
    Section       : 
-   Bank          : 4
+   Bank          : 3
    Map size      : 455 x 18
    Tile set      : gb_tileset_v2.gbr
    Plane count   : 1 plane (8 bits)
@@ -22,7 +22,7 @@
 
 #define level1_v2Width 455
 #define level1_v2Height 18
-#define level1_v2Bank 4
+#define level1_v2Bank 3
 
 extern const unsigned char level1_v2[];
 

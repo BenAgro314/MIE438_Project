@@ -1,6 +1,6 @@
 make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 make: *** No rule to make target 'all'.  Stop.
- 
+
 # GNU Make 4.2.1
 # Built for x86_64-pc-linux-gnu
 # Copyright (C) 1988-2016 Free Software Foundation, Inc.
@@ -8,7 +8,7 @@ make: *** No rule to make target 'all'.  Stop.
 # This is free software: you are free to change and redistribute it.
 # There is NO WARRANTY, to the extent permitted by law.
 
-# Make data base, printed on Mon Mar 28 14:59:04 2022
+# Make data base, printed on Mon Apr  4 11:21:48 2022
 
 # Variables
 
@@ -51,7 +51,7 @@ VSCODE_NLS_CONFIG = {"locale":"en-gb","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/share/code/code
 # environment
-JOURNAL_STREAM = 9:53922
+JOURNAL_STREAM = 9:55870
 # environment
 XDG_CONFIG_DIRS = /etc/xdg/xdg-ubuntu:/etc/xdg
 # makefile (from 'Makefile', line 1)
@@ -71,7 +71,7 @@ VSCODE_VERBOSE_LOGGING = true
 # environment
 INFOPATH = /home/linuxbrew/.linuxbrew/share/info:/home/linuxbrew/.linuxbrew/share/info:
 # environment
-MANAGERPID = 2492
+MANAGERPID = 2422
 # environment
 LESSOPEN = | /usr/bin/lesspipe %s
 # environment
@@ -83,7 +83,7 @@ PATH = /home/linuxbrew/.linuxbrew/bin:/home/linuxbrew/.linuxbrew/sbin:/home/agro
 # environment
 GPG_AGENT_INFO = /run/user/1001/gnupg/S.gpg-agent:0:1
 # environment
-SESSION_MANAGER = local/grogu2:@/tmp/.ICE-unix/2782,unix/grogu2:/tmp/.ICE-unix/2782
+SESSION_MANAGER = local/grogu2:@/tmp/.ICE-unix/2711,unix/grogu2:/tmp/.ICE-unix/2711
 # environment
 XDG_RUNTIME_DIR = /run/user/1001
 # default
@@ -99,7 +99,7 @@ DESKTOP_MODE = 1
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # environment
-INVOCATION_ID = 0f14194e75494c77aac8466f92fe8dd1
+INVOCATION_ID = 985d1fc577804f04a0759a1b62aa3cad
 # default
 .FEATURES := target-specific order-only second-expansion else-if shortest-stem undefine oneshell archives jobserver output-sync check-symlink load
 # environment
@@ -109,7 +109,7 @@ XDG_SESSION_DESKTOP = ubuntu
 # environment
 SSH_AUTH_SOCK = /run/user/1001/keyring/ssh
 # environment
-GIO_LAUNCHED_DESKTOP_FILE_PID = 1458588
+GIO_LAUNCHED_DESKTOP_FILE_PID = 777420
 # automatic
 %F = $(notdir $%)
 # environment
@@ -123,7 +123,7 @@ PWD = /home/agrobenj/MIE438_Project
 # default
 .LOADED := 
 # environment
-SSH_AGENT_PID = 2743
+SSH_AGENT_PID = 2674
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = ubuntu:GNOME
 # environment
@@ -137,7 +137,7 @@ HOME = /home/agrobenj
 # environment
 HOMEBREW_CELLAR = /home/linuxbrew/.linuxbrew/Cellar
 # environment
-VSCODE_CODE_CACHE_PATH = /home/agrobenj/.config/Code/CachedData/c722ca6c7eed3d7987c0d5c3df5c45f6b15e77d1
+VSCODE_CODE_CACHE_PATH = /home/agrobenj/.config/Code/CachedData/e18005f0f1b33c29e81d732535d8c0e47cafb0b5
 # environment
 LOGNAME = agrobenj
 # environment
@@ -173,7 +173,7 @@ CC = ../gbdk/bin/lcc
 # environment
 GNOME_SHELL_SESSION_MODE = ubuntu
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /run/user/1001/vscode-ipc-d8c2e219-e90f-470a-bb7b-c02d20209996.sock
+VSCODE_IPC_HOOK_EXTHOST = /run/user/1001/vscode-ipc-0bfa3fbe-bc86-4bee-9e46-351cf93cef77.sock
 # default
 MAKE_VERSION := 4.2.1
 # environment
@@ -195,7 +195,7 @@ MAKE_COMMAND := make
 # environment
 LANGUAGE = en_CA:en
 # environment
-VSCODE_IPC_HOOK = /run/user/1001/vscode-45fde29c-1.65.2-main.sock
+VSCODE_IPC_HOOK = /run/user/1001/vscode-45fde29c-1.66.0-main.sock
 # makefile
 MAKEFLAGS = pqrR
 # environment
@@ -243,7 +243,7 @@ GJS_DEBUG_OUTPUT = stderr
 # environment
 LANG = C
 # environment
-VSCODE_PID = 1458588
+VSCODE_PID = 777420
 # environment
 _CE_CONDA = 
 # variable set hash-table stats:
@@ -275,9 +275,16 @@ all:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-03-24 18:17:01.474507877
+#  Last modified 2022-04-04 11:17:47.36173793
 #  File has been updated.
 #  Successfully updated.
+
+build:
+#  Implicit rule search has not been done.
+#  Modification time never checked.
+#  File has not been updated.
+#  recipe to execute (from 'Makefile', line 33):
+	mkdir $@
 
 # Not a target:
 .DEFAULT:
@@ -285,47 +292,48 @@ Makefile:
 #  Modification time never checked.
 #  File has not been updated.
 
-make:
+make: | build
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 16):
-	$(WINE) music/mod2gbt music/song_gdash.mod song 3
-	$(CC) -Wa-l -Wf-bo3 -c -o build/title_map.o sprites/title_map_v2.c
-	$(CC) -Wa-l -Wf-bo4 -c -o build/level1.o sprites/level1_v2.c
-	$(CC) -Wa-l -Wf-bo4 -c -o build/level2.o sprites/level2.c
+#  recipe to execute (from 'Makefile', line 17):
  
+	$(WINE) music/mod2gbt music/song_gdash.mod song 2
+	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o build/music_output.o output.c 
 	$(CC) -Wa-l -Wf-bo2 -c -o build/tiles.o tiles.c
-	$(CC) -Wa-l -c -o build/geometry_boy.o geometry_boy.c
-	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo3 -c -o build/music_output.o output.c
+	$(CC) -Wa-l -Wf-bo3 -c -o build/title_map.o sprites/title_map_v2.c
+	$(CC) -Wa-l -Wf-bo3 -c -o build/level1.o sprites/level1_v2.c
+	$(CC) -Wa-l -Wf-bo4 -c -o build/level2.o sprites/level2.c
+	$(CC) -Wa-l -Wf-bo4 -c -o build/level3.o sprites/level3.c
+	$(CC) -Wa-l -Wf-bo0 -c -o build/geometry_boy.o geometry_boy.c
 	$(CC) -c -o build/gbt_player.o music/gbt_player.s
 	$(CC) -c -o build/gbt_player_bank1.o music/gbt_player_bank1.s
 	
-	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
+	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/level3.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
 	rm -f *.sym
 
 clean:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
-#  recipe to execute (from 'Makefile', line 31):
+#  recipe to execute (from 'Makefile', line 36):
 	rm -f *.o *.lst *.map *.gb *~ *.rel *.cdb *.ihx *.lnk *.sym *.asm *.noi *.sav
 	rm -f build/*.o build/*.lst build/*.map build/*.gb build/*~ build/*.rel build/*.cdb build/*.ihx build/*.lnk build/*.sym build/*.asm build/*.noi build/*.sav
 
 # files hash-table stats:
-# Load=6/1024=1%, Rehash=0, Collisions=0/16=0%
+# Load=7/1024=1%, Rehash=0, Collisions=0/19=0%
 # VPATH Search Paths
 
 # No 'vpath' search paths.
 
 # No general ('VPATH' variable) search path.
 
-# strcache buffers: 1 (0) / strings = 27 / storage = 258 B / avg = 9 B
-# current buf: size = 8162 B / used = 258 B / count = 27 / avg = 9 B
+# strcache buffers: 1 (0) / strings = 27 / storage = 252 B / avg = 9 B
+# current buf: size = 8162 B / used = 252 B / count = 27 / avg = 9 B
 
-# strcache performance: lookups = 33 / hit rate = 18%
+# strcache performance: lookups = 36 / hit rate = 25%
 # hash-table stats:
-# Load=27/8192=0%, Rehash=0, Collisions=1/33=3%
-# Finished Make data base on Mon Mar 28 14:59:04 2022
+# Load=27/8192=0%, Rehash=0, Collisions=1/36=3%
+# Finished Make data base on Mon Apr  4 11:21:48 2022
 
  
