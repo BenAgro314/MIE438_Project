@@ -6,6 +6,7 @@ CC = ../gbdk/bin/lcc# -Wa-l -Wl-m -Wl-j -Wm-ys -Wl-yo4 -Wl-ya4 -Wl-yt1
 
 # originaly used -Wl-yt1, -Wl-yt3 and -Wl-yo4 was added to allow for saving
 # see https://github.com/mrombout/gbdk_playground/tree/master/save_ram
+#$(WINE) 
 
 ifeq ($(OS),Windows_NT)
 	WINE := ""
@@ -14,8 +15,7 @@ else
 endif
 
 make: | build
-	$(WINE) music/mod2gbt music/song_gdash.mod song 2
-	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o build/music_output.o output.c 
+	$(CC) -Wa-l -Wl-m -Wl-j -Wf-bo2 -c -o build/music_output.o music_sample.c 
 	$(CC) -Wa-l -Wf-bo2 -c -o build/tiles.o tiles.c
 	$(CC) -Wa-l -Wf-bo3 -c -o build/title_map.o sprites/title_map_v2.c
 	$(CC) -Wa-l -Wf-bo3 -c -o build/level1.o sprites/level1_v2.c

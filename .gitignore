@@ -1,6 +1,7 @@
 build/*.o
 build/*.sym
 build/*.lst
+build/*.asm
 *.ihx
 *.map
 *.sav

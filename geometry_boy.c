@@ -66,6 +66,9 @@ typedef enum
 
 // For music
 extern const unsigned char *song_Data[];
+extern const unsigned char * level1song_Data[];
+extern const unsigned char * level2song_Data[];
+extern const unsigned char * level3song_Data[];
 
 typedef enum
 {
@@ -629,7 +632,7 @@ void skip_to(uint16_t background_x, uint8_t char_y) {
 
 screen_t game()
 {
-    gbt_play(song_Data, musicBank, 1);
+    gbt_play(level1song_Data, musicBank, 1);
     gbt_loop(1);
     STAT_REG |= 0x40; // enable LYC=LY interrupt
     LYC_REG = 16;     // the scanline on which to trigger
@@ -1004,6 +1007,7 @@ screen_t title()
                 {
                     cursor_title_position_old = 1; // force a change the next time title runs
                     level_ind = 0;
+                    gbt_stop();
                     return LEVEL_SELECT;
                 }
                 else if (cursor_title_position == 1)
@@ -1013,7 +1017,7 @@ screen_t title()
                 }
             }
         }
-        //gbt_update(); // This will change to ROM bank 1. Basically play the music
+        gbt_update(); // This will change to ROM bank 1. Basically play the music
         //delay(LOOP_DELAY);    // LOOP_DELAY
     }
 }
@@ -1031,7 +1035,6 @@ void move_sprite_on_grid(uint8_t sprite_num, uint8_t offset, uint8_t neg_x_offse
 
 screen_t player_select()
 {
-
     wait_vbl_done();
     clear_background();
 
@@ -1062,13 +1065,14 @@ screen_t player_select()
 
     while (1)
     {
-
         if (vbl_count == 0)
         {
             wait_vbl_done();
         }
         vbl_count = 0;
-
+        
+        gbt_update(); //update the music loop
+        
         prev_jpad = jpad;
         jpad = joypad();
 
@@ -1142,7 +1146,8 @@ const char back_text[] = {'B', 'A', 'C', 'K'};
 
 screen_t level_select()
 {
-    
+    gbt_play(level3song_Data, musicBank, 7); //mainscreen music
+    gbt_loop(1);
     HIDE_WIN;
     SHOW_BKG;
     SHOW_SPRITES;
@@ -1210,9 +1215,8 @@ screen_t level_select()
     }
 
     uint8_t render = 0;
-    while (1)
-    {
-
+    while(1)
+    {        
         if (sys_time % 2 == 0){
             continue;
         }
@@ -1220,6 +1224,9 @@ screen_t level_select()
         prev_jpad = jpad;
         jpad = joypad();
         render = 0;
+        
+        gbt_update(); //level select music
+        delay(12);
 
         if (debounce_input(J_DOWN, jpad, prev_jpad))
         {
@@ -1260,12 +1267,16 @@ screen_t level_select()
             if (cursor_title_position == 0)
             {
                 cursor_title_position = 0;
+                gbt_stop(); //stop mainscreen music
                 return GAME;
             }
 
             else if (cursor_title_position == 1)
             {
                 cursor_title_position = 0;
+                gbt_stop();
+                gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+                gbt_loop(1);
                 return TITLE;
             }
         }
@@ -1298,7 +1309,6 @@ screen_t level_select()
                 saved_attempts = saved_attempts / 10;
             }
         }
-
     }
 }
 
@@ -1307,7 +1317,8 @@ void main()
     reset_tracking();
     // load music begins
     disable_interrupts();
-
+    gbt_play(level2song_Data, musicBank, 7); //mainscreen music
+    gbt_loop(1);
     set_interrupts(VBL_IFLAG); // interrupt set after finished drawing the screen
     enable_interrupts();
     // end of music setup
@@ -1338,7 +1349,7 @@ void main()
     {
         wait_vbl_done(); // wait until finished drawing the screen
         // play the music within while(1) of each function below. (currently only done in game()). done via gbt_update()
-
+        
         if (current_screen == TITLE)
         {
             current_screen = title();
