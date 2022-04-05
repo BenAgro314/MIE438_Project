@@ -6,13 +6,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// music (bank 2)
-#define musicBank 2
-#include "music/gbt_player.h"
+#include "music/gbt_player.h" // music code, bank 1
+#include "music_sample.h"  // music data, bank 2
 
 // tiles (bank 2)
 #include "tiles.h"
-
 
 // maps
 #include "sprites/title_map_v2.h" // bank3 
@@ -26,110 +24,37 @@
 //#define SKIP_X_PX 350*8
 //#define SKIP_Y_PX 144   //144
 
+// coordinate system starts (8,16) px right and up of the corner of the screen
 #define XOFF 8
 #define YOFF 16
 
-#define FLOOR 144
-#define CEILING 24
-
-#define LOOP_DELAY 20
-
+// physics parameters
 #define GRAVITY 1
 #define CUBE_MAX_FALL_SPEED 7
 #define SHIP_MAX_FALL_SPEED 4
 #define PLAYER_JUMP_VEL 6
 #define SHIP_JUMP_VEL 3
 #define PLAYER_SUPER_JUMP_VEL 9
-#define ACCELERATION 1
-#define ROTATION_SPEED 15
 
+// Player parameters
 #define PLAYER_START_Y 144
 #define PLAYER_START_X 32
 #define PLAYER_WIDTH 8
 
-//#define APPLY_GRAV_EVERY 1
-
-// TODO: docstrings
-
-// player jump height 2.133 blocks: https://geometry-dash.fandom.com/wiki/Transporters
-// data on scroll speeds: https://gdforum.freeforums.net/thread/55538/easy-speed-maths-numbers-speeds?page=1
-// 10.37 blocks/s at normal speed
-// jump dist at normal speed 3.6 blocks https://geometry-dash.fandom.com/f/p/2846072015683784356
-
-typedef enum
-{
-    TITLE,
-    GAME,
-    LEVEL_SELECT,
-    PLAYER_SELECT,
-} screen_t;
-
-// For music
-extern const unsigned char * level1song_Data[];
-extern const unsigned char * level2song_Data[];
-extern const unsigned char * level3song_Data[];
-
-typedef enum
-{
-    CUBE,
-    SHIP
-} vehicle_t;
-
-// we use globals because they are faster (not on the stack)
-int8_t player_dy = 0;
-int8_t player_dx = 3; // note we don't move the player, just the background
-vehicle_t current_vehicle = CUBE;
-// player velocities
-uint8_t player_y = PLAYER_START_Y;
-uint8_t player_x = PLAYER_START_X;
-// player status
-uint8_t player_sprite_num = 0;
-uint8_t on_ground = 1;
-uint8_t win = 0;
-uint8_t lose = 0;
-// joypad
-uint8_t prev_jpad = 0;
-uint8_t jpad = 0;
-// game/level state
-uint8_t tick = 0;
-uint8_t saved_tick = 0;
-uint16_t background_x_shift = 0;
-uint16_t old_background_x_shift = 8 + 3;
-uint16_t old_scroll_x = 0;
-// vars for scrolling
-uint8_t scx_cnt;
-uint8_t render_row;
-uint8_t render_col;
-uint16_t count;
-// for bank restoring
-uint8_t saved_bank;
-// for vbl_wait timing
-uint8_t vbl_count;
-// for parallax
-uint8_t parallax_tile_ind = 0;
-// uint8_t white_tile_ind = 0;
-// uint8_t green_tile_ind = 128; // 8*16;
-
-// level stuff
-uint8_t level_ind = 0;
+// level parameters
 #define NUM_LEVELS 3
 #define LEVEL_END_OFFSET 20 // tiles that are black at the level end
-unsigned char *level_maps[NUM_LEVELS] = {level1_v2, level2, level3};
-uint16_t level_widths[NUM_LEVELS] = {level1_v2Width, level2Width, level3Width};
-uint8_t level_banks[NUM_LEVELS] = {level1_v2Bank, level2Bank, level3Bank};
-unsigned char **level_songs[NUM_LEVELS] = {level1song_Data, level3song_Data, level1song_Data};
-uint16_t current_attempts = 0;
-uint16_t px_progress_bar = 0;
-uint16_t old_px_progress_bar = 0;
-// tracking stats
+
+// for saving/restoring progress
 // from pan docs: A000 - BFFF	8 KiB External RAM	From cartridge, switchable bank if any
 #define START_RAM 0xa000
 #define START_ATTEMPTS 0xa001
 #define START_PROGRESS 0xa100
-char *saved = (uint8_t *)START_RAM;
-uint16_t *attempts[NUM_LEVELS]; 
-uint16_t *px_progress[NUM_LEVELS]; 
 
+// progress bar parameters
+#define NUM_PROGRESS_BAR_TILES 18
+
+// tileset parameters
 #define GB_TILESET_LEN 14
 #define AERO_TILESET_LEN 36
 
@@ -153,6 +78,69 @@ uint16_t *px_progress[NUM_LEVELS];
 #define BACK_SPIKE_TILE 12
 #define CUBE_PORTAL_TILE 13
 
+// screen types
+typedef enum
+{
+    TITLE,
+    GAME,
+    LEVEL_SELECT,
+    PLAYER_SELECT,
+} screen_t;
+
+// vehicle types
+typedef enum
+{
+    CUBE,
+    SHIP
+} vehicle_t;
+
+// we use globals because they are faster (not on the stack)
+int8_t player_dy = 0;
+int8_t player_dx = 3; // note we don't move the player, just the background
+vehicle_t current_vehicle = CUBE;
+// player velocities
+uint8_t player_y = PLAYER_START_Y;
+uint8_t player_x = PLAYER_START_X;
+// player status
+uint8_t player_sprite_num = 0;
+uint8_t on_ground = 1;
+uint8_t win = 0;
+uint8_t lose = 0;
+// joypad
+uint8_t prev_jpad = 0;
+uint8_t jpad = 0;
+// game/level state
+uint8_t tick = 0;
+uint16_t background_x_shift = 0;
+uint16_t old_background_x_shift = 8 + 3;
+uint16_t old_scroll_x = 0;
+// vars for implementing scrolling
+uint8_t scx_cnt;
+uint8_t render_row;
+uint8_t render_col;
+uint16_t count;
+// for bank restoring
+uint8_t saved_bank;
+// for vbl_wait timing
+uint8_t vbl_count;
+// for parallax
+uint8_t parallax_tile_ind = 0;
+
+// level variables
+uint8_t level_ind = 0; // current level index
+unsigned char *level_maps[NUM_LEVELS] = {level1_v2, level2, level3};
+uint16_t level_widths[NUM_LEVELS] = {level1_v2Width, level2Width, level3Width};
+uint8_t level_banks[NUM_LEVELS] = {level1_v2Bank, level2Bank, level3Bank};
+unsigned char **level_songs[NUM_LEVELS] = {level1song_Data, level3song_Data, level1song_Data};
+
+// tracking progress
+uint16_t current_attempts = 0;
+uint16_t px_progress_bar = 0;
+uint16_t old_px_progress_bar = 0;
+
+char *saved = (uint8_t *)START_RAM;
+uint16_t *attempts[NUM_LEVELS]; 
+uint16_t *px_progress[NUM_LEVELS]; 
 
 inline void init_tiles()
 {
@@ -178,7 +166,6 @@ inline void reset_tracking()
     lose = 0;
     win = 0;
     tick = 0;
-    saved_tick =0;
     parallax_tile_ind = 0;
     current_vehicle = CUBE;
     prev_jpad = 0;
@@ -229,8 +216,6 @@ inline void update_HUD_attempts()
     // progress bar is 8 tiles = 64 px:
 }
 
-#define NUM_PROGRESS_BAR_TILES 18
-
 inline void update_HUD_bar()
 {
     px_progress_bar = NUM_PROGRESS_BAR_TILES * (background_x_shift + player_x) / (level_widths[level_ind] - LEVEL_END_OFFSET); 
@@ -266,15 +251,24 @@ void vbl_interrupt_game()
 {
     SHOW_WIN;
     vbl_count++;
+    // we assume that background_x_shift is not updated on every vblank (game loop is slower than 60Hz)
+    // this math below interpolates the scrolling for smoothness. 
     old_scroll_x += (background_x_shift - old_scroll_x + 1) >> 1;
-    SCX_REG = old_scroll_x; // + player_dx;
+    // E.g.,
+    // vbl_number | old_scroll_x | background_x_shift | SCX_REG |
+    //          1 |          100 |                103 |     102 | (old_scroll_x += 4/2 = 2)
+    //          2 |          102 |                103 |     103 | (old_scroll_x += 2/2 = 1) 
+    //          3 |          103 |                106 |     105 | (note player_dx = 3)
+    //          4 |          105 |                106 |     106 |  
+    //          5 |          106 |                109 |     108 |  
+    SCX_REG = old_scroll_x;
 }
 
 void vbl_interrupt_title()
 {
     vbl_count++;
     old_scroll_x += (background_x_shift - old_scroll_x + 1) >> 1;
-    SCX_REG = old_scroll_x + player_dx;
+    SCX_REG = old_scroll_x;
 }
 
 inline void scroll_bkg_x(uint8_t x_shift, char *map, uint16_t map_width)
@@ -309,7 +303,6 @@ void init_background(char *map, uint16_t map_width)
 inline void clear_background()
 {
     // write 0 to all background tiles
-
     SWITCH_ROM_MBC1(tilesBank);
     set_bkg_data(0, 1, gb_tileset_v2); // load tiles into VRAM
     SWITCH_ROM_MBC1(saved_bank);
@@ -359,16 +352,6 @@ inline uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t butto
 {
     return (button == target) && !(prev_button == target);
 }
-
-//inline uint8_t inside_player(uint8_t x, uint8_t y)
-//{
-    //// returns 1 if (x,y) is inside the player, otherwise returns 0
-    //if (x >= player_x && x < (player_x + PLAYER_WIDTH) && y >= player_y && y < (player_y + PLAYER_WIDTH))
-    //{
-        //return 1;
-    //}
-    //return 0;
-//}
 
 inline uint8_t rect_collision_with_player(uint8_t x_left, uint8_t x_right, uint8_t y_top, uint8_t y_bot)
 {
@@ -780,9 +763,6 @@ screen_t game()
         SWITCH_ROM_MBC1(saved_bank);
 
         gbt_update(); // This will change to ROM bank 1. Basically play the music
-        //delay(8);     // LOOP_DELAY
-        //gbt_update(); // This will change to ROM bank 1. Basically play the music
-        //delay(8);     // LOOP_DELAY
     }
 }
 
@@ -1030,7 +1010,6 @@ screen_t title()
             }
         }
         gbt_update(); // This will change to ROM bank 1. Basically play the music
-        //delay(LOOP_DELAY);    // LOOP_DELAY
     }
 }
 
