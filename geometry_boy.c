@@ -22,9 +22,9 @@
 
 // debug flagss
 //#define INVINCIBLE
-//#define SKIP
-//#define SKIP_X_PX 244*8
-//#define SKIP_Y_PX 144   //144
+#define SKIP
+#define SKIP_X_PX 350*8
+#define SKIP_Y_PX 144   //144
 
 #define XOFF 8
 #define YOFF 16
