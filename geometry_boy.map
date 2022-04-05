@@ -34,10 +34,10 @@ Area                       Addr        Size        Decimal Bytes (Attributes)
      0000004E  l__HEADER |    0000007C  l__DATA   |    00000082  l__HEADER
      00000200  s__CODE   |    0000061C  l__HOME   |    0000066F  l__CODE_1
      000009ED  l__CODE_3 |    00001010  l__CODE_2 |    00001FFE  l__CODE_5
-     00002000  _rROMB0   |    00003000  _rROMB1   |    000033C7  l__CODE  
-     000035C7  s__HOME   |    00003BE3  s__BASE   |    00003BE3  s__CODE_0
-     00003BE3  s__INITIA |    00003BE3  s__LIT    |    00003C12  s__GSINIT
-     00003C1E  s__GSFINA |    00003FFC  l__CODE_4 |    00004000  _rRAMB   
+     00002000  _rROMB0   |    00003000  _rROMB1   |    0000339D  l__CODE  
+     0000359D  s__HOME   |    00003BB9  s__BASE   |    00003BB9  s__CODE_0
+     00003BB9  s__INITIA |    00003BB9  s__LIT    |    00003BE8  s__GSINIT
+     00003BF4  s__GSFINA |    00003FFC  l__CODE_4 |    00004000  _rRAMB   
      00008000  __VRAM    |    00008000  __VRAM800 |    00008800  __VRAM880
      00009000  __VRAM900 |    00009800  __SCRN0   |    00009C00  __SCRN1  
      0000A000  __SRAM    |    0000C000  __RAM     |    0000C000  _shadow_O
@@ -80,22 +80,22 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_CODE                  00000200    000033C7 =       13255. bytes (REL,CON)
+_CODE                  00000200    0000339D =       13213. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
      00000200  _lcd_inte |    00000207  _attempts |    0000020E  _vbl_inte
      00000240  _vbl_inte |    00000270  _init_bac |    000002B6  _collide 
      0000113D  _tick_pla |    000011EE  _initiali |    00001231  _skip_to 
-     000014AC  _game     |    00001E67  _title    |    000026A7  _game_tit
-     000026B2  _start_te |    000026B7  _player_t |    000026BD  _player_s
-     00002B94  _level_se |    0000319D  _level_te |    000031A2  _progress
-     000031AA  _attempts |    000031B2  _back_tex |    000031B6  _main    
-     00003324  gbt_get_p |    00003341  gbt_get_p |    00003360  _gbt_play
-     0000341B  _gbt_paus |    0000342C  _gbt_loop |    00003433  _gbt_stop
-     0000343E  _gbt_enab |    00003445  _gbt_upda |    0000354A  _get_vram
-     00003557  _get_win_ |    0000355F  _get_bkg_ |    00003586  _set_vram
-     00003595  _set_win_ |    0000359D  _set_bkg_
+     000014AC  _game     |    00001E3D  _title    |    0000267D  _game_tit
+     00002688  _start_te |    0000268D  _player_t |    00002693  _player_s
+     00002B6A  _level_se |    00003173  _level_te |    00003178  _progress
+     00003180  _attempts |    00003188  _back_tex |    0000318C  _main    
+     000032FA  gbt_get_p |    00003317  gbt_get_p |    00003336  _gbt_play
+     000033F1  _gbt_paus |    00003402  _gbt_loop |    00003409  _gbt_stop
+     00003414  _gbt_enab |    0000341B  _gbt_upda |    00003520  _get_vram
+     0000352D  _get_win_ |    00003535  _get_bkg_ |    0000355C  _set_vram
+     0000356B  _set_win_ |    00003573  _set_bkg_
 ASxxxx Linker V03.00 + NoICE + sdld,  page 4.
 Hexadecimal  [32-Bits]
 
@@ -270,36 +270,36 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_HOME                  000035C7    0000061C =        1564. bytes (REL,CON)
+_HOME                  0000359D    0000061C =        1564. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     000035C7  .memset_s |    000035D0  .memcpy_s |    000035ED  .remove_V
-     000035F0  .remove_i |    0000360D  .add_VBL  |    00003610  .add_int 
-     0000361B  .wait_vbl |    0000361B  _wait_vbl |    0000362B  .display_
-     0000362B  _display_ |    00003643  _remove_V |    0000364E  _add_VBL 
-     00003659  __divsuch |    00003666  __modsuch |    00003670  __divusch
-     00003682  __modusch |    00003692  __divscha |    0000369E  __modscha
-     000036A8  __divsint |    000036B9  __modsint |    000036C8  __divucha
-     000036D4  __moducha |    000036DE  __divuint |    000036EF  __moduint
-     000036FE  .div8     |    000036FE  .mod8     |    00003706  .div16   
-     00003706  .mod16    |    0000373C  .divu8    |    0000373C  .modu8   
-     0000373F  .divu16   |    0000373F  .modu16   |    00003780  _set_tile
-     00003785  _set_bkg_ |    00003785  _set_win_ |    0000378D  _set_spri
-     000037EC  _add_LCD  |    000037F7  .add_LCD  |    000037FD  _remove_L
-     00003808  .remove_L |    0000380E  __modulon |    000038A3  .padup   
-     000038A3  _waitpadu |    000038B3  .jpad     |    000038B3  _joypad  
-     000038DB  _waitpad  |    000038DE  .wait_pad |    000038E5  __divulon
-     00003967  _delay    |    0000396C  .delay    |    00003998  __mullong
-     00003B21  _set_bkg_ |    00003B35  __mulsuch |    00003B3F  __mulusch
-     00003B49  __mulscha |    00003B5B  __mulucha |    00003B67  __mulint 
-     00003B8D  .set_xy_w |    00003B96  .set_xy_b |    00003BA5  .set_xy_t
+     0000359D  .memset_s |    000035A6  .memcpy_s |    000035C3  .remove_V
+     000035C6  .remove_i |    000035E3  .add_VBL  |    000035E6  .add_int 
+     000035F1  .wait_vbl |    000035F1  _wait_vbl |    00003601  .display_
+     00003601  _display_ |    00003619  _remove_V |    00003624  _add_VBL 
+     0000362F  __divsuch |    0000363C  __modsuch |    00003646  __divusch
+     00003658  __modusch |    00003668  __divscha |    00003674  __modscha
+     0000367E  __divsint |    0000368F  __modsint |    0000369E  __divucha
+     000036AA  __moducha |    000036B4  __divuint |    000036C5  __moduint
+     000036D4  .div8     |    000036D4  .mod8     |    000036DC  .div16   
+     000036DC  .mod16    |    00003712  .divu8    |    00003712  .modu8   
+     00003715  .divu16   |    00003715  .modu16   |    00003756  _set_tile
+     0000375B  _set_bkg_ |    0000375B  _set_win_ |    00003763  _set_spri
+     000037C2  _add_LCD  |    000037CD  .add_LCD  |    000037D3  _remove_L
+     000037DE  .remove_L |    000037E4  __modulon |    00003879  .padup   
+     00003879  _waitpadu |    00003889  .jpad     |    00003889  _joypad  
+     000038B1  _waitpad  |    000038B4  .wait_pad |    000038BB  __divulon
+     0000393D  _delay    |    00003942  .delay    |    0000396E  __mullong
+     00003AF7  _set_bkg_ |    00003B0B  __mulsuch |    00003B15  __mulusch
+     00003B1F  __mulscha |    00003B31  __mulucha |    00003B3D  __mulint 
+     00003B63  .set_xy_w |    00003B6C  .set_xy_b |    00003B7B  .set_xy_t
 ASxxxx Linker V03.00 + NoICE + sdld,  page 23.
 Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_INITIALIZER           00003BE3    0000002F =          47. bytes (REL,CON)
+_INITIALIZER           00003BB9    0000002F =          47. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
@@ -308,17 +308,17 @@ Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_GSINIT                00003C12    0000000C =          12. bytes (REL,CON)
+_GSINIT                00003BE8    0000000C =          12. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    
-     00003C12  gsinit   
+     00003BE8  gsinit   
 ASxxxx Linker V03.00 + NoICE + sdld,  page 25.
 Hexadecimal  [32-Bits]
 
 Area                       Addr        Size        Decimal Bytes (Attributes)
 --------------------       ----        ----        ------- ----- ------------
-_GSFINAL               00003C1E    00000001 =           1. bytes (REL,CON)
+_GSFINAL               00003BF4    00000001 =           1. bytes (REL,CON)
 
         Value  Global            Value  Global            Value  Global    
         -----  ------            -----  ------            -----  ------    

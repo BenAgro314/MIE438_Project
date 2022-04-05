@@ -4227,19 +4227,6 @@ _game::
 	ld	de, #0x2000
 	ld	a, (hl)
 	ld	(de), a
-;geometry_boy.c:664: skip_to(SKIP_X_PX, SKIP_Y_PX);
-	ld	a, #0x90
-	push	af
-	inc	sp
-	ld	de, #0x0af0
-	push	de
-	call	_skip_to
-	add	sp, #3
-;geometry_boy.c:665: delay(500);
-	ld	de, #0x01f4
-	push	de
-	call	_delay
-	pop	hl
 ;geometry_boy.c:668: while (1)
 00119$:
 ;geometry_boy.c:670: if (vbl_count == 0)
@@ -5261,19 +5248,6 @@ _game::
 00189$:
 ;geometry_boy.c:726: wait_vbl_done();
 	call	_wait_vbl_done
-;geometry_boy.c:729: skip_to(SKIP_X_PX, SKIP_Y_PX);
-	ld	a, #0x90
-	push	af
-	inc	sp
-	ld	de, #0x0af0
-	push	de
-	call	_skip_to
-	add	sp, #3
-;geometry_boy.c:730: delay(500);
-	ld	de, #0x01f4
-	push	de
-	call	_delay
-	pop	hl
 	jp	00115$
 00114$:
 ;geometry_boy.c:733: } else if (win){
