@@ -18,7 +18,7 @@
 #include "sprites/level2.h" // bank 4
 #include "sprites/level3.h" // bank 5
 
-// debug flagss
+// debug flags
 //#define INVINCIBLE
 //#define SKIP
 //#define SKIP_X_PX 350*8
@@ -40,6 +40,7 @@
 #define PLAYER_START_Y 144
 #define PLAYER_START_X 32
 #define PLAYER_WIDTH 8
+#define NUM_PLAYER_SPRITES 16
 
 // level parameters
 #define NUM_LEVELS 3
@@ -793,9 +794,6 @@ uint8_t cursor_title_position_old = 0;
 
 screen_t title()
 {
-
-
-
     disable_interrupts();
     add_VBL(vbl_interrupt_title);
     enable_interrupts();
@@ -1042,7 +1040,7 @@ screen_t player_select()
 
     // Loading in characters
 
-    for (uint8_t i = 0; i < 16; i++)
+    for (uint8_t i = 0; i < NUM_PLAYER_SPRITES; i++)
     {
         set_sprite_tile(PLAYER_SPRITES_OAM + i, PLAYER_SPRITES_OAM + i);
         move_sprite_on_grid(PLAYER_SPRITES_OAM + i, i, 0, 0);
@@ -1071,25 +1069,25 @@ screen_t player_select()
         {
             move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 12;
-            player_sprite_num %= 16;
+            player_sprite_num %= NUM_PLAYER_SPRITES;
         }
         else if (debounce_input(J_DOWN, jpad, prev_jpad))
         {
             move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 4;
-            player_sprite_num %= 16;
+            player_sprite_num %= NUM_PLAYER_SPRITES;
         }
         else if (debounce_input(J_LEFT, jpad, prev_jpad))
         {
             move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 15;
-            player_sprite_num %= 16;
+            player_sprite_num %= NUM_PLAYER_SPRITES;
         }
         else if (debounce_input(J_RIGHT, jpad, prev_jpad))
         {
             move_sprite_on_grid(PLAYER_SPRITES_OAM + player_sprite_num, player_sprite_num, 0, 0);
             player_sprite_num += 1;
-            player_sprite_num %= 16;
+            player_sprite_num %= NUM_PLAYER_SPRITES;
         }
         else if (debounce_input(J_SELECT, jpad, prev_jpad)) // || debounce_input(J_START, jpad, prev_jpad))
         {
@@ -1336,9 +1334,6 @@ void main()
 
     while (1)
     {
-        wait_vbl_done(); // wait until finished drawing the screen
-        // play the music within while(1) of each function below. (currently only done in game()). done via gbt_update()
-        
         if (current_screen == TITLE)
         {
             current_screen = title();
