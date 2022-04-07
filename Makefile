@@ -14,11 +14,11 @@ make: | build
 	$(CC) -Wf-bo4 -c -o build/level2.o sprites/level2.c
 	$(CC) -Wf-bo4 -c -o build/level3.o sprites/level3.c
 	$(CC) -Wf-bo0 -c -o build/geometry_boy.o geometry_boy.c
-	$(CC) -c -o build/gbt_player.o music/gbt_player.s
-	$(CC) -c -o build/gbt_player_bank1.o music/gbt_player_bank1.s
+	$(CC) -Wf-bo1 -c -o build/gbt_player.o music/gbt_player.s
+	$(CC) -Wf-bo1 -c -o build/gbt_player_bank1.o music/gbt_player_bank1.s
 
 	
-	$(CC) -Wl-m -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/level3.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
+	$(CC) -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/level3.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
 	rm -f *.sym
 
 build:
