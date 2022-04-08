@@ -18,7 +18,7 @@ make: | build
 	$(CC) -Wf-bo1 -c -o build/gbt_player_bank1.o music/gbt_player_bank1.s
 
 	
-	$(CC) -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/level3.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
+	$(CC) -Wl-yt0x1B -Wl-yo8 -Wl-ya1 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/level3.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
 	rm -f *.sym
 
 for_figures: | build
