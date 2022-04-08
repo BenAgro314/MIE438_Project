@@ -1,6 +1,6 @@
 // File created by mod2gbt
 
-#pragma bank 2
+#pragma bank 1
 
 const unsigned char level1song0[] = {
   0x00, 0x87,0x17, 0x93,0x10, 0x4A,0x06,

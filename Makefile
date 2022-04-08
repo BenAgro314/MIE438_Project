@@ -21,6 +21,13 @@ make: | build
 	$(CC) -Wl-yt3 -Wl-yo8 -Wl-ya4 -o geometry_boy.gb build/title_map.o build/level1.o build/level2.o build/level3.o build/geometry_boy.o build/music_output.o build/gbt_player.o build/gbt_player_bank1.o build/tiles.o
 	rm -f *.sym
 
+for_figures: | build
+	$(CC) -Wf-bo2 -c -o build/tiles.o tiles.c
+	$(CC) -Wf-bo0 -c -o build/for_figures.o for_figures.c
+	
+	$(CC) -Wl-yt3 -Wl-yo4 -Wl-ya4 -o for_figures.gb build/tiles.o build/for_figures.o
+	rm -f *.sym
+
 build:
 	mkdir $@
 
