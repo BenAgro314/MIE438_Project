@@ -143,7 +143,7 @@ uint16_t *px_progress[NUM_LEVELS];
 
 inline void init_tiles()
 {
-    SWITCH_ROM_MBC1(tilesBank);
+    SWITCH_ROM_MBC5(tilesBank);
     set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
     set_bkg_data(GB_TILESET_LEN, AERO_TILESET_LEN, aero + 3 * 16);
     set_bkg_data(GB_TILESET_LEN + AERO_TILESET_LEN, 1, aero + 47 * 16); // colon
@@ -301,7 +301,7 @@ void init_background(char *map, uint16_t map_width)
 inline void clear_background()
 {
     // write 0 to all background tiles
-    SWITCH_ROM_MBC1(tilesBank);
+    SWITCH_ROM_MBC5(tilesBank);
     set_bkg_data(0, 1, gb_tileset_v2); // load tiles into VRAM
     for (render_row = 0; render_row < 18; render_row++)
     {
@@ -316,7 +316,7 @@ inline void black_background()
 {
     // write 0 to all background tiles
 
-    SWITCH_ROM_MBC1(tilesBank);
+    SWITCH_ROM_MBC5(tilesBank);
     set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
     for (render_row = 0; render_row < 18; render_row++)
     {
@@ -589,7 +589,7 @@ inline void render_player()
 
 void initialize_player()
 {
-    SWITCH_ROM_MBC1(tilesBank);
+    SWITCH_ROM_MBC5(tilesBank);
     set_sprite_data(0, 1, players + (player_sprite_num << 4)); // cube
     set_sprite_data(1, 1, gb_tileset_v2 + (11<<4));  // ship
     set_sprite_tile(0, 0);
@@ -599,7 +599,7 @@ void initialize_player()
 void skip_to(uint16_t background_x, uint8_t char_y) {
 
     while (background_x_shift < background_x){
-        SWITCH_ROM_MBC1(level_banks[level_ind]);
+        SWITCH_ROM_MBC5(level_banks[level_ind]);
         scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
         update_HUD_bar();
     }
@@ -633,9 +633,9 @@ screen_t game()
     SHOW_BKG;
     DISPLAY_ON;
 
-    SWITCH_ROM_MBC1(level_banks[level_ind]);
+    SWITCH_ROM_MBC5(level_banks[level_ind]);
     init_background(level_maps[level_ind], level_widths[level_ind]);
-    SWITCH_ROM_MBC1(tilesBank);
+    SWITCH_ROM_MBC5(tilesBank);
     set_bkg_data(CUBE_PORTAL_TILE, 1, players + (player_sprite_num << 4));     // load tiles into VRAM
 
 #ifdef SKIP
@@ -680,7 +680,7 @@ screen_t game()
             tick_player();
             render_player();
 
-            SWITCH_ROM_MBC1(level_banks[level_ind]);
+            SWITCH_ROM_MBC5(level_banks[level_ind]);
             scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
 
             update_HUD_bar();
@@ -689,7 +689,7 @@ screen_t game()
 
         if (lose)
         {
-            SWITCH_ROM_MBC1(level_banks[level_ind]);
+            SWITCH_ROM_MBC5(level_banks[level_ind]);
             init_background(level_maps[level_ind], level_widths[level_ind]);
             *(attempts[level_ind]) = *(attempts[level_ind])+1;
             if (background_x_shift + player_x > *(px_progress[level_ind]))
@@ -734,7 +734,7 @@ screen_t game()
         {
             parallax_tile_ind = 0;
         }
-        SWITCH_ROM_MBC1(tilesBank);
+        SWITCH_ROM_MBC5(tilesBank);
         set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
         set_bkg_data(SMALL_SPIKE_TILE, 1, small_spike_parallax + parallax_tile_ind);  // load tiles into VRAM
         set_bkg_data(BIG_SPIKE_TILE, 1, big_spike_parallax + parallax_tile_ind);    // load tiles into VRAM
@@ -785,7 +785,7 @@ screen_t title()
     init_tiles();
     reset_tracking();
 
-    SWITCH_ROM_MBC1(title_map_v2Bank);
+    SWITCH_ROM_MBC5(title_map_v2Bank);
     init_background(title_map_v2, title_map_v2Width);
 
 
@@ -793,7 +793,7 @@ screen_t title()
     {
         for (render_col = 0; render_col < 11; render_col++)
         {
-            SWITCH_ROM_MBC1(tilesBank);
+            SWITCH_ROM_MBC5(tilesBank);
             set_sprite_data(TITLE_OAM + render_col, 1, nima + 16 * (13 + game_title[render_col] - 65)); // load tiles into VRAM
             set_sprite_tile(TITLE_OAM + render_col, TITLE_OAM + render_col);
             if (render_col > 7)
@@ -810,18 +810,18 @@ screen_t title()
             // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
             if (render_col < 5)
             {
-                SWITCH_ROM_MBC1(tilesBank);
+                SWITCH_ROM_MBC5(tilesBank);
                 set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
                 set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
                 move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
             }
-            SWITCH_ROM_MBC1(tilesBank);
+            SWITCH_ROM_MBC5(tilesBank);
             set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
             set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
             move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
         }
         // Load cursor
-        SWITCH_ROM_MBC1(tilesBank);
+        SWITCH_ROM_MBC5(tilesBank);
         set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
         // Starting at OAM 10 want to use 0-9 for something else. Title at 11
         set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
@@ -848,7 +848,7 @@ screen_t title()
         vbl_count = 0;
 
         if (sys_time % 2 == 0){
-            SWITCH_ROM_MBC1(title_map_v2Bank);
+            SWITCH_ROM_MBC5(title_map_v2Bank);
             scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
         }
 
@@ -857,7 +857,7 @@ screen_t title()
         {
             parallax_tile_ind = 0;
         }
-        SWITCH_ROM_MBC1(tilesBank);
+        SWITCH_ROM_MBC5(tilesBank);
         set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
 
         if (!title_loaded)
@@ -866,7 +866,7 @@ screen_t title()
             { 
                 if (title_index < 11)
                 {
-                    SWITCH_ROM_MBC1(tilesBank);
+                    SWITCH_ROM_MBC5(tilesBank);
                     set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
                     set_sprite_tile(TITLE_OAM + title_index, TITLE_OAM + title_index);
                     if (title_index > 7)
@@ -886,18 +886,18 @@ screen_t title()
                         // ASCII Letters - 65, plus 13 to skip the numbers and other stuff
                         if (render_col < 5)
                         {
-                            SWITCH_ROM_MBC1(tilesBank);
+                            SWITCH_ROM_MBC5(tilesBank);
                             set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
                             set_sprite_tile(START_TEXT_OAM + render_col, START_TEXT_OAM + render_col);
                             move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
                         }
-                        SWITCH_ROM_MBC1(tilesBank);
+                        SWITCH_ROM_MBC5(tilesBank);
                         set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
                         set_sprite_tile(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_OAM + render_col);
                         move_sprite(PLAYER_TEXT_OAM + render_col, PLAYER_TEXT_START_X + XOFF + 8 * render_col, (uint8_t)(PLAYER_TEXT_START_Y + YOFF));
                     }
                     // Load cursor
-                    SWITCH_ROM_MBC1(tilesBank);
+                    SWITCH_ROM_MBC5(tilesBank);
                     set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
                     // Starting at OAM 10 want to use 0-9 for something else. Title at 11
                     set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
@@ -999,7 +999,7 @@ screen_t player_select()
     clear_background();
 
     uint8_t cursor_position = 0;
-    SWITCH_ROM_MBC1(tilesBank);
+    SWITCH_ROM_MBC5(tilesBank);
     // Load cursor
     set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors + 16); // Load into VRAM
     // Load all character sprites
@@ -1116,7 +1116,7 @@ screen_t level_select()
     reset_tracking();
 
     // Load in cursor
-    SWITCH_ROM_MBC1(tilesBank);
+    SWITCH_ROM_MBC5(tilesBank);
     set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
     set_sprite_tile(CURSOR_TEXT_OAM, CURSOR_TEXT_OAM);
     move_sprite(CURSOR_TEXT_OAM, (START_TEXT_START_COL << 3) + XOFF - 16, (START_TEXT_ROW << 3) + YOFF);
@@ -1279,7 +1279,7 @@ void main()
     SPRITES_8x8;
     screen_t current_screen = TITLE;
 
-    ENABLE_RAM_MBC1;
+    ENABLE_RAM_MBC5;
     for (uint8_t i = 0; i < NUM_LEVELS; i++){
         attempts[i] = (uint16_t *) (START_ATTEMPTS + (i << 1));
         px_progress[i] = (uint16_t *) (START_PROGRESS + (i << 1));

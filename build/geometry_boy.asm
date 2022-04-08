@@ -3268,10 +3268,12 @@ _tick_player::
 ; Function initialize_player
 ; ---------------------------------
 _initialize_player::
-;geometry_boy.c:592: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:592: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:593: set_sprite_data(0, 1, players + (player_sprite_num << 4)); // cube
 	ld	bc, #_players+0
@@ -3326,7 +3328,7 @@ _skip_to::
 	ld	a, (de)
 	sbc	a, (hl)
 	jp	NC, 00103$
-;geometry_boy.c:602: SWITCH_ROM_MBC1(level_banks[level_ind]);
+;geometry_boy.c:602: SWITCH_ROM_MBC5(level_banks[level_ind]);
 	ld	a, c
 	ld	hl, #_level_ind
 	add	a, (hl)
@@ -3336,6 +3338,16 @@ _skip_to::
 	ld	d, a
 	ld	a, (de)
 	ldh	(__current_bank + 0), a
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	a, c
+	ld	hl, #_level_ind
+	add	a, (hl)
+	ld	e, a
+	ld	a, b
+	adc	a, #0x00
+	ld	d, a
+	ld	a, (de)
 	ld	(#0x2000),a
 ;geometry_boy.c:603: scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
 	ld	a, (#_level_ind)
@@ -3919,10 +3931,12 @@ _game::
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x02
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:146: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:146: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:147: set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
 	ld	de, #_gb_tileset_v2
@@ -4128,7 +4142,7 @@ _game::
 	ldh	a, (_LCDC_REG + 0)
 	or	a, #0x80
 	ldh	(_LCDC_REG + 0), a
-;geometry_boy.c:636: SWITCH_ROM_MBC1(level_banks[level_ind]);
+;geometry_boy.c:636: SWITCH_ROM_MBC5(level_banks[level_ind]);
 	ld	a, #<(_level_banks)
 	ld	hl, #_level_ind
 	add	a, (hl)
@@ -4138,6 +4152,16 @@ _game::
 	ld	b, a
 	ld	a, (bc)
 	ldh	(__current_bank + 0), a
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	a, #<(_level_banks)
+	ld	hl, #_level_ind
+	add	a, (hl)
+	ld	c, a
+	ld	a, #>(_level_banks)
+	adc	a, #0x00
+	ld	b, a
+	ld	a, (bc)
 	ld	(#0x2000),a
 ;geometry_boy.c:637: init_background(level_maps[level_ind], level_widths[level_ind]);
 	ld	hl, #_level_ind
@@ -4173,10 +4197,12 @@ _game::
 	push	bc
 	call	_init_background
 	add	sp, #4
-;geometry_boy.c:638: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:638: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:639: set_bkg_data(CUBE_PORTAL_TILE, 1, players + (player_sprite_num << 4));     // load tiles into VRAM
 	ld	bc, #_players+0
@@ -4472,7 +4498,7 @@ _game::
 	ld	(bc), a
 ;geometry_boy.c:681: render_player();
 00164$:
-;geometry_boy.c:683: SWITCH_ROM_MBC1(level_banks[level_ind]);
+;geometry_boy.c:683: SWITCH_ROM_MBC5(level_banks[level_ind]);
 	ld	a, #<(_level_banks)
 	ld	hl, #_level_ind
 	add	a, (hl)
@@ -4482,6 +4508,16 @@ _game::
 	ld	b, a
 	ld	a, (bc)
 	ldh	(__current_bank + 0), a
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	a, #<(_level_banks)
+	ld	hl, #_level_ind
+	add	a, (hl)
+	ld	c, a
+	ld	a, #>(_level_banks)
+	adc	a, #0x00
+	ld	b, a
+	ld	a, (bc)
 	ld	(#0x2000),a
 ;geometry_boy.c:684: scroll_bkg_x(player_dx, level_maps[level_ind], level_widths[level_ind]);
 	ld	hl, #_level_ind
@@ -4830,7 +4866,7 @@ _game::
 	ld	a, (#_lose)
 	or	a, a
 	jp	Z, 00116$
-;geometry_boy.c:692: SWITCH_ROM_MBC1(level_banks[level_ind]);
+;geometry_boy.c:692: SWITCH_ROM_MBC5(level_banks[level_ind]);
 	ld	a, #<(_level_banks)
 	ld	hl, #_level_ind
 	add	a, (hl)
@@ -4840,6 +4876,16 @@ _game::
 	ld	b, a
 	ld	a, (bc)
 	ldh	(__current_bank + 0), a
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	a, #<(_level_banks)
+	ld	hl, #_level_ind
+	add	a, (hl)
+	ld	c, a
+	ld	a, #>(_level_banks)
+	adc	a, #0x00
+	ld	b, a
+	ld	a, (bc)
 	ld	(#0x2000),a
 ;geometry_boy.c:693: init_background(level_maps[level_ind], level_widths[level_ind]);
 	ld	hl, #_level_ind
@@ -5502,10 +5548,12 @@ _game::
 ;geometry_boy.c:735: parallax_tile_ind = 0;
 	ld	(hl), #0x00
 00119$:
-;geometry_boy.c:737: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:737: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:738: set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind);     // load tiles into VRAM
 	ld	a, #<(_parallax_tileset_v2)
@@ -5656,10 +5704,12 @@ _title::
 	inc	sp
 ;geometry_boy.c:783: wait_vbl_done();
 	call	_wait_vbl_done
-;geometry_boy.c:146: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:146: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:147: set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
 	ld	de, #_gb_tileset_v2
@@ -5751,10 +5801,12 @@ _title::
 ;geometry_boy.c:171: SCX_REG = 0;
 	xor	a, a
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:788: SWITCH_ROM_MBC1(title_map_v2Bank);
+;geometry_boy.c:788: SWITCH_ROM_MBC5(title_map_v2Bank);
 	ld	a, #0x03
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x03
 ;geometry_boy.c:789: init_background(title_map_v2, title_map_v2Width);
 	ld	de, #0x003c
@@ -5771,10 +5823,12 @@ _title::
 	ld	hl, #_render_col
 	ld	(hl), #0x00
 00203$:
-;geometry_boy.c:796: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:796: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:797: set_sprite_data(TITLE_OAM + render_col, 1, nima + 16 * (13 + game_title[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_game_title)
@@ -6035,10 +6089,12 @@ _title::
 	ld	a, (#_render_col)
 	sub	a, #0x05
 	jr	NC, 00106$
-;geometry_boy.c:813: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:813: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:814: set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_start_text)
@@ -6121,10 +6177,12 @@ _title::
 	ld	(hl), c
 ;geometry_boy.c:816: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
 00106$:
-;geometry_boy.c:818: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:818: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:819: set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_player_text)
@@ -6211,10 +6269,12 @@ _title::
 	ld	a, (hl)
 	sub	a, #0x06
 	jp	C, 00205$
-;geometry_boy.c:824: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:824: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:825: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
 	ld	de, #_aero_cursors
@@ -6295,10 +6355,12 @@ _title::
 	ld	c, (hl)
 	rrca
 	jp	C,00114$
-;geometry_boy.c:851: SWITCH_ROM_MBC1(title_map_v2Bank);
+;geometry_boy.c:851: SWITCH_ROM_MBC5(title_map_v2Bank);
 	ld	a, #0x03
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x03
 ;geometry_boy.c:852: scroll_bkg_x(player_dx, title_map_v2, title_map_v2Width);
 	ld	hl, #_player_dx
@@ -6456,10 +6518,12 @@ _title::
 ;geometry_boy.c:858: parallax_tile_ind = 0;
 	ld	(hl), #0x00
 00116$:
-;geometry_boy.c:860: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:860: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:861: set_bkg_data(WHITE_TILE, 1, parallax_tileset_v2 + parallax_tile_ind); // load tiles into VRAM
 	ld	a, #<(_parallax_tileset_v2)
@@ -6510,10 +6574,12 @@ _title::
 	ld	a, (hl)
 	sub	a, #0x0b
 	jp	NC, 00124$
-;geometry_boy.c:869: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:869: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:870: set_sprite_data(TITLE_OAM + title_index, 1, nima + 16 * (13 + game_title[title_index] - 65)); // load tiles into VRAM
 	ld	de, #_game_title
@@ -6636,10 +6702,12 @@ _title::
 	ld	a, (#_render_col)
 	sub	a, #0x05
 	jr	NC, 00121$
-;geometry_boy.c:889: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:889: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:890: set_sprite_data(START_TEXT_OAM + render_col, 1, aero + 16 * (13 + start_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_start_text)
@@ -6722,10 +6790,12 @@ _title::
 	ld	(hl), c
 ;geometry_boy.c:892: move_sprite(START_TEXT_OAM + render_col, 8 * render_col + START_TEXT_START_X + XOFF, START_TEXT_START_Y + YOFF);
 00121$:
-;geometry_boy.c:894: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:894: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:895: set_sprite_data(PLAYER_TEXT_OAM + render_col, 1, aero + 16 * (13 + player_text[render_col] - 65)); // load tiles into VRAM
 	ld	a, #<(_player_text)
@@ -6812,10 +6882,12 @@ _title::
 	ld	a, (hl)
 	sub	a, #0x06
 	jp	C, 00209$
-;geometry_boy.c:900: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:900: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:901: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
 	ld	de, #_aero_cursors
@@ -7069,10 +7141,12 @@ _title::
 	jp	Z, 00156$
 ;../gbdk/include/gb/gb.h:660: __asm__("di");
 	di
-;geometry_boy.c:304: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:304: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:305: set_bkg_data(0, 1, gb_tileset_v2); // load tiles into VRAM
 	ld	de, #_gb_tileset_v2
@@ -7283,10 +7357,12 @@ _player_select::
 	dec	sp
 ;geometry_boy.c:998: wait_vbl_done();
 	call	_wait_vbl_done
-;geometry_boy.c:304: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:304: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:305: set_bkg_data(0, 1, gb_tileset_v2); // load tiles into VRAM
 	ld	de, #_gb_tileset_v2
@@ -7327,10 +7403,12 @@ _player_select::
 	ld	a, (hl)
 	sub	a, #0x12
 	jr	C, 00141$
-;geometry_boy.c:1002: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:1002: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:1004: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors + 16); // Load into VRAM
 	ld	de, #(_aero_cursors + 16)
@@ -7782,10 +7860,12 @@ _level_select::
 	ldh	(_LCDC_REG + 0), a
 ;geometry_boy.c:1114: wait_vbl_done();
 	call	_wait_vbl_done
-;geometry_boy.c:319: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:319: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:320: set_bkg_data(0, GB_TILESET_LEN, gb_tileset_v2); // load tiles into VRAM
 	ld	de, #_gb_tileset_v2
@@ -7880,10 +7960,12 @@ _level_select::
 ;geometry_boy.c:171: SCX_REG = 0;
 	ld	a, #0x00
 	ldh	(_SCX_REG + 0), a
-;geometry_boy.c:1119: SWITCH_ROM_MBC1(tilesBank);
+;geometry_boy.c:1119: SWITCH_ROM_MBC5(tilesBank);
 	ld	a, #0x02
 	ldh	(__current_bank + 0), a
-	ld	hl, #0x2000
+	ld	hl, #0x3000
+	ld	(hl), #0x00
+	ld	h, #0x20
 	ld	(hl), #0x02
 ;geometry_boy.c:1120: set_sprite_data(CURSOR_TEXT_OAM, 1, aero_cursors); // Load into VRAM
 	ld	de, #_aero_cursors
@@ -8991,7 +9073,7 @@ _main::
 ;geometry_boy.c:1280: screen_t current_screen = TITLE;
 	ldhl	sp,	#2
 	ld	(hl), #0x00
-;geometry_boy.c:1282: ENABLE_RAM_MBC1;
+;geometry_boy.c:1282: ENABLE_RAM_MBC5;
 	ld	hl, #0x0000
 	ld	(hl), #0x0a
 ;geometry_boy.c:1283: for (uint8_t i = 0; i < NUM_LEVELS; i++){
