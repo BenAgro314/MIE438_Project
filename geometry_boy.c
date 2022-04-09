@@ -130,7 +130,7 @@ uint8_t level_ind = 0; // current level index
 unsigned char *level_maps[NUM_LEVELS] = {level1_v2, level2, level3};
 uint16_t level_widths[NUM_LEVELS] = {level1_v2Width, level2Width, level3Width};
 uint8_t level_banks[NUM_LEVELS] = {level1_v2Bank, level2Bank, level3Bank};
-unsigned char **level_songs[NUM_LEVELS] = {level1song_Data, level3song_Data, level1song_Data};
+unsigned char **level_songs[NUM_LEVELS] = {level1song_Data, level3song_Data, lastsong_Data};
 
 // tracking progress
 uint16_t current_attempts = 0;
