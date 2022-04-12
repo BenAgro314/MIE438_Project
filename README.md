@@ -2,7 +2,7 @@
 
 Details can be found in the project report is located at [MIE438_Project_Report.pdf](MIE438_Project_Report.pdf)
 
-A demo video is available here: [https://drive.google.com/file/d/1qcTJF-kABjWPuaVZBRAyVAAjToCYio4O/view?usp=sharing](https://drive.google.com/file/d/1qcTJF-kABjWPuaVZBRAyVAAjToCYio4O/view?usp=sharing)
+A demo video is available here: [https://youtu.be/1WBaEiE1EUo](https://youtu.be/1WBaEiE1EUo)
 
 ## Running the Game
 
