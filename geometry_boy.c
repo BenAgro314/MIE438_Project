@@ -20,9 +20,9 @@
 
 // debug flags
 //#define INVINCIBLE
-// #define SKIP
-// #define SKIP_X_PX 125*8
-// #define SKIP_Y_PX 100   //144
+//#define SKIP
+//#define SKIP_X_PX 122*8
+//#define SKIP_Y_PX 96  //144
 
 // coordinate system starts (8,16) px right and up of the corner of the screen
 #define XOFF 8
@@ -340,7 +340,7 @@ inline uint8_t y_px_to_tile_ind(uint8_t y_px)
 inline uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px)
 {
     return get_bkg_tile_xy(
-        x_px_to_tile_ind(x_px + background_x_shift),
+        x_px_to_tile_ind(x_px + SCX_REG),
         y_px_to_tile_ind(y_px));
 }
 
