@@ -20,9 +20,9 @@
 
 // debug flags
 //#define INVINCIBLE
-#define SKIP
-#define SKIP_X_PX 125*8
-#define SKIP_Y_PX 100   //144
+// #define SKIP
+// #define SKIP_X_PX 125*8
+// #define SKIP_Y_PX 100   //144
 
 // coordinate system starts (8,16) px right and up of the corner of the screen
 #define XOFF 8
