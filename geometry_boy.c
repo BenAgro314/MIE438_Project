@@ -21,7 +21,7 @@
 // debug flags
 //#define INVINCIBLE
 //#define SKIP
-//#define SKIP_X_PX 122*8
+//#define SKIP_X_PX 120*8
 //#define SKIP_Y_PX 96  //144
 
 // coordinate system starts (8,16) px right and up of the corner of the screen
@@ -327,21 +327,11 @@ inline void black_background()
     }
 }
 
-inline uint8_t x_px_to_tile_ind(uint8_t x_px)
-{
-    return (x_px - XOFF) >> 3; // >> 3 is the same as /8
-}
-
-inline uint8_t y_px_to_tile_ind(uint8_t y_px)
-{
-    return (y_px - YOFF) >> 3;
-}
-
 inline uint8_t get_tile_by_px(uint8_t x_px, uint8_t y_px)
 {
     return get_bkg_tile_xy(
-        x_px_to_tile_ind(x_px + SCX_REG),
-        y_px_to_tile_ind(y_px));
+        (((x_px - XOFF) + SCX_REG) & 255) >> 3,
+        (y_px - YOFF) >> 3);
 }
 
 inline uint8_t debounce_input(uint8_t target, uint8_t prev_button, uint8_t button)
