@@ -4223,6 +4223,19 @@ _game::
 	push	hl
 	call	_set_bkg_data
 	add	sp, #4
+;geometry_boy.c:642: skip_to(SKIP_X_PX, SKIP_Y_PX);
+	ld	a, #0x64
+	push	af
+	inc	sp
+	ld	de, #0x03e8
+	push	de
+	call	_skip_to
+	add	sp, #3
+;geometry_boy.c:643: delay(500);
+	ld	de, #0x01f4
+	push	de
+	call	_delay
+	pop	hl
 ;geometry_boy.c:646: while (1)
 00121$:
 ;geometry_boy.c:648: if (vbl_count == 0)
@@ -5258,6 +5271,19 @@ _game::
 00191$:
 ;geometry_boy.c:703: wait_vbl_done();
 	call	_wait_vbl_done
+;geometry_boy.c:706: skip_to(SKIP_X_PX, SKIP_Y_PX);
+	ld	a, #0x64
+	push	af
+	inc	sp
+	ld	de, #0x03e8
+	push	de
+	call	_skip_to
+	add	sp, #3
+;geometry_boy.c:707: delay(500);
+	ld	de, #0x01f4
+	push	de
+	call	_delay
+	pop	hl
 	jp	00117$
 00116$:
 ;geometry_boy.c:710: } else if (win){
@@ -9314,7 +9340,7 @@ __xinit__level_banks:
 __xinit__level_songs:
 	.dw _level1song_Data
 	.dw _level3song_Data
-	.dw _level1song_Data
+	.dw _lastsong_Data
 __xinit__current_attempts:
 	.dw #0x0000
 __xinit__px_progress_bar:
