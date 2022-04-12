@@ -6,3 +6,4 @@ build/*.asm
 *.map
 *.sav
 .vscode/
+*.mp4
